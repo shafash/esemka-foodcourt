@@ -1,0 +1,19 @@
+# Dependencies
+**/node_modules
+
+# Environment
+**/.env
+
+# Build
+**/dist
+
+# IDE
+.vscode/
+
+# AI Tools
+**/.agents/
+**/.claude/
+**/.windsurf/
+
+# Logs
+*.log
