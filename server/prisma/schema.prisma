@@ -9,11 +9,104 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-model TestConnection {
-  id Int @id @default(autoincrement())
-  name String
-  createdAt DateTime @default(now())
+model Roles {
+  ID    Int     @id @default(autoincrement())
+  Name  String
+  Users Users[]
+}
+
+model Users {
+  ID          Int      @id @default(autoincrement())
+  FirstName   String
+  LastName    String
+  Email       String   @unique
+  PhoneNumber String
+  Password    String
+  DateJoined  DateTime @default(now())
+
+  RoleID Int
+  Role   Roles @relation(fields: [RoleID], references: [ID])
+
+  Reservations Reservations[]
+}
+
+model Categories {
+  ID   Int    @id @default(autoincrement())
+  Name String
+
+  Menus Menus[]
+}
+
+model Menus {
+  ID          Int     @id @default(autoincrement())
+  CategoryID  Int
+  Name        String
+  Description String?
+  Price       Decimal @db.Decimal(10, 2)
+
+  Category           Categories           @relation(fields: [CategoryID], references: [ID])
+  ReservationDetails ReservationDetails[]
+  MenuIngredients    MenuIngredients[]
+}
+
+model Ingredients {
+  ID   Int    @id @default(autoincrement())
+  Name String
+
+  MenuIngredients MenuIngredients[]
+}
+
+model Units {
+  ID   Int    @id @default(autoincrement())
+  Name String
+
+  MenuIngredients MenuIngredients[]
+}
+
+model MenuIngredients {
+  ID           Int     @id @default(autoincrement())
+  MenuID       Int
+  IngredientID Int
+  UnitID       Int
+  Qty          Decimal @db.Decimal(10, 2)
+
+  Menu       Menus       @relation(fields: [MenuID], references: [ID])
+  Ingredient Ingredients @relation(fields: [IngredientID], references: [ID])
+  Unit       Units       @relation(fields: [UnitID], references: [ID])
+}
+
+model Tables {
+  ID   Int    @id @default(autoincrement())
+  Name String
+
+  Reservations Reservations[]
+}
+
+model Reservations {
+  ID                  Int      @id @default(autoincrement())
+  UserID              Int
+  CustomerFirstName   String
+  CustomerLastName    String
+  CustomerEmail       String
+  CustomerPhoneNumber String
+  NumberOfPeople      Int
+  TableID             Int
+  ReservationDate     DateTime
+
+  User               Users                @relation(fields: [UserID], references: [ID])
+  Table              Tables               @relation(fields: [TableID], references: [ID])
+  ReservationDetails ReservationDetails[]
+}
+
+model ReservationDetails {
+  ID            Int @id @default(autoincrement())
+  ReservationID Int
+  MenuID        Int
+  Qty           Int
+
+  Reservation Reservations @relation(fields: [ReservationID], references: [ID])
+  Menu        Menus        @relation(fields: [MenuID], references: [ID])
 }
