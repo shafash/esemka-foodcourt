@@ -4,36 +4,52 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-    await prisma.roles.createMany({
-        data: [
-            { Name: "admin" },
-            { Name: "member" },
-        ],
-    });
+  await prisma.roles.upsert({
+    where: {
+      Name: "admin",
+    },
+    update: {},
+    create: {
+      Name: "admin",
+    },
+  });
 
-    const password = await bcrypt.hash(
-        "admin123",
-        10
-    );
+  await prisma.roles.upsert({
+    where: {
+      Name: "member",
+    },
+    update: {},
+    create: {
+      Name: "member",
+    },
+  });
 
-    await prisma.users.create({
-        data: {
-            FirstName: "System",
-            LastName: "Administrator",
-            Email: "admin@esemkafoodcourt.com",
-            PhoneNumber: "081234567890",
-            Password: password,
-            RoleID: 1
-        }
-    });
+  const password = await bcrypt.hash("admin123", 10);
+
+  await prisma.users.upsert({
+    where: {
+      Email: "admin@esemkafoodcourt.com",
+    },
+    update: {},
+    create: {
+      FirstName: "System",
+      LastName: "Administrator",
+      Email: "admin@esemkafoodcourt.com",
+      PhoneNumber: "081234567890",
+      Password: password,
+      RoleID: 1,
+    },
+  });
+
+  console.log("Database seeded successfully!");
 }
 
 main()
-    .then(async () => {
-        await prisma.$disconnect();
-    })
-    .catch(async (error) => {
-        console.error(error);
-        await prisma.$disconnect();
-        process.exit(1);
-    });
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (error) => {
+    console.error(error);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

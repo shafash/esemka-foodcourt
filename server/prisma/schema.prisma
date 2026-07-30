@@ -14,7 +14,7 @@ datasource db {
 
 model Roles {
   ID    Int     @id @default(autoincrement())
-  Name  String
+  Name  String @unique
   Users Users[]
 }
 
