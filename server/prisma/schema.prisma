@@ -46,6 +46,7 @@ model Menus {
   Name        String
   Description String?
   Price       Decimal @db.Decimal(10, 2)
+  Image String? 
 
   Category           Categories           @relation(fields: [CategoryID], references: [ID])
   ReservationDetails ReservationDetails[]
