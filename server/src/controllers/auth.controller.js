@@ -1,50 +1,57 @@
-import { registerSchema } from "../validations/auth.validation.js";
-import { registerService } from "../services/auth.service.js";
-import { loginService } from "../services/auth.service.js";
-import { loginSchema } from "../validations/auth.validation.js";
+import {
+    registerSchema,
+    loginSchema,
+} from "../validations/auth.validation.js";
 
-export const register = async (req, res) => {
+import {
+    registerService,
+    loginService,
+} from "../services/auth.service.js";
+
+import { successResponse } from "../utils/response.js";
+
+export const register = async (req, res, next) => {
     try {
         const payload = registerSchema.parse(req.body);
         const user = await registerService(payload);
-        return res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            data: {
+
+        return successResponse(
+            res,
+            "User registered successfully",
+            {
                 ID: user.ID,
                 FirstName: user.FirstName,
                 LastName: user.LastName,
                 Email: user.Email,
-            }
-        });
-    }  catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+                PhoneNumber: user.PhoneNumber,
+                RoleID: user.RoleID,
+                DateJoined: user.DateJoined,
+            },
+            201
+        );
+    } catch (error) {
+        next(error);
     }
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
     try {
         const payload = loginSchema.parse(req.body);
         const result = await loginService(payload);
-        return res.status(200).json({
-            success: true,
-            message: "Login successful",
+
+        return successResponse(res, "Login successful", {
             token: result.token,
-            data: {
+            user: {
                 ID: result.user.ID,
                 FirstName: result.user.FirstName,
                 LastName: result.user.LastName,
                 Email: result.user.Email,
+                PhoneNumber: result.user.PhoneNumber,
                 RoleID: result.user.RoleID,
-            }
+                DateJoined: result.user.DateJoined,
+            },
         });
     } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message,
-        });
+        next(error);
     }
 };

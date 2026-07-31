@@ -26,4 +26,8 @@ router.use(
     authRoutes
 );
 
+router.get("/test-error", (req, res, next) => {
+    next(new Error("Testing internal server error"));
+});
+
 export default router;

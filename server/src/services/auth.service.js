@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import ApiError from "../errors/ApiError.js";
 
 export const registerService = async (payload) => {
     const {
@@ -18,7 +19,7 @@ export const registerService = async (payload) => {
     });
 
     if (existingUser) {
-        throw new Error("Email already registered");
+        throw new ApiError(409, "Email already exists");
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -54,7 +55,7 @@ export const loginService = async (payload) => {
     }); 
 
     if (!user) {
-        throw new Error("Invalid email or password");
+        throw new ApiError(401, "Invalid email or password");
     }
 
     const isMatch = await bcrypt.compare(
@@ -63,7 +64,7 @@ export const loginService = async (payload) => {
     );
 
     if (!isMatch) {
-        throw new Error("Invalid email or password");
+        throw new ApiError(401, "Invalid email or password");
     }
 
     const token = jwt.sign(

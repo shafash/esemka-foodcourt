@@ -7,7 +7,7 @@ export const successResponse = (
     return res.status(status).json({
         success: true,
         message,
-        data
+        data,
     });
 };
 
@@ -15,9 +15,11 @@ export const errorResponse = (
     res,
     message,
     status = 400,
+    errors = null
 ) => {
     return res.status(status).json({
         success: false,
-        message 
+        message,
+        errors,
     });
 };
