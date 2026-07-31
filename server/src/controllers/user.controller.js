@@ -1,13 +1,24 @@
+import { successResponse } from "../utils/response.js";
+import { getProfileService } from "../services/user.service.js";
+
 export const getProfile = async (
     req, 
     res,
     next 
 ) => {
-    return res.status(200).json({
-        success: true,
-        message: "Endpoint belum diimplementasikan",
-        user: req.user
-    })
+    try {
+        const profile = await getProfileService(
+            req.user.ID 
+        );
+
+        return successResponse(
+            res,
+            "Profile retrieved successfully",
+            profile 
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const updateProfile = async (
@@ -15,11 +26,7 @@ export const updateProfile = async (
     res,
     next 
 ) => {
-    return res.status(200).json({
-        success: true,
-        message: "Endpoint belum diimplementasikan",
-        user: req.user
-    })
+
 };
 
 export const changePassword = async (
@@ -27,9 +34,5 @@ export const changePassword = async (
     res, 
     next 
 ) => {
-    return res.status(200).json({
-        success: true,
-        message: "Endpoint belum diimplementasikan",
-        user: req.user
-    })
+
 };
