@@ -8,6 +8,11 @@ export const registerSchema = z.object({
     Password: z.string().min(6),
 });
 
+export const loginSchema = z.object({
+    Email: z.string().email(),
+    Password: z.string().min(6),
+});
+
 export const registerValidation = (body) => {
 
 };
