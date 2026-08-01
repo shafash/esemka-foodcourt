@@ -1,5 +1,6 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
+import bcrypt from "bcryptjs";
 
 export const getProfileService = async (
     userId
@@ -73,6 +74,58 @@ export const updateProfileService = async (
 };
 
 export const changePasswordService = async (
+    userId,
+    payload
 ) => {
+    const {
+        CurrentPassword,
+        NewPassword
+    } = payload;
 
+    const user = await prisma.users.findUnique({
+        where: {
+            ID: userId 
+        }
+    });
+
+    if (!user) {
+        throw new ApiError(
+            404,
+            "User not found"
+        );
+    }
+
+    const isMatch = await bcrypt.compare(
+        CurrentPassword,
+        user.Password 
+    );
+
+    if (!isMatch) {
+        throw new ApiError(
+            401,
+            "Current password is incorrect"
+        );
+    }
+
+    if (CurrentPassword === NewPassword) {
+        throw new ApiError(
+            400,
+            "New password cannot be the same as the current password"
+        );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        NewPassword,
+        10 
+    );
+
+    await prisma.users.update({
+        where: {
+            ID: userId 
+        },
+
+        data: {
+            Password: hashedPassword
+        }
+    });
 };

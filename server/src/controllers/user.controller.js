@@ -1,9 +1,13 @@
 import { successResponse } from "../utils/response.js";
 import { 
     getProfileService, 
-    updateProfileService
+    updateProfileService,
+    changePasswordService
 } from "../services/user.service.js";
-import { updateProfileSchema } from "../validations/user.validation.js";
+import { 
+    updateProfileSchema,
+    changePasswordSchema
+} from "../validations/user.validation.js";
 
 export const getProfile = async (
     req, 
@@ -55,5 +59,21 @@ export const changePassword = async (
     res, 
     next 
 ) => {
+    try {
+        const payload = changePasswordSchema.parse(
+            req.body
+        );
 
+        await changePasswordService(
+            req.user.ID,
+            payload 
+        );
+
+        return successResponse(
+            res,
+            "Password changed successfully"
+        );
+    } catch (error) {
+        next(error);
+    }
 };
