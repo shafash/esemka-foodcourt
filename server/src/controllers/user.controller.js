@@ -1,5 +1,9 @@
 import { successResponse } from "../utils/response.js";
-import { getProfileService } from "../services/user.service.js";
+import { 
+    getProfileService, 
+    updateProfileService
+} from "../services/user.service.js";
+import { updateProfileSchema } from "../validations/user.validation.js";
 
 export const getProfile = async (
     req, 
@@ -26,7 +30,24 @@ export const updateProfile = async (
     res,
     next 
 ) => {
+    try {
+        const payload = updateProfileSchema.parse(
+            req.body
+        );
 
+        const user = await updateProfileService(
+            req.user.ID,
+            payload
+        );
+
+        return successResponse(
+            res,
+            "Profile updated successfully",
+            user 
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const changePassword = async (

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const updateProfileSchema = z.object({
-    FristName: z .string() .min(2),
-    LastName: z .string() .min(2),
-    PhoneNumber: z .string() .min(10) 
+    FirstName: z .string() .trim() .min(2) .max(50), 
+    LastName: z .string() .trim() .min(2) .max(50),
+    PhoneNumber: z .string() .trim() .min(10) .max(15) 
 });
 
 export const changePasswordSchema = z.object({
