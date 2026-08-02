@@ -13,21 +13,25 @@ const router = Router();
 
 router.get(
     "/",
+    authMiddleware,
     getAllCategories 
 );
 
 router.get(
     "/:id",
+    authMiddleware,
     getCategoryById
 );
 
 router.post(
     "/",
+    authMiddleware,
+    roleMiddleware(1),
     createCategory
 );
 
 router.put(
-    ":id",
+    "/:id",
     updateCategory
 );
 

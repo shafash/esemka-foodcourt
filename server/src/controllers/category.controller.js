@@ -5,6 +5,7 @@ import { getAllCategoriesService,
     updateCategoryService,
     deleteCategoryService
 } from "../services/category.service.js";
+import { categorySchema } from "../validations/category.validation.js";
 
 export const getAllCategories = async (
     req,
@@ -37,7 +38,24 @@ export const createCategory = async (
     res,
     next
 ) => {
+    try {
+        const payload = categorySchema.parse(
+            req.body
+        );
 
+        const category = await createCategoryService(
+            payload
+        );
+
+        return successResponse(
+            res,
+            "Category created successfully",
+            category,
+            201
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const updateCategory = async (
