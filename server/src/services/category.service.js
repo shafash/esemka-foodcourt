@@ -39,7 +39,46 @@ export const createCategoryService = async (payload) => {
 };
 
 export const updateCategoryService = async (categoryId, payload) => {   
+    const category = await prisma.categories.findUnique({
+        where: {
+            ID: categoryId
+        }
+    });
 
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    const existingCategory = await prisma.categories.findFirst({
+        where: {
+            Name: payload.Name,
+            NOT: {
+                ID: categoryId
+            }
+        }
+    });
+
+    if (existingCategory) {
+        throw new ApiError(
+            409,
+            "Category name already exists"
+        );
+    }
+
+    const updatedCategory = await prisma.categories.update({
+        where: {
+            ID: categoryId
+        },
+
+        data: {
+            Name: payload.Name
+        }
+    });
+
+    return updatedCategory;
 };
 
 export const deleteCategoryService = async (categoryId) => {

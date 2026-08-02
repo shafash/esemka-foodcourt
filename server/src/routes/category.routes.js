@@ -32,6 +32,8 @@ router.post(
 
 router.put(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     updateCategory
 );
 

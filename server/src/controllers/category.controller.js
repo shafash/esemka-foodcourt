@@ -63,7 +63,28 @@ export const updateCategory = async (
     res,
     next
 ) => {
+    try {
+        const categoryId = Number(
+            req.params.id
+        );
 
+        const payload = categorySchema.parse(
+            req.body
+        );
+
+        const category = await updateCategoryService(
+            categoryId,
+            payload
+        ); 
+
+        return successResponse(
+            res,
+            "Category updated successfully",
+            category
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const deleteCategory = async (
