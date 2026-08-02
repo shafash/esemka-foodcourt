@@ -39,6 +39,8 @@ router.put(
 
 router.delete(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     deleteCategory
 );
 

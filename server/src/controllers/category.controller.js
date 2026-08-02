@@ -6,6 +6,7 @@ import { getAllCategoriesService,
     deleteCategoryService
 } from "../services/category.service.js";
 import { categorySchema } from "../validations/category.validation.js";
+import ApiError from "../errors/ApiError.js";
 
 export const getAllCategories = async (
     req,
@@ -92,5 +93,27 @@ export const deleteCategory = async (
     res,
     next
 ) => {
+    try {
+        const categoryId = Number(
+            req.params.id
+        );
 
+        if (Number.isNaN(categoryId)) {
+            throw new ApiError(
+                400,
+                "Invalid category ID"
+            );
+        }
+
+        await deleteCategoryService(
+            categoryId
+        );
+
+        return successResponse(
+            res,
+            "Category deleted successfully"
+        );
+    } catch (error) {
+        next(error);
+    }
 };

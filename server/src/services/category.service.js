@@ -82,5 +82,35 @@ export const updateCategoryService = async (categoryId, payload) => {
 };
 
 export const deleteCategoryService = async (categoryId) => {
+    const category = await prisma.categories.findUnique({
+        where: {
+            ID: categoryId
+        }
+    });
 
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    const menuCount = await prisma.menus.count({
+        where: {
+            CategoryID: categoryId
+        }
+    });
+
+    if (menuCount > 0) {
+        throw new ApiError(
+            409,
+            "Category cannot be deleted because it is associated with existing menu items"
+        );
+    }
+
+    await prisma.categories.delete({
+        where: {
+            ID: categoryId
+        }
+    });
 };
