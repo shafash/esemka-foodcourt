@@ -41,6 +41,17 @@ async function main() {
     },
   });
 
+  await prisma.categories.createMany({
+    data: [
+      { Name: "Breakfast" },
+      { Name: "Main Course" },
+      { Name: "Appetizer" },
+      { Name: "Desserts" },
+      { Name: "Beverages" },
+    ],
+    skipDuplicates: true,
+  });
+
   console.log("Database seeded successfully!");
 }
 
