@@ -34,7 +34,7 @@ export const getAllMembersService = async ({
     const totalData = await prisma.users.count({
         where,
     });
-    
+
     const members = await prisma.users.findMany({
         where,
         skip,
@@ -76,5 +76,46 @@ export const getAllMembersService = async ({
             totalData,
             totalPages: Math.ceil(totalData / limit)
         }
+    };
+};
+
+export const getMemberByIdService = async (id) => {
+    const member = await prisma.users.findFirst({
+        where: {
+            ID: id,
+            RoleID: 2
+        },
+
+        include: {
+            Role: {
+                select: {
+                    Name: true 
+                }
+            },
+
+            _count: {
+                select: {
+                    Reservations: true 
+                }
+            }
+        }
+    });
+
+    if (!member) {
+        throw new ApiError(
+            404,
+            "Member not found"
+        );
+    }
+
+    return {
+        ID: member.ID,
+        FirstName: member.FirstName,
+        LastName: member.LastName,
+        Email: member.Email,
+        PhoneNumber: member.PhoneNumber,
+        DateJoined: member.DateJoined,
+        Role: member.Role.Name,
+        ReservationCount: member._count.Reservations 
     };
 };
