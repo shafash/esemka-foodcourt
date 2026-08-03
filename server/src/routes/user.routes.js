@@ -1,28 +1,18 @@
 import { Router } from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
+import roleMiddleware from "../middleware/role.middleware.js";
 import {
-    getProfile,
-    updateProfile,
-    changePassword,
+    getAllMembers
 } from "../controllers/user.controller.js";
 
 const router = Router();
 
 router.use(authMiddleware);
+router.use(roleMiddleware(1));
 
 router.get(
-    "/me",
-    getProfile 
-);
-
-router.put(
-    "/profile",
-    updateProfile
-);
-
-router.put(
-    "/change-password",
-    changePassword 
+    "/",
+    getAllMembers
 );
 
 export default router;
