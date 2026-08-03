@@ -10,3 +10,11 @@ export const changePasswordSchema = z.object({
     CurrentPassword: z .string() .min(6),
     NewPassword: z .string() .min(6) 
 });
+
+export const createMemberSchema = z.object({
+    FirstName: z .string() .min(1),
+    LastName: z .string() .min(1),
+    Email: z .string() .email(),
+    PhoneNumber: z .string() .min(1),
+    Password: z .string() .min(8)
+});

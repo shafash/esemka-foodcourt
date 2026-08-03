@@ -2,7 +2,9 @@ import { successResponse } from "../utils/response.js";
 import { 
     getAllMembersService,
     getMemberByIdService,
+    createMemberService
 } from "../services/user.service.js";
+import { createMemberSchema } from "../validations/user.validation.js";
 
 export const getAllMembers = async (
     req,
@@ -51,6 +53,31 @@ export const getMemberById = async (
             res,
             "Member retrivied successfully",
             member
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createMember = async (
+    req, 
+    res,
+    next 
+) => {
+    try {
+        const payload = createMemberSchema.parse(
+            req.body
+        );
+
+        const member = await createMemberService(
+            payload
+        );
+
+        return successResponse(
+            res,
+            "Member created successfully",
+            member,
+            201
         );
     } catch (error) {
         next(error);

@@ -119,3 +119,54 @@ export const getMemberByIdService = async (id) => {
         ReservationCount: member._count.Reservations 
     };
 };
+
+export const createMemberService = async (
+    payload
+) => {
+    const emailExists = await prisma.users.findUnique({
+        where: {
+            Email: payload.Email 
+        }
+    });
+
+    if (emailExists) {
+        throw new ApiError(
+            409,
+            "Email already registered"
+        );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        payload.Password,
+        10 
+    );
+
+    const member = await prisma.users.create({
+        data:  {
+            FirstName: payload.FirstName,
+            LastName: payload.LastName,
+            Email: payload.Email,
+            PhoneNumber: payload.PhoneNumber,
+            Password: hashedPassword,
+            RoleID: 2
+        },
+
+        include: {
+            Role: {
+                select: {
+                    Name: true 
+                }
+            }
+        }
+    });
+
+    return {
+        ID: member.ID,
+        FirstName: member.FirstName,
+        LastName: member.LastName,
+        Email: member.Email,
+        PhoneNumber: member.PhoneNumber,
+        DateJoined: member.DateJoined,
+        Role: member.Role.Name 
+    };
+};

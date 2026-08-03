@@ -3,7 +3,8 @@ import authMiddleware from "../middleware/auth.middleware.js";
 import roleMiddleware from "../middleware/role.middleware.js";
 import {
     getAllMembers,
-    getMemberById
+    getMemberById,
+    createMember
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -19,6 +20,11 @@ router.get(
 router.get(
     "/:id",
     getMemberById 
+);
+
+router.post(
+    "/",
+    createMember 
 );
 
 export default router;
