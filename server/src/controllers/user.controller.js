@@ -2,9 +2,13 @@ import { successResponse } from "../utils/response.js";
 import { 
     getAllMembersService,
     getMemberByIdService,
-    createMemberService
+    createMemberService,
+    updateMemberService
 } from "../services/user.service.js";
-import { createMemberSchema } from "../validations/user.validation.js";
+import { 
+    createMemberSchema,
+    updateMemberSchema
+} from "../validations/user.validation.js";
 
 export const getAllMembers = async (
     req,
@@ -78,6 +82,41 @@ export const createMember = async (
             "Member created successfully",
             member,
             201
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateMember = async (
+    req,
+    res,
+    next 
+) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return errorResponse(
+                res,
+                "Invalid member ID",
+                400
+            );
+        }
+
+        const payload =  updateMemberSchema.parse(
+            req.body 
+        );
+
+        const member = await updateMemberService(
+            id,
+            payload 
+        );
+
+        return successResponse(
+            res,
+            "Member updated successfully",
+            member 
         );
     } catch (error) {
         next(error);

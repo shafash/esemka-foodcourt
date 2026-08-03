@@ -4,7 +4,8 @@ import roleMiddleware from "../middleware/role.middleware.js";
 import {
     getAllMembers,
     getMemberById,
-    createMember
+    createMember,
+    updateMember
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -25,6 +26,11 @@ router.get(
 router.post(
     "/",
     createMember 
+);
+
+router.put(
+    "/:id",
+    updateMember
 );
 
 export default router;

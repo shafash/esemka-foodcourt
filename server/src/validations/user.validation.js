@@ -18,3 +18,11 @@ export const createMemberSchema = z.object({
     PhoneNumber: z .string() .min(1),
     Password: z .string() .min(8)
 });
+
+export const updateMemberSchema = z.object({
+    FirstName: z .string() .min(1),
+    LastName: z .string() .min(1),
+    Email: z .string() .email(),
+    PhoneNumber: z .string() .min(1),
+    Password: z .string() .min(8) .optional()
+});

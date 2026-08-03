@@ -170,3 +170,76 @@ export const createMemberService = async (
         Role: member.Role.Name 
     };
 };
+
+export const updateMemberService = async (
+    id,
+    payload 
+) => {
+    const member = await prisma.users.findFirst({
+        where: {
+            ID: id,
+            RoleID: 2
+        }
+    });
+
+    if (!member) {
+        throw new ApiError(
+            404,
+            "Member not found"
+        );
+    }
+
+    const emailExists = await prisma.users.findFirst({
+        where: {
+            Email: payload.Email,
+            NOT: {
+                ID: id 
+            }
+        }
+    });
+
+    if (emailExists) {
+        throw new ApiError(
+            409,
+            "Email already registered"
+        );
+    }
+
+    const data = {
+        FirstName: payload.FirstName,
+        LastName: payload.LastName,
+        Email: payload.Email,
+        PhoneNumber: payload.PhoneNumber 
+    };
+
+    if (payload.Password) {
+        data.Password = await bcrypt.hash(
+            payload.Password,
+            10 
+        );
+    }
+
+    const updateMember = await prisma.users.update({
+        where: {
+            ID: id 
+        },
+        data,
+        include: {
+            Role: {
+                select: {
+                    Name: true 
+                }
+            }
+        }
+    });
+
+    return  {
+        ID: updateMember.ID,
+        FirstName: updateMember.FirstName,
+        LastName: updateMember.LastName,
+        Email: updateMember.Email,
+        PhoneNumber: updateMember.PhoneNumber,
+        DateJoined: updateMember.DateJoined,
+        ROle: updateMember.Role.Name 
+    };
+};
