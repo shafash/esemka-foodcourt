@@ -11,7 +11,7 @@ export const getAllMenusService = async ({
     const where = {
         ...(search && {
             Name: {
-                constains: search 
+                contains: search 
             }
         })
     };
@@ -30,7 +30,7 @@ export const getAllMenusService = async ({
         include: {
             Category: {
                 select: {
-                    Id: true,
+                    ID: true,
                     Name: true 
                 }
             }
@@ -78,4 +78,155 @@ export const getMenuByIdService = async (id) => {
         CategoryID: menu.CategoryID,
         Category: menu.Category.Name 
     };
+};
+
+export const createMenuService = async (payload) => {
+    const category = await prisma.categories.findUnique({
+        where: {
+            ID: payload.CategoryID 
+        }
+    });
+
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    const menuExists = await prisma.menus.findFirst({
+        where: {
+            Name: payload.Name 
+        }
+    });
+
+    if (menuExists) {
+        throw new ApiError(
+            409,
+            "Menu name already exists"
+        );
+    }
+
+    const menu = await prisma.menus.create({
+        data: {
+            CategoryID: payload.CategoryID,
+            Name: payload.Name,
+            Description: payload.Description,
+            Price: payload.Price
+        },
+
+        include: {
+            Category: {
+                select: {
+                    ID: true,
+                    Name: true 
+                }
+            }
+        }
+    });
+
+    return {
+        ID: menu.ID,
+        CategoryID: menu.CategoryID,
+        Category: menu.Category.Name,
+        Name: menu.Name,
+        Description: menu.Description,
+        Price: menu.Price 
+    };
+};
+
+export const updateMenuService = async (
+    id,
+    payload 
+) => {
+    const menu = await prisma.menus.findUnique({
+        where: {
+            ID: id 
+        }
+    });
+
+    if (!menu) {
+        throw new ApiError(
+            404,
+            "Menu not found"
+        );
+    }
+
+    const category = await prisma.categories.findUnique({
+        where: {
+            ID: payload.CategoryID 
+        }
+    });
+
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    const updateMenu = await prisma.menus.update({
+        where: {
+            ID: id
+        },
+
+        data: {
+            CategoryID: payload.CategoryID,
+            Name: payload.Name,
+            Description: payload.Description,
+            Price: payload.Price
+        },
+
+        include: {
+            Category: {
+                select: {
+                    ID: true,
+                    Name: true
+                }
+            }
+        }
+    });
+
+    return {
+        ID: updateMenu.ID,
+        CategoryID: updateMenu.CategoryID,
+        Category: updateMenu.Category.Name,
+        Name: updateMenu.Name,
+        Description: updateMenu.Description,
+        Price: updateMenu.Price 
+    };
+};
+
+export const deleteMenuService = async (id) => {
+    const menu = await prisma.menus.findUnique({
+        where: {
+            ID: id 
+        }
+    });
+
+    if (!menu) {
+        throw new ApiError(
+            404,
+            "Menu not found" 
+        );
+    }
+
+    const reservationCount = await prisma.reservationDetails.count({
+        where: {
+            MenuID: id 
+        }
+    });
+
+    if (reservationCount > 0) {
+        throw new ApiError(
+            409,
+            "Menu cannot be deleted because it is used in reservation"
+        );
+    }
+
+    await prisma.menus.delete({
+        where: {
+            ID: id
+        }
+    });
 };
