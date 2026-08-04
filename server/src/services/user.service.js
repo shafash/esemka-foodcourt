@@ -243,3 +243,38 @@ export const updateMemberService = async (
         ROle: updateMember.Role.Name 
     };
 };
+
+export const deleteMemberService = async (id) => {
+    const member = await prisma.users.findFirst({
+        where: {
+            ID: id,
+            RoleID: 2
+        }
+    });
+
+    if (!member) {
+        throw new ApiError(
+            404,
+            "Member not found"
+        );
+    }
+
+    const reservationCount = await prisma.reservations.count({
+        where: {
+            UserID: id 
+        }
+    });
+
+    if (reservationCount > 0) {
+        throw new ApiError(
+            409,
+            "Member cannot be deleted because reservation data exists"
+        );
+    }
+
+    await prisma.users.delete({
+        where: {
+            ID: id 
+        }
+    });
+};

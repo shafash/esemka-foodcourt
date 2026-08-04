@@ -5,7 +5,8 @@ import {
     getAllMembers,
     getMemberById,
     createMember,
-    updateMember
+    updateMember,
+    deleteMember
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -31,6 +32,11 @@ router.post(
 router.put(
     "/:id",
     updateMember
+);
+
+router.delete(
+    "/:id",
+    deleteMember
 );
 
 export default router;

@@ -1,9 +1,10 @@
-import { successResponse } from "../utils/response.js";
+import { errorResponse, successResponse } from "../utils/response.js";
 import { 
     getAllMembersService,
     getMemberByIdService,
     createMemberService,
-    updateMemberService
+    updateMemberService,
+    deleteMemberService
 } from "../services/user.service.js";
 import { 
     createMemberSchema,
@@ -117,6 +118,33 @@ export const updateMember = async (
             res,
             "Member updated successfully",
             member 
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteMember = async (
+    req,
+    res,
+    next 
+) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return errorResponse(
+                res,
+                "Invalid member ID",
+                400 
+            );
+        }
+
+        await deleteMemberService(id);
+
+        return successResponse(
+            res,
+            "Member deleted successfully" 
         );
     } catch (error) {
         next(error);
