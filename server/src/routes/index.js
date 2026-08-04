@@ -4,6 +4,7 @@ import prisma from "../config/prisma.js";
 import userRoutes from "./user.routes.js";
 import categoryRoutes from "./category.routes.js";
 import menuRoutes from "./menu.routes.js";
+import ingredientRoutes from "./ingredient.routes.js";
 
 const router = Router();
 
@@ -46,6 +47,11 @@ router.use(
 router.use(
     "/menus",
     menuRoutes 
+);
+
+router.use(
+    "/ingredient",
+    ingredientRoutes
 );
 
 export default router;
