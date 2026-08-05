@@ -6,6 +6,7 @@ import categoryRoutes from "./category.routes.js";
 import menuRoutes from "./menu.routes.js";
 import ingredientRoutes from "./ingredient.routes.js";
 import unitRoutes from "./unit.routes.js";
+import menuIngredientRoutes from "./menuIngredient.routes.js";
 
 const router = Router();
 
@@ -58,6 +59,11 @@ router.use(
 router.use(
     "/unit",
     unitRoutes
+);
+
+router.use(
+    "/menuIngredient",
+    menuIngredientRoutes 
 );
 
 export default router;
