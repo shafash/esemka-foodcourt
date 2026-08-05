@@ -5,6 +5,7 @@ import userRoutes from "./user.routes.js";
 import categoryRoutes from "./category.routes.js";
 import menuRoutes from "./menu.routes.js";
 import ingredientRoutes from "./ingredient.routes.js";
+import unitRoutes from "./unit.routes.js";
 
 const router = Router();
 
@@ -52,6 +53,11 @@ router.use(
 router.use(
     "/ingredient",
     ingredientRoutes
+);
+
+router.use(
+    "/unit",
+    unitRoutes
 );
 
 export default router;
