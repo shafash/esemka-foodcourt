@@ -7,6 +7,7 @@ import menuRoutes from "./menu.routes.js";
 import ingredientRoutes from "./ingredient.routes.js";
 import unitRoutes from "./unit.routes.js";
 import menuIngredientRoutes from "./menuIngredient.routes.js";
+import tableRoutes from "./table.routes.js";
 
 const router = Router();
 
@@ -64,6 +65,11 @@ router.use(
 router.use(
     "/menuIngredient",
     menuIngredientRoutes 
+);
+
+router.use(
+    "/table",
+    tableRoutes 
 );
 
 export default router;
