@@ -8,6 +8,7 @@ import ingredientRoutes from "./ingredient.routes.js";
 import unitRoutes from "./unit.routes.js";
 import menuIngredientRoutes from "./menuIngredient.routes.js";
 import tableRoutes from "./table.routes.js";
+import reservationRoutes from "./reservation.routes.js";
 
 const router = Router();
 
@@ -70,6 +71,11 @@ router.use(
 router.use(
     "/table",
     tableRoutes 
+);
+
+router.use(
+    "/reservation",
+    reservationRoutes
 );
 
 export default router;
