@@ -15,14 +15,14 @@ const router = Router();
 router.get(
     "/",
     authMiddleware,
-    roleMiddleware(1),
+    roleMiddleware(1, 2),
     getAllMenus
 );
 
 router.get(
     "/:id",
     authMiddleware,
-    roleMiddleware(1),
+    roleMiddleware(1, 2),
     getMenuById
 );
 

@@ -14,14 +14,14 @@ const router = Router();
 router.get(
     "/",
     authMiddleware,
-    roleMiddleware(1),
+    roleMiddleware(1, 2),
     getAllTables
 );
 
 router.get(
     "/:id",
     authMiddleware,
-    roleMiddleware(1),
+    roleMiddleware(1, 2),
     getTableById
 );
 

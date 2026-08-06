@@ -84,6 +84,7 @@ export const createMenuIngredient = async(
         return successResponse(
             res,
             "Menu ingredient created successfully",
+            menuIngredient,
             201 
         );
     } catch (error) {

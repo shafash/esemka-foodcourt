@@ -91,6 +91,14 @@ export const updateCategory = async (
             req.params.id
         );
 
+        if (Number.isNaN(categoryId)) {
+            return errorResponse(
+                res,
+                "Invalid category ID",
+                400
+            );
+        }
+
         const payload = categorySchema.parse(
             req.body
         );

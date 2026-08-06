@@ -16,21 +16,28 @@ const router = Router();
 
 router.get(
     "/",
+    authMiddleware,
+    roleMiddleware(1),
     getAllReservations 
 );
 
 router.get(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     getReservationById 
 );
 
 router.put(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     updateReservation
 );
 
 router.delete(
     "/:id",
+    authMiddleware(1),
     deleteReservation
 );
 

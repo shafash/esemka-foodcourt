@@ -240,7 +240,7 @@ export const updateMenuIngredientService = async (
     let ingredient = await prisma.ingredients.findFirst({
         where: {
             Name: {
-                equals: payload.Ingredient
+                equals: payload.IngredientName
             }
         }
     });
@@ -256,7 +256,7 @@ export const updateMenuIngredientService = async (
     let unit = await prisma.units.findFirst({
         where: {
             Name: {
-                equals: payload.Unit 
+                equals: payload.UnitName
             }
         }
     });
