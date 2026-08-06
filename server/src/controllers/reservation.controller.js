@@ -6,7 +6,8 @@ import {
     getMyReservationByIdService,
     createReservationService,
     updateReservationService,
-    deleteReservationService
+    deleteReservationService,
+    cancelReservationService
 } from "../services/reservation.service.js";
 import {
     updateReservationSchema,
@@ -210,6 +211,37 @@ export const getMyReservationById = async (
         return successResponse(
             res,
             "Reservation retrieved successfully",
+            reservation
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const cancelReservation = async (
+    req,
+    res,
+    next
+) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return errorResponse(
+                res,
+                "Invalid reservation ID",
+                400
+            );
+        }
+
+        const reservation = await cancelReservationService(
+            req.user.ID,
+            id
+        );
+
+        return successResponse(
+            res,
+            "Reservation cancelled successfully",
             reservation
         );
     } catch (error) {

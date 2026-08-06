@@ -466,3 +466,63 @@ export const getMyReservationByIdService = async (
         }))
     };
 };
+
+export const cancelReservationService = async (
+    userId,
+    reservationId
+) => {
+    const reservation = await prisma.reservations.findFirst({
+        where: {
+            ID: reservationId,
+            UserID: userId
+        }
+    });
+
+    if (!reservation) {
+        throw new ApiError(
+            404,
+            "Reservation not found"
+        );
+    }
+
+    if (reservation.Status !== "Pending") {
+        throw new ApiError(
+            409,
+            "Only pending reservations can be cancelled"
+        );
+    }
+
+    const updatedReservation = await prisma.reservations.update({
+        where: {
+            ID: reservationId
+        },
+
+        data: {
+            Status: "Cancelled"
+        },
+
+        include: {
+            Table: {
+                select: {
+                    ID: true,
+                    Name: true
+                }
+            }
+        }
+    });
+
+    return {
+        ID: updatedReservation.ID,
+        CustomerFirstName: updatedReservation.CustomerFirstName,
+        CustomerLastName: updatedReservation.CustomerLastName,
+        ReservationDate: updatedReservation.ReservationDate,
+        ReservationTime: updatedReservation.ReservationTime,
+        NumberOfPeople: updatedReservation.NumberOfPeople,
+        Status: updatedReservation.Status,
+
+        Table: {
+            ID: updatedReservation.Table.ID,
+            Name: updatedReservation.Table.Name
+        }
+    };
+};

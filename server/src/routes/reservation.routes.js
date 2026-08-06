@@ -8,7 +8,8 @@ import {
     getMyReservations,
     createReservation,
     updateReservation,
-    deleteReservation
+    deleteReservation,
+    cancelReservation
 } from "../controllers/reservation.controller.js";
 
 const router = Router();
@@ -52,6 +53,13 @@ router.get(
     authMiddleware,
     roleMiddleware("Member"),
     getMyReservationById
+);
+
+router.put(
+    "/me/:id/cancel",
+    authMiddleware,
+    roleMiddleware(2),
+    cancelReservation
 );
 
 export default router;
