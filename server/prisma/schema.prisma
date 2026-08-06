@@ -95,7 +95,11 @@ model Reservations {
   CustomerPhoneNumber String
   NumberOfPeople      Int
   TableID             Int
+
   ReservationDate     DateTime
+  ReservationTime     String
+  Status              String   @default("Pending")
+  CreatedAt           DateTime @default(now())
 
   User               Users                @relation(fields: [UserID], references: [ID])
   Table              Tables               @relation(fields: [TableID], references: [ID])
