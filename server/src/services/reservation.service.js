@@ -402,6 +402,20 @@ export const createReservationService = async (
     return reservation;
 };
 
+export const getMyReservationsService = async ({
+    userId,
+    page,
+    limit,
+    search
+}) => {
+    return await getAllReservationsService({
+        userId,
+        page,
+        limit,
+        search
+    });
+};
+
 export const getMyReservationByIdService = async (
     userId,
     id

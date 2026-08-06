@@ -12,7 +12,41 @@ export const getAllCategoriesService = async () => {
 };
 
 export const getCategoryByIdService = async (categoryId) => {
+    const category = await prisma.categories.findUnique({
+        where: {
+            ID: categoryId
+        },
+        include: {
+            Menus: {
+                select: {
+                    ID: true,
+                    Name: true,
+                    Description: true,
+                    Price: true,
+                    Image: true
+                }
+            }
+        }
+    });
 
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    return {
+        ID: category.ID,
+        Name: category.Name,
+        Menus: category.Menus.map(menu => ({
+            ID: menu.ID,
+            Name: menu.Name,
+            Description: menu.Description,
+            Price: menu.Price,
+            Image: menu.Image
+        }))
+    };
 };
 
 export const createCategoryService = async (payload) => {

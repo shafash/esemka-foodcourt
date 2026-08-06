@@ -13,26 +13,36 @@ const router = Router();
 
 router.get(
     "/",
-    getAllMenuIngredients 
+    authMiddleware,
+    roleMiddleware(1),
+    getAllMenuIngredients
 );
 
 router.get(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     getMenuIngredientById
 );
 
 router.post(
     "/",
-    createMenuIngredient 
+    authMiddleware,
+    roleMiddleware(1),
+    createMenuIngredient
 );
 
 router.put(
     "/:id",
-    updateMenuIngredient 
+    authMiddleware,
+    roleMiddleware(1),
+    updateMenuIngredient
 );
 
 router.delete(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     deleteMenuIngredient
 );
 

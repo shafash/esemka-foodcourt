@@ -13,27 +13,37 @@ const router = Router();
 
 router.get(
     "/",
-    getAllUnits 
+    authMiddleware,
+    roleMiddleware(1),
+    getAllUnits
 );
 
 router.get(
     "/:id",
-    getUnitById 
+    authMiddleware,
+    roleMiddleware(1),
+    getUnitById
 );
 
 router.post(
     "/",
-    createUnit 
+    authMiddleware,
+    roleMiddleware(1),
+    createUnit
 );
 
 router.put(
     "/:id",
-    updateUnit 
+    authMiddleware,
+    roleMiddleware(1),
+    updateUnit
 );
 
 router.delete(
     "/:id",
-    deleteUnit 
+    authMiddleware,
+    roleMiddleware(1),
+    deleteUnit
 );
 
 export default router;

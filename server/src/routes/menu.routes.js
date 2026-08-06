@@ -13,27 +13,37 @@ const router = Router();
 
 router.get(
     "/",
+    authMiddleware,
+    roleMiddleware(1),
     getAllMenus
 );
 
 router.get(
     "/:id",
-    getMenuById 
+    authMiddleware,
+    roleMiddleware(1),
+    getMenuById
 );
 
 router.post(
     "/",
-    createMenu 
+    authMiddleware,
+    roleMiddleware(1),
+    createMenu
 );
 
 router.put(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     updateMenu
 );
 
 router.delete(
     "/:id",
-    deleteMenu 
+    authMiddleware,
+    roleMiddleware(1),
+    deleteMenu
 );
 
 export default router;

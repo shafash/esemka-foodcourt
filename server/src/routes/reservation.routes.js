@@ -51,7 +51,7 @@ router.get(
 router.get(
     "/me/:id",
     authMiddleware,
-    roleMiddleware("Member"),
+    roleMiddleware(2),
     getMyReservationById
 );
 

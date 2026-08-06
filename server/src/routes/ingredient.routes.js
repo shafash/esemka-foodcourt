@@ -13,27 +13,37 @@ const router = Router();
 
 router.get(
     "/",
-    getAllIngredients 
+    authMiddleware,
+    roleMiddleware(1),
+    getAllIngredients
 );
 
 router.get(
     "/:id",
-    getIngredientById 
+    authMiddleware,
+    roleMiddleware(1),
+    getIngredientById
 );
 
 router.post(
     "/",
-    createIngredient 
+    authMiddleware,
+    roleMiddleware(1),
+    createIngredient
 );
 
 router.put(
     "/:id",
-    updateIngredient,
+    authMiddleware,
+    roleMiddleware(1),
+    updateIngredient
 );
 
 router.delete(
     "/:id",
-    deleteIngredient 
+    authMiddleware,
+    roleMiddleware(1),
+    deleteIngredient
 );
 
 export default router;

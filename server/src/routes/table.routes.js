@@ -13,26 +13,36 @@ const router = Router();
 
 router.get(
     "/",
-    getAllTables 
+    authMiddleware,
+    roleMiddleware(1),
+    getAllTables
 );
 
 router.get(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     getTableById
 );
 
 router.post(
     "/",
-    createTable 
+    authMiddleware,
+    roleMiddleware(1),
+    createTable
 );
 
 router.put(
     "/:id",
-    updateTable 
+    authMiddleware,
+    roleMiddleware(1),
+    updateTable
 );
 
 router.delete(
     "/:id",
+    authMiddleware,
+    roleMiddleware(1),
     deleteTable
 );
 

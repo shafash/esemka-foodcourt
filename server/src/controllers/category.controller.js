@@ -1,4 +1,4 @@
-import { successResponse } from "../utils/response.js";
+import { errorResponse, successResponse } from "../utils/response.js";
 import { getAllCategoriesService,
     getCategoryByIdService,
     createCategoryService,
@@ -31,7 +31,29 @@ export const getCategoryById = async (
     res,
     next
 ) => {
+    try {
+        const id = Number(req.params.id);
 
+        if (Number.isNaN(id)) {
+            return errorResponse(
+                res,
+                "Invalid category ID",
+                400
+            );
+        }
+
+        const category = await getCategoryByIdService(
+            id
+        );
+
+        return successResponse(
+            res,
+            "Category retrieved successfully",
+            category
+        );
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const createCategory = async (
