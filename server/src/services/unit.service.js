@@ -43,7 +43,7 @@ export const getAllUnitsService = async ({
 export const getUnitByIdService = async (
     id 
 ) => {
-    const unit = await prisma.unit.findUnique({
+    const unit = await prisma.units.findUnique({
         where: {
             ID: id 
         }

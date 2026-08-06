@@ -120,16 +120,16 @@ export const getMenuIngredientByIdService = async (
             404,
             "Menu ingredient not found"
         );
+    }
 
-        return {
-            ID: menuIngredient.ID,
-            MenuID: menuIngredient.MenuID,
-            MenuName: menuIngredient.Menu.Name,
-            IngredientID: menuIngredient.IngredientID,
-            UnitID: menuIngredient.UnitID,
-            UnitName: menuIngredient.Unit.Name,
-            Qty: menuIngredient.Qty 
-        };
+    return {
+        ID: menuIngredient.ID,
+        MenuID: menuIngredient.MenuID,
+        MenuName: menuIngredient.Menu.Name,
+        IngredientID: menuIngredient.IngredientID,
+        UnitID: menuIngredient.UnitID,
+        UnitName: menuIngredient.Unit.Name,
+        Qty: menuIngredient.Qty 
     };
 }
 
