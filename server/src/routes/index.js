@@ -54,27 +54,27 @@ router.use(
 );
 
 router.use(
-    "/ingredient",
+    "/ingredients",
     ingredientRoutes
 );
 
 router.use(
-    "/unit",
+    "/units",
     unitRoutes
 );
 
 router.use(
-    "/menuIngredient",
+    "/menuIngredients",
     menuIngredientRoutes 
 );
 
 router.use(
-    "/table",
+    "/tables",
     tableRoutes 
 );
 
 router.use(
-    "/reservation",
+    "/reservations",
     reservationRoutes
 );
 
