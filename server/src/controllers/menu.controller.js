@@ -75,6 +75,10 @@ export const createMenu = async (
             req.body 
         );
 
+        if (req.file) {
+            payload.Image = req.file.filename;
+        }
+
         const menu = await createMenuService(
             payload 
         );
@@ -109,6 +113,10 @@ export const updateMenu = async (
         const payload = updateMenuSchema.parse(
             req.body 
         );
+
+        if (req.file) {
+            payload.Image = req.file.filename;
+        }
 
         const menu = await updateMenuService(
             id,

@@ -9,6 +9,7 @@ export const getAllMenusService = async ({
     const skip = (page - 1) * limit;
 
     const where = {
+        DeletedAt: null,
         ...(search && {
             Name: {
                 contains: search 
@@ -48,10 +49,70 @@ export const getAllMenusService = async ({
     };
 };
 
-export const getMenuByIdService = async (id) => {
-    const menu = await prisma.menus.findUnique({
+export const createMenuService = async (payload) => {
+    const category = await prisma.categories.findFirst({
         where: {
-            ID: id 
+            ID: payload.CategoryID,
+            DeletedAt: null
+        }
+    });
+
+    if (!category) {
+        throw new ApiError(
+            404,
+            "Category not found"
+        );
+    }
+
+    const menuExists = await prisma.menus.findFirst({
+        where: {
+            Name: payload.Name,
+            DeletedAt: null
+        }
+    });
+
+    if (menuExists) {
+        throw new ApiError(
+            409,
+            "Menu name already exists"
+        );
+    }
+
+    const menu = await prisma.menus.create({
+        data: {
+            CategoryID: payload.CategoryID,
+            Name: payload.Name,
+            Description: payload.Description,
+            Price: payload.Price,
+            Image: payload.Image || null
+        },
+
+        include: {
+            Category: {
+                select: {
+                    ID: true,
+                    Name: true 
+                }
+            }
+        }
+    });
+
+    return {
+        ID: menu.ID,
+        CategoryID: menu.CategoryID,
+        Category: menu.Category.Name,
+        Name: menu.Name,
+        Description: menu.Description,
+        Price: menu.Price,
+        Image: menu.Image
+    };
+};
+
+export const getMenuByIdService = async (id) => {
+    const menu = await prisma.menus.findFirst({
+        where: {
+            ID: id,
+            DeletedAt: null
         },
         include: {
             Category: {
@@ -76,62 +137,8 @@ export const getMenuByIdService = async (id) => {
         Description: menu.Description,
         Price: menu.Price,
         CategoryID: menu.CategoryID,
-        Category: menu.Category.Name 
-    };
-};
-
-export const createMenuService = async (payload) => {
-    const category = await prisma.categories.findUnique({
-        where: {
-            ID: payload.CategoryID 
-        }
-    });
-
-    if (!category) {
-        throw new ApiError(
-            404,
-            "Category not found"
-        );
-    }
-
-    const menuExists = await prisma.menus.findFirst({
-        where: {
-            Name: payload.Name 
-        }
-    });
-
-    if (menuExists) {
-        throw new ApiError(
-            409,
-            "Menu name already exists"
-        );
-    }
-
-    const menu = await prisma.menus.create({
-        data: {
-            CategoryID: payload.CategoryID,
-            Name: payload.Name,
-            Description: payload.Description,
-            Price: payload.Price
-        },
-
-        include: {
-            Category: {
-                select: {
-                    ID: true,
-                    Name: true 
-                }
-            }
-        }
-    });
-
-    return {
-        ID: menu.ID,
-        CategoryID: menu.CategoryID,
         Category: menu.Category.Name,
-        Name: menu.Name,
-        Description: menu.Description,
-        Price: menu.Price 
+        Image: menu.Image
     };
 };
 
@@ -139,9 +146,10 @@ export const updateMenuService = async (
     id,
     payload 
 ) => {
-    const menu = await prisma.menus.findUnique({
+    const menu = await prisma.menus.findFirst({
         where: {
-            ID: id 
+            ID: id,
+            DeletedAt: null
         }
     });
 
@@ -174,7 +182,8 @@ export const updateMenuService = async (
             CategoryID: payload.CategoryID,
             Name: payload.Name,
             Description: payload.Description,
-            Price: payload.Price
+            Price: payload.Price,
+            Image: payload.Image ?? undefined
         },
 
         include: {
@@ -193,14 +202,16 @@ export const updateMenuService = async (
         Category: updateMenu.Category.Name,
         Name: updateMenu.Name,
         Description: updateMenu.Description,
-        Price: updateMenu.Price 
+        Price: updateMenu.Price,
+        Image: updateMenu.Image
     };
 };
 
 export const deleteMenuService = async (id) => {
-    const menu = await prisma.menus.findUnique({
+    const menu = await prisma.menus.findFirst({
         where: {
-            ID: id 
+            ID: id,
+            DeletedAt: null
         }
     });
 
@@ -224,9 +235,12 @@ export const deleteMenuService = async (id) => {
         );
     }
 
-    await prisma.menus.delete({
+    await prisma.menus.update({
         where: {
             ID: id
+        },
+        data: {
+            DeletedAt: new Date()
         }
     });
 };

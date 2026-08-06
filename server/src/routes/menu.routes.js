@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
 import roleMiddleware from "../middleware/role.middleware.js";
+import uploadMiddleware from "../middleware/upload.middleware.js";
 import {
     getAllMenus,
     getMenuById,
@@ -29,6 +30,7 @@ router.post(
     "/",
     authMiddleware,
     roleMiddleware(1),
+    uploadMiddleware.single("image"),
     createMenu
 );
 
@@ -36,6 +38,7 @@ router.put(
     "/:id",
     authMiddleware,
     roleMiddleware(1),
+    uploadMiddleware.single("image"),
     updateMenu
 );
 

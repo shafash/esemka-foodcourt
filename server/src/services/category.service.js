@@ -3,6 +3,9 @@ import ApiError from "../errors/ApiError.js";
 
 export const getAllCategoriesService = async () => {
     const categories = await prisma.categories.findMany({
+        where: {
+            DeletedAt: null
+        },
         orderBy: {
             Name: "asc"
         }
@@ -12,12 +15,16 @@ export const getAllCategoriesService = async () => {
 };
 
 export const getCategoryByIdService = async (categoryId) => {
-    const category = await prisma.categories.findUnique({
+    const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId
+            ID: categoryId,
+            DeletedAt: null
         },
         include: {
             Menus: {
+                where: {
+                    DeletedAt: null
+                },
                 select: {
                     ID: true,
                     Name: true,
@@ -52,7 +59,8 @@ export const getCategoryByIdService = async (categoryId) => {
 export const createCategoryService = async (payload) => {
     const existingCategory = await prisma.categories.findFirst({
         where: {
-            Name: payload.Name 
+            Name: payload.Name,
+            DeletedAt: null
         }
     });
 
@@ -73,9 +81,10 @@ export const createCategoryService = async (payload) => {
 };
 
 export const updateCategoryService = async (categoryId, payload) => {   
-    const category = await prisma.categories.findUnique({
+    const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId
+            ID: categoryId,
+            DeletedAt: null
         }
     });
 
@@ -89,6 +98,7 @@ export const updateCategoryService = async (categoryId, payload) => {
     const existingCategory = await prisma.categories.findFirst({
         where: {
             Name: payload.Name,
+            DeletedAt: null,
             NOT: {
                 ID: categoryId
             }
@@ -116,9 +126,10 @@ export const updateCategoryService = async (categoryId, payload) => {
 };
 
 export const deleteCategoryService = async (categoryId) => {
-    const category = await prisma.categories.findUnique({
+    const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId
+            ID: categoryId,
+            DeletedAt: null
         }
     });
 
@@ -131,7 +142,8 @@ export const deleteCategoryService = async (categoryId) => {
 
     const menuCount = await prisma.menus.count({
         where: {
-            CategoryID: categoryId
+            CategoryID: categoryId,
+            DeletedAt: null
         }
     });
 
@@ -142,9 +154,12 @@ export const deleteCategoryService = async (categoryId) => {
         );
     }
 
-    await prisma.categories.delete({
+    await prisma.categories.update({
         where: {
             ID: categoryId
+        },
+        data: {
+            DeletedAt: new Date()
         }
     });
 };

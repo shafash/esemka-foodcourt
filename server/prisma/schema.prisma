@@ -34,19 +34,21 @@ model Users {
 }
 
 model Categories {
-  ID   Int    @id @default(autoincrement())
-  Name String
+  ID        Int      @id @default(autoincrement())
+  Name      String
+  DeletedAt DateTime?
 
   Menus Menus[]
 }
 
 model Menus {
-  ID          Int     @id @default(autoincrement())
+  ID          Int      @id @default(autoincrement())
   CategoryID  Int
   Name        String
   Description String?
-  Price       Decimal @db.Decimal(10, 2)
-  Image String? 
+  Price       Decimal   @db.Decimal(10, 2)
+  Image       String?
+  DeletedAt   DateTime?
 
   Category           Categories           @relation(fields: [CategoryID], references: [ID])
   ReservationDetails ReservationDetails[]
@@ -55,14 +57,14 @@ model Menus {
 
 model Ingredients {
   ID   Int    @id @default(autoincrement())
-  Name String
+  Name String @unique
 
   MenuIngredients MenuIngredients[]
 }
 
 model Units {
   ID   Int    @id @default(autoincrement())
-  Name String
+  Name String @unique
 
   MenuIngredients MenuIngredients[]
 }

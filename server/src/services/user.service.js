@@ -233,14 +233,14 @@ export const updateMemberService = async (
         }
     });
 
-    return  {
+    return {
         ID: updateMember.ID,
         FirstName: updateMember.FirstName,
         LastName: updateMember.LastName,
         Email: updateMember.Email,
         PhoneNumber: updateMember.PhoneNumber,
         DateJoined: updateMember.DateJoined,
-        ROle: updateMember.Role.Name 
+        Role: updateMember.Role.Name
     };
 };
 
