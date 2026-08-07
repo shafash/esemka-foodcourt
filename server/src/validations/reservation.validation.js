@@ -14,7 +14,7 @@ export const createReservationSchema = z.object({
 
     CustomerFirstName: z.string().trim().optional(),
     CustomerLastName: z.string().trim().optional(),
-    CustomerEmail: z.string().email().optional(),
+    CustomerEmail: z.email().optional(),
     CustomerPhoneNumber: z.string().min(8).max(20).optional(),
 
     ReservationDate: z.coerce.date(),

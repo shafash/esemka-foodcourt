@@ -1,4 +1,3 @@
-import { ZodNull } from "zod";
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
 
@@ -175,6 +174,18 @@ export const updateMenuService = async (
         );
     }
 
+    const duplicate = await prisma.menus.findFirst({
+        where: {
+            Name: payload.Name,
+            DeletedAt: null,
+            NOT: { ID: id }
+        }
+    });
+    
+    if (duplicate) {
+        throw new ApiError(409, "Menu name already exists");
+    }
+    
     const updateMenu = await prisma.menus.update({
         where: {
             ID: id
@@ -197,18 +208,6 @@ export const updateMenuService = async (
             }
         }
     });
-
-    const duplicate = await prisma.menus.findFirst({
-        where: {
-            Name: payload.Name,
-            DeletedAt: null,
-            NOT: { ID: id }
-        }
-    });
-    
-    if (duplicate) {
-        throw new ApiError(409, "Menu name already exists");
-    }
 
     return {
         ID: updateMenu.ID,

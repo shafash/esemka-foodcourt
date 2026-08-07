@@ -14,7 +14,7 @@ export const changePasswordSchema = z.object({
 export const createMemberSchema = z.object({
     FirstName: z .string() .min(1),
     LastName: z .string() .min(1),
-    Email: z .string() .email(),
+    Email: z .email(),
     PhoneNumber: z .string() .min(1),
     Password: z .string() .min(8)
 });
@@ -22,7 +22,7 @@ export const createMemberSchema = z.object({
 export const updateMemberSchema = z.object({
     FirstName: z .string() .min(1),
     LastName: z .string() .min(1),
-    Email: z .string() .email(),
+    Email: z .email(),
     PhoneNumber: z .string() .min(1),
     Password: z .string() .min(8) .optional()
 });

@@ -37,7 +37,8 @@ router.put(
 
 router.delete(
     "/:id",
-    authMiddleware(1),
+    authMiddleware,
+    roleMiddleware(1),
     deleteReservation
 );
 

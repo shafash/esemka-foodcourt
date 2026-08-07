@@ -1,5 +1,4 @@
 import { errorResponse, successResponse } from "../utils/response.js";
-import ApiError from "../errors/ApiError.js";
 import {
     getAllUnitsService,
     getUnitByIdService,
@@ -108,7 +107,7 @@ export const updateUnit = async (
             );
         }
 
-        const payload = await updateUnitSchema.parse(
+        const payload = updateUnitSchema.parse(
             req.body 
         );
 

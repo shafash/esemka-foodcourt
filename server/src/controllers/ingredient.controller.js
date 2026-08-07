@@ -1,5 +1,4 @@
 import { errorResponse, successResponse } from "../utils/response.js";
-import ApiError from "../errors/ApiError.js";
 import {
     getAllIngredientsService,
     getIngredientByIdService,
