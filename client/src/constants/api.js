@@ -6,3 +6,12 @@ export const AUTH_ENDPOINTS = {
   register: "/auth/register",
   logout: "/auth/logout",
 };
+
+export const MENU_ENDPOINTS = {
+  list: "/menus",
+  detail: (id) => `/menus/${id}`,
+  create: "/menus",
+  update: (id) => `/menus/${id}`,
+  delete: (id) => `/menus/${id}`,
+  bulkDelete: "/menus/bulk-delete",
+};

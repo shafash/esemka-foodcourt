@@ -1,7 +1,14 @@
 import { useMemo } from "react";
-import { FiCalendar, FiClipboard, FiTag, FiUsers, FiEye, FiCheck, FiX } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiClipboard,
+  FiTag,
+  FiUsers,
+  FiEye,
+  FiCheck,
+  FiX,
+} from "react-icons/fi";
 
-import Header from "../../components/layout/Header";
 import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Button from "../../components/common/Button";
@@ -13,11 +20,12 @@ import StatisticCard from "../../components/dashboard/StatisticCard";
 
 import useAuth from "../../hooks/useAuth";
 import useFetch from "../../hooks/useFetch";
+
 import {
   getSummaryStats,
   getRecentReservations,
   getStockAlerts,
-} from "../../services/dashboard.service";
+} from "../../services/dashboard.service.js";
 
 import "../../styles/dashboard.css";
 
@@ -27,8 +35,8 @@ const RESERVATION_COLUMNS = [
     header: "Customer",
     render: (row) => (
       <div>
-        <p className="table-cell__primary">{row.customer}</p>
-        <p className="table-cell__secondary">{row.email}</p>
+        <strong>{row.customer}</strong>
+        <span>{row.email}</span>
       </div>
     ),
   },
@@ -37,8 +45,8 @@ const RESERVATION_COLUMNS = [
     header: "Date",
     render: (row) => (
       <div>
-        <p className="table-cell__primary">{row.date}</p>
-        <p className="table-cell__secondary">{row.time}</p>
+        <strong>{row.date}</strong>
+        <span>{row.time}</span>
       </div>
     ),
   },
@@ -49,14 +57,52 @@ const RESERVATION_COLUMNS = [
   },
 ];
 
+function ReservationActions({ row }) {
+  if (row.status === "pending") {
+    return (
+      <>
+        <Button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          icon={<FiCheck />}
+          aria-label="Konfirmasi reservasi"
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          icon={<FiX />}
+          aria-label="Tolak reservasi"
+        />
+      </>
+    );
+  }
+
+  return (
+    <Button variant="ghost" size="sm" icon={<FiEye />}>
+      View
+    </Button>
+  );
+}
+
 function Dashboard() {
   const { user } = useAuth();
 
-  const { data: stats, isLoading: isStatsLoading } = useFetch(getSummaryStats);
-  const { data: reservations, isLoading: isReservationsLoading } = useFetch(
-    getRecentReservations
-  );
-  const { data: alerts, isLoading: isAlertsLoading } = useFetch(getStockAlerts);
+  const {
+    data: stats,
+    isLoading: isStatsLoading,
+  } = useFetch(getSummaryStats);
+
+  const {
+    data: reservations,
+    isLoading: isReservationsLoading,
+  } = useFetch(getRecentReservations);
+
+  const {
+    data: alerts,
+    isLoading: isAlertsLoading,
+  } = useFetch(getStockAlerts);
 
   const statCards = useMemo(
     () => [
@@ -92,23 +138,89 @@ function Dashboard() {
     [stats]
   );
 
+  let reservationsContent;
+
+  if (isReservationsLoading) {
+    reservationsContent = (
+      <LoadingSkeleton variant="table-row" count={4} />
+    );
+  } else if (reservations && reservations.length > 0) {
+    reservationsContent = (
+      <Table
+        columns={RESERVATION_COLUMNS}
+        data={reservations}
+        getRowId={(row) => row.id}
+        renderActions={(row) => <ReservationActions row={row} />}
+      />
+    );
+  } else {
+    reservationsContent = (
+      <EmptyState
+        title="Belum ada reservasi"
+        description="Reservasi terbaru akan muncul di sini."
+      />
+    );
+  }
+
+  let alertsContent;
+
+  if (isAlertsLoading) {
+    alertsContent = <LoadingSkeleton variant="text" count={3} />;
+  } else if (alerts && alerts.length > 0) {
+    alertsContent = (
+      <div>
+        {alerts.map((alert) => (
+          <div className="stock-alert" key={alert.id}>
+            <span className="stock-alert__bar" />
+
+            <div>
+              <p className="stock-alert__title">
+                {alert.title}
+              </p>
+
+              <p className="stock-alert__description">
+                {alert.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  } else {
+    alertsContent = (
+      <EmptyState
+        title="Tidak ada peringatan stok"
+        description="Semua bahan baku dalam kondisi aman saat ini."
+      />
+    );
+  }
+
   return (
     <>
-      <Header title="Dashboard" />
-
       <div className="dashboard-hero">
-        <h2 className="dashboard-hero__title">Welcome, {user?.firstName}</h2>
+        <h2 className="dashboard-hero__title">
+          Welcome, {user?.firstName}
+        </h2>
+
         <p className="dashboard-hero__subtitle">
-          Manage your foodcourt operations, monitor menu performance, and
-          track member engagement — all from one central command center.
+          Manage your foodcourt operations, monitor menu performance,
+          and track member engagement — all from one central command
+          center.
         </p>
       </div>
 
       <div className="dashboard-grid">
-        {statCards.map((stat) =>
-          isStatsLoading ? (
-            <LoadingSkeleton key={stat.key} variant="stat-card" />
-          ) : (
+        {statCards.map((stat) => {
+          if (isStatsLoading) {
+            return (
+              <LoadingSkeleton
+                key={stat.key}
+                variant="stat-card"
+              />
+            );
+          }
+
+          return (
             <StatisticCard
               key={stat.key}
               label={stat.label}
@@ -116,12 +228,15 @@ function Dashboard() {
               caption={stat.caption}
               icon={stat.icon}
             />
-          )
-        )}
+          );
+        })}
       </div>
 
       <div className="dashboard-section">
-        <Card title="Reservation Trend" subtitle="7 hari terakhir (data dummy)">
+        <Card
+          title="Reservation Trend"
+          subtitle="7 hari terakhir (data dummy)"
+        >
           {isStatsLoading ? (
             <LoadingSkeleton variant="card" />
           ) : (
@@ -134,72 +249,21 @@ function Dashboard() {
         <Card
           title="Recent Reservations"
           headerAction={
-            <Button variant="ghost" size="sm" disabled title="Tersedia di Milestone Reservation">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled
+              title="Tersedia di Milestone Reservation"
+            >
               View All
             </Button>
           }
         >
-          {isReservationsLoading ? (
-            <LoadingSkeleton variant="table-row" count={4} />
-          ) : reservations && reservations.length > 0 ? (
-            <Table
-              columns={RESERVATION_COLUMNS}
-              data={reservations}
-              getRowId={(row) => row.id}
-              renderActions={(row) =>
-                row.status === "pending" ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      iconOnly
-                      icon={<FiCheck />}
-                      aria-label="Konfirmasi reservasi"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      iconOnly
-                      icon={<FiX />}
-                      aria-label="Tolak reservasi"
-                    />
-                  </>
-                ) : (
-                  <Button variant="ghost" size="sm" icon={<FiEye />}>
-                    View
-                  </Button>
-                )
-              }
-            />
-          ) : (
-            <EmptyState
-              title="Belum ada reservasi"
-              description="Reservasi terbaru akan muncul di sini."
-            />
-          )}
+          {reservationsContent}
         </Card>
 
         <Card title="Stock Alerts">
-          {isAlertsLoading ? (
-            <LoadingSkeleton variant="text" count={3} />
-          ) : alerts && alerts.length > 0 ? (
-            <div>
-              {alerts.map((alert) => (
-                <div className="stock-alert" key={alert.id}>
-                  <span className="stock-alert__bar" />
-                  <div>
-                    <p className="stock-alert__title">{alert.title}</p>
-                    <p className="stock-alert__description">{alert.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="Tidak ada peringatan stok"
-              description="Semua bahan baku dalam kondisi aman saat ini."
-            />
-          )}
+          {alertsContent}
         </Card>
       </div>
     </>
