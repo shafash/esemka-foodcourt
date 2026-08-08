@@ -1,0 +1,124 @@
+.dashboard-hero {
+  background-color: var(--color-ink);
+  color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.dashboard-hero__title {
+  font-size: var(--font-size-page-title);
+  margin-bottom: var(--space-2);
+  color: var(--color-surface);
+}
+
+.dashboard-hero__subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 640px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 1023px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-section {
+  margin-top: var(--space-6);
+}
+
+.dashboard-columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .dashboard-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statistic-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statistic-card__label {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+}
+
+.statistic-card__icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  color: var(--color-ink-soft);
+  flex-shrink: 0;
+}
+
+.statistic-card__value {
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--space-3);
+  color: var(--color-ink);
+}
+
+.statistic-card__caption {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+}
+
+.stock-alert {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stock-alert:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stock-alert:first-child {
+  padding-top: 0;
+}
+
+.stock-alert__bar {
+  width: 3px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-danger);
+  flex-shrink: 0;
+}
+
+.stock-alert__title {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+  font-size: var(--font-size-caption);
+}
+
+.stock-alert__description {
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+  margin-top: var(--space-1);
+}

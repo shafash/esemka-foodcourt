@@ -1,8 +1,14 @@
-import { useState } from 'react'
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
-    <h1>Hello Esemka Foodcourt</h1>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
