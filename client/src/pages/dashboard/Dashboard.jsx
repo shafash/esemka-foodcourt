@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import {
   FiCalendar,
   FiClipboard,
-  FiTag,
   FiUsers,
   FiEye,
   FiCheck,
   FiX,
+  FiBarChart2,
+  FiDownload,
 } from "react-icons/fi";
 
 import Card from "../../components/common/Card";
@@ -26,6 +27,8 @@ import {
   getRecentReservations,
   getStockAlerts,
 } from "../../services/dashboard.service.js";
+import { ROLE_MEMBER } from "../../constants/roles";
+import MemberDashboard from "./MemberDashboard";
 
 import "../../styles/dashboard.css";
 
@@ -35,8 +38,8 @@ const RESERVATION_COLUMNS = [
     header: "Customer",
     render: (row) => (
       <div>
-        <strong>{row.customer}</strong>
-        <span>{row.email}</span>
+        <strong className="table-cell__primary">{row.customer}</strong>
+        <span className="table-cell__secondary">{row.email}</span>
       </div>
     ),
   },
@@ -45,8 +48,8 @@ const RESERVATION_COLUMNS = [
     header: "Date",
     render: (row) => (
       <div>
-        <strong>{row.date}</strong>
-        <span>{row.time}</span>
+        <strong className="table-cell__primary">{row.date}</strong>
+        <span className="table-cell__secondary">{row.time}</span>
       </div>
     ),
   },
@@ -89,6 +92,14 @@ function ReservationActions({ row }) {
 function Dashboard() {
   const { user } = useAuth();
 
+  if (user?.role === ROLE_MEMBER) {
+    return <MemberDashboard />;
+  }
+
+  return <AdminDashboard user={user} />;
+}
+
+function AdminDashboard({ user }) {
   const {
     data: stats,
     isLoading: isStatsLoading,
@@ -107,32 +118,25 @@ function Dashboard() {
   const statCards = useMemo(
     () => [
       {
-        key: "reservations",
-        label: "Total Reservations",
-        value: stats?.totalReservations,
-        caption: stats?.totalReservationsCaption,
-        icon: <FiCalendar />,
+        key: "members",
+        label: "Total Members",
+        value: stats?.totalMembers,
+        caption: stats?.totalMembersCaption,
+        icon: <FiUsers />,
       },
       {
         key: "menus",
-        label: "Total Menus",
-        value: stats?.totalMenus,
-        caption: stats?.totalMenusCaption,
+        label: "Active Menus",
+        value: stats?.activeMenus,
+        caption: stats?.activeMenusCaption,
         icon: <FiClipboard />,
       },
       {
-        key: "categories",
-        label: "Total Categories",
-        value: stats?.totalCategories,
-        caption: stats?.totalCategoriesCaption,
-        icon: <FiTag />,
-      },
-      {
-        key: "customers",
-        label: "Total Customers",
-        value: stats?.totalCustomers,
-        caption: stats?.totalCustomersCaption,
-        icon: <FiUsers />,
+        key: "reservations",
+        label: "Today's Reservations",
+        value: stats?.todaysReservations,
+        caption: stats?.todaysReservationsCaption,
+        icon: <FiCalendar />,
       },
     ],
     [stats]
@@ -170,7 +174,7 @@ function Dashboard() {
     alertsContent = (
       <div>
         {alerts.map((alert) => (
-          <div className="stock-alert" key={alert.id}>
+          <div className={`stock-alert stock-alert--${alert.severity || "warning"}`} key={alert.id}>
             <span className="stock-alert__bar" />
 
             <div>
@@ -262,9 +266,30 @@ function Dashboard() {
           {reservationsContent}
         </Card>
 
-        <Card title="Stock Alerts">
-          {alertsContent}
-        </Card>
+        <div className="dashboard-columns__side">
+          <Card title="Stock Alerts">
+            {alertsContent}
+          </Card>
+
+          <Card className="performance-card">
+            <span className="performance-card__icon">
+              <FiBarChart2 size={22} />
+            </span>
+            <h3 className="performance-card__title">Performance Reports</h3>
+            <p className="performance-card__description">
+              Generate comprehensive weekly reports for sales and member growth.
+            </p>
+            <Button
+              variant="primary"
+              className="button--cta"
+              icon={<FiDownload />}
+              disabled
+              title="Tersedia setelah integrasi backend"
+            >
+              Download Report
+            </Button>
+          </Card>
+        </div>
       </div>
     </>
   );

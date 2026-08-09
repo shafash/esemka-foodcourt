@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
+import TopBar from "../components/layout/TopBar";
 
 function DashboardLayout({ role, onLogout, withDetail = false, detail }) {
   const layoutClass = withDetail
@@ -13,6 +14,7 @@ function DashboardLayout({ role, onLogout, withDetail = false, detail }) {
       </div>
 
       <div className="dashboard-layout__main">
+        <TopBar />
         <div className="dashboard-layout__content">
           <Outlet />
         </div>

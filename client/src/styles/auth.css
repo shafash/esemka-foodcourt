@@ -11,12 +11,19 @@
   text-align: center;
 }
 
+.auth-brand--centered .auth-brand__title {
+  font-family: var(--font-family-heading);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
 .auth-brand__logo {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
-  background-color: var(--color-ink);
-  color: var(--color-surface);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +60,7 @@
 .auth-checkbox input {
   width: 16px;
   height: 16px;
-  accent-color: var(--color-ink);
+  accent-color: var(--color-primary);
 }
 
 .auth-link {

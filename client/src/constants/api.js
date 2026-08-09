@@ -15,3 +15,11 @@ export const MENU_ENDPOINTS = {
   delete: (id) => `/menus/${id}`,
   bulkDelete: "/menus/bulk-delete",
 };
+
+export const CATEGORY_ENDPOINTS = {
+  list: "/categories",
+  detail: (id) => `/categories/${id}`,
+  create: "/categories",
+  update: (id) => `/categories/${id}`,
+  delete: (id) => `/categories/${id}`,
+};

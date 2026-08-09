@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
@@ -14,11 +14,14 @@ import Select from "../../components/common/Select";
 import Modal from "../../components/common/Modal";
 import EmptyState from "../../components/common/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
-
 import useFetch from "../../hooks/useFetch";
-import { getMenus, deleteMenu, bulkDeleteMenus, MOCK_CATEGORIES } from "../../services/menu.service";
+import {
+  getMenus,
+  deleteMenu,
+  bulkDeleteMenus,
+} from "../../services/menu.service";
+import { getCategoryOptions } from "../../services/cetagory.service";
 import { formatCurrency } from "../../utils/formatCurrency";
-
 import "../../styles/menu.css";
 
 const PAGE_SIZE = 9;
@@ -48,13 +51,12 @@ function MenuList() {
   );
   const { data, isLoading, refetch } = useFetch(fetchMenus);
 
+  const { data: categoryOptions } = useFetch(getCategoryOptions);
+
+  const safeCategoryOptions = categoryOptions || [];
+
   const menus = data?.data || [];
   const total = data?.total || 0;
-
-  const categoryOptions = useMemo(
-    () => MOCK_CATEGORIES.map((category) => ({ value: category, label: category })),
-    []
-  );
 
   const handleCategoryChange = (value) => {
     setCategoryFilter(value);
@@ -128,23 +130,11 @@ function MenuList() {
 
   return (
     <>
-      <Header title="Manage Menus" />
-
-      <Card
+      <Header
         title="Menu Inventory"
-        headerAction={
-          <div className="menu-toolbar">
-            <SearchBar
-              value={searchInput}
-              onChange={setSearchInput}
-              placeholder="Search menus..."
-            />
-            <Select
-              value={categoryFilter}
-              onChange={(event) => handleCategoryChange(event.target.value)}
-              options={categoryOptions}
-              placeholder="All Categories"
-            />
+        subtitle="Manage your culinary offerings, prices, and categories."
+        actions={
+          <>
             <Button
               variant="danger"
               disabled={selectedIds.length === 0}
@@ -158,6 +148,24 @@ function MenuList() {
                 Insert New
               </Button>
             </Link>
+          </>
+        }
+      />
+
+      <Card
+        headerAction={
+          <div className="menu-toolbar">
+            <SearchBar
+              value={searchInput}
+              onChange={setSearchInput}
+              placeholder="Search menus..."
+            />
+            <Select
+              value={categoryFilter}
+              onChange={(event) => handleCategoryChange(event.target.value)}
+              options={categoryOptions}
+              placeholder="Filter by Category"
+            />
           </div>
         }
       >

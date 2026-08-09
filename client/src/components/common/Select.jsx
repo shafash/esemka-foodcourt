@@ -1,11 +1,22 @@
 import { forwardRef, useId } from "react";
 
 const Select = forwardRef(function Select(
-  { label, options = [], placeholder, error, hint, className = "", id, ...rest },
+  {
+    label,
+    options,
+    placeholder,
+    error,
+    hint,
+    className = "",
+    id,
+    ...rest
+  },
   ref
 ) {
   const generatedId = useId();
   const selectId = id || generatedId;
+
+  const safeOptions = Array.isArray(options) ? options : [];
 
   return (
     <div className={`field ${className}`.trim()}>
@@ -19,12 +30,15 @@ const Select = forwardRef(function Select(
         <select
           id={selectId}
           ref={ref}
-          className={`field__input field__select ${error ? "field__input--error" : ""}`.trim()}
+          className={`field__input field__select ${
+            error ? "field__input--error" : ""
+          }`.trim()}
           aria-invalid={Boolean(error)}
           {...rest}
         >
           {placeholder && <option value="">{placeholder}</option>}
-          {options.map((option) => (
+
+          {safeOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>

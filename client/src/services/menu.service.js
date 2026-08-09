@@ -148,3 +148,7 @@ export async function bulkDeleteMenus(ids) {
   const { data } = await axiosInstance.post(MENU_ENDPOINTS.bulkDelete, { ids });
   return data;
 }
+
+export function countMenusByCategory(categoryName) {
+  return MOCK_MENUS.filter((menu) => menu.category === categoryName).length;
+}

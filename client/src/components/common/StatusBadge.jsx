@@ -6,6 +6,9 @@ const STATUS_CONFIG = {
   completed: { label: "Completed", variant: "info" },
   canceled: { label: "Canceled", variant: "danger" },
   upcoming: { label: "Upcoming", variant: "neutral" },
+  active: { label: "Active", variant: "warning" },
+  inactive: { label: "Inactive", variant: "neutral" },
+  vip: { label: "VIP", variant: "secondary" },
 };
 
 function StatusBadge({ status }) {

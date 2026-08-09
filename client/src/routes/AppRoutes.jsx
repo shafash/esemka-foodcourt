@@ -13,9 +13,20 @@ import MenuList from "../pages/menu/MenuList";
 import CreateMenu from "../pages/menu/CreateMenu";
 import EditMenu from "../pages/menu/EditMenu";
 
+import MemberList from "../pages/member/MemberList";
+import CreateMember from "../pages/member/CreateMember";
+import EditMember from "../pages/member/EditMember";
+
+import IngredientList from "../pages/ingredient/IngredientList";
+
+import ReservationList from "../pages/reservation/ReservationList";
+import CreateReservation from "../pages/reservation/CreateReservation";
+import ReservationHistory from "../pages/reservation/ReservationHistory";
+
 import NotFound from "../pages/NotFound";
 
 import useAuth from "../hooks/useAuth";
+import { ROLE_ADMIN, ROLE_MEMBER } from "../constants/roles";
 
 function AuthLayoutRoute() {
   return <AuthLayout />;
@@ -63,9 +74,24 @@ function AppRoutes() {
         <Route element={<DashboardLayoutRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route path="/menu" element={<MenuList />} />
-          <Route path="/menu/create" element={<CreateMenu />} />
-          <Route path="/menu/:id/edit" element={<EditMenu />} />
+          <Route element={<ProtectedRoute allowedRoles={[ROLE_ADMIN]} />}>
+            <Route path="/menu" element={<MenuList />} />
+            <Route path="/menu/create" element={<CreateMenu />} />
+            <Route path="/menu/:id/edit" element={<EditMenu />} />
+
+            <Route path="/members" element={<MemberList />} />
+            <Route path="/members/create" element={<CreateMember />} />
+            <Route path="/members/:id/edit" element={<EditMember />} />
+
+            <Route path="/ingredients" element={<IngredientList />} />
+
+            <Route path="/reservation" element={<ReservationList />} />
+          </Route>
+ 
+          <Route element={<ProtectedRoute allowedRoles={[ROLE_MEMBER]} />}>
+            <Route path="/reservation/reserve" element={<CreateReservation />} />
+            <Route path="/reservation/history" element={<ReservationHistory />} />
+          </Route>
         </Route>
       </Route>
 

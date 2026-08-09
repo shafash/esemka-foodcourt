@@ -35,7 +35,7 @@ function EditMenu() {
 
   return (
     <>
-      <Header title="Edit Menu" />
+      <Header title="Edit Menu" showBack backTo="/menu" />
       <Card>
         {isLoading ? (
           <Loader centered label="Memuat data menu..." />

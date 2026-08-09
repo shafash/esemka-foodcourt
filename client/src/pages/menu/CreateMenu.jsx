@@ -28,7 +28,7 @@ function CreateMenu() {
 
   return (
     <>
-      <Header title="Add Menu" />
+      <Header title="Add Menu Item" showBack backTo="/menu" />
       <Card>
         {submitError && <p className="auth-error">{submitError}</p>}
         <MenuForm onSubmit={handleSubmit} isSubmitting={isSubmitting} submitLabel="Save Change" />

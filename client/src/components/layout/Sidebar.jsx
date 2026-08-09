@@ -5,47 +5,66 @@ import {
   FiClipboard,
   FiCalendar,
   FiLogOut,
+  FiHome,
 } from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
 
-const MENU_BY_ROLE = {
+const NAV_SECTIONS_BY_ROLE = {
   [ROLE_ADMIN]: [
-    { to: "/dashboard", label: "Dashboard", icon: <FiGrid /> },
-    { to: "/members", label: "Manage Members", icon: <FiUsers /> },
-    { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
-    { to: "/ingredients", label: "Menu Ingredients", icon: <GiKnifeFork /> },
-    { to: "/reservation", label: "Reservation", icon: <FiCalendar /> },
+    {
+      label: "Admin Panel",
+      items: [
+        { to: "/dashboard", label: "Dashboard", icon: <FiGrid /> },
+        { to: "/members", label: "Manage Members", icon: <FiUsers /> },
+        { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
+        { to: "/ingredients", label: "Menu Ingredients", icon: <GiKnifeFork /> },
+        { to: "/reservation", label: "Reservations", icon: <FiCalendar /> },
+      ],
+    },
   ],
   [ROLE_MEMBER]: [
-    { to: "/dashboard", label: "Dashboard", icon: <FiGrid /> },
-    { to: "/reservation/reserve", label: "Reserve Table", icon: <FiCalendar /> },
-    { to: "/reservation/history", label: "Reservation History", icon: <FiClipboard /> },
+    {
+      label: "Guest Services",
+      items: [
+        { to: "/dashboard", label: "Dashboard", icon: <FiHome /> },
+        { to: "/reservation/reserve", label: "Reserve Table", icon: <FiCalendar /> },
+        { to: "/reservation/history", label: "Reservation History", icon: <FiClipboard /> },
+      ],
+    },
   ],
 };
 
 function Sidebar({ role = ROLE_ADMIN, onLogout }) {
-  const menuItems = MENU_BY_ROLE[role] || MENU_BY_ROLE[ROLE_ADMIN];
+  const sections = NAV_SECTIONS_BY_ROLE[role] || NAV_SECTIONS_BY_ROLE[ROLE_ADMIN];
 
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
-        <p className="sidebar__brand-title">Esemka Foodcourt</p>
-        <p className="sidebar__brand-subtitle">Management system</p>
+        <span className="sidebar__brand-icon">
+          <GiKnifeFork />
+        </span>
+        <span className="sidebar__brand-title">Esemka FoodCourt</span>
       </div>
 
       <nav className="sidebar__nav">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `sidebar__nav-item${isActive ? " sidebar__nav-item--active" : ""}`
-            }
-          >
-            <span className="sidebar__nav-icon">{item.icon}</span>
-            <span>{item.label}</span>
-          </NavLink>
+        {sections.map((section) => (
+          <div className="sidebar__section" key={section.label}>
+            <p className="sidebar__section-label">{section.label}</p>
+            {section.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/dashboard"}
+                className={({ isActive }) =>
+                  `sidebar__nav-item${isActive ? " sidebar__nav-item--active" : ""}`
+                }
+              >
+                <span className="sidebar__nav-icon">{item.icon}</span>
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
         ))}
       </nav>
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { FiX } from "react-icons/fi";
 
-function Modal({ isOpen, onClose, title, children, footer }) {
+function Modal({ isOpen, onClose, title, children, footer, variant }) {
   useEffect(() => {
     if (!isOpen) return undefined;
 
@@ -19,10 +19,13 @@ function Modal({ isOpen, onClose, title, children, footer }) {
 
   if (!isOpen) return null;
 
+  const overlayClass = `modal-overlay${variant === "drawer" ? " modal-overlay--drawer" : ""}`;
+  const modalClass = `modal${variant === "drawer" ? " modal--drawer" : ""}`;
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className={overlayClass} onClick={onClose}>
       <div
-        className="modal"
+        className={modalClass}
         role="dialog"
         aria-modal="true"
         aria-label={title}

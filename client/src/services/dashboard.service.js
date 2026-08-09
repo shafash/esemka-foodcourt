@@ -3,22 +3,20 @@ function delay(ms = 500) {
 }
 
 const MOCK_SUMMARY = {
-  totalReservations: 128,
-  totalReservationsCaption: "+8% dari bulan lalu",
-  totalMenus: 45,
-  totalMenusCaption: "3 diperbarui minggu ini",
-  totalCategories: 6,
-  totalCategoriesCaption: "Semua kategori aktif",
-  totalCustomers: 1234,
-  totalCustomersCaption: "+12% dari bulan lalu",
+  totalMembers: 1234,
+  totalMembersCaption: "+12% from last month",
+  activeMenus: 45,
+  activeMenusCaption: "3 updated this week",
+  todaysReservations: 12,
+  todaysReservationsCaption: "4 pending confirmation",
   chartSeries: [
-    { label: "Sen", value: 12 },
-    { label: "Sel", value: 18 },
-    { label: "Rab", value: 15 },
-    { label: "Kam", value: 24 },
-    { label: "Jum", value: 30 },
-    { label: "Sab", value: 22 },
-    { label: "Min", value: 27 },
+    { label: "Mon", value: 12 },
+    { label: "Tue", value: 18 },
+    { label: "Wed", value: 15 },
+    { label: "Thu", value: 24 },
+    { label: "Fri", value: 30 },
+    { label: "Sat", value: 22 },
+    { label: "Sun", value: 27 },
   ],
 };
 
@@ -49,7 +47,20 @@ const MOCK_RECENT_RESERVATIONS = [
   },
 ];
 
-const MOCK_STOCK_ALERTS = [];
+const MOCK_STOCK_ALERTS = [
+  {
+    id: "alert-1",
+    title: "Coffee Beans Low",
+    description: "Only 2kg remaining in storage.",
+    severity: "danger",
+  },
+  {
+    id: "alert-2",
+    title: "Fresh Produce",
+    description: "Check restock for Salad Bar.",
+    severity: "warning",
+  },
+];
 
 export async function getSummaryStats() {
   await delay();

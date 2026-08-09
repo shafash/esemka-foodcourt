@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FiMail, FiLock, FiPhone } from "react-icons/fi";
+import { FiMail, FiLock, FiPhone, FiUser, FiArrowLeft } from "react-icons/fi";
 
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
@@ -55,13 +55,15 @@ function Register() {
         <div className="form-row">
           <Input
             label="First Name"
-            placeholder="First name"
+            placeholder="e.g. Jane"
+            iconLeft={<FiUser />}
             error={errors.firstName?.message}
             {...register("firstName", { required: "Nama depan wajib diisi." })}
           />
           <Input
             label="Last Name"
-            placeholder="Last name"
+            placeholder="e.g. Doe"
+            iconLeft={<FiUser />}
             error={errors.lastName?.message}
             {...register("lastName", { required: "Nama belakang wajib diisi." })}
           />
@@ -107,15 +109,21 @@ function Register() {
           })}
         />
 
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          variant="primary"
+          className="button--cta"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Creating account..." : "Register"}
         </Button>
       </form>
 
       <p className="auth-footer">
-        Already have an account?{" "}
+        Already have an account?
+        <br />
         <Link className="auth-footer-link" to="/login">
-          Back to login
+          <FiArrowLeft /> Back to login
         </Link>
       </p>
     </Card>

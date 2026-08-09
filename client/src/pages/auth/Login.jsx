@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FiMail, FiLock } from "react-icons/fi";
+import { FiMail, FiLock, FiArrowRight, FiUserPlus } from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
 
 import Card from "../../components/common/Card";
@@ -84,18 +84,23 @@ function Login() {
           </span>
         </div>
 
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? "Logging in..." : "Login"}
+        <Button
+          type="submit"
+          variant="primary"
+          className="button--cta"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Logging in..." : "Login"} <FiArrowRight />
         </Button>
       </form>
 
       <div className="auth-divider">New here?</div>
 
-      <p className="auth-footer">
-        <Link className="auth-footer-link" to="/register">
+      <Link to="/register">
+        <Button type="button" variant="secondary" icon={<FiUserPlus />}>
           Create an account
-        </Link>
-      </p>
+        </Button>
+      </Link>
     </Card>
   );
 }

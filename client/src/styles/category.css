@@ -1,0 +1,30 @@
+.category-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.category-toolbar .field {
+  min-width: 220px;
+}
+
+.category-description-cell {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 320px;
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 767px) {
+  .category-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-toolbar .field {
+    min-width: 0;
+  }
+}

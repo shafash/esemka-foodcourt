@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { FiUpload } from "react-icons/fi";
+import { FiUploadCloud } from "react-icons/fi";
 
 function ImageUploadField({ label, value, onChange, error, hint }) {
   const inputRef = useRef(null);
@@ -17,14 +17,18 @@ function ImageUploadField({ label, value, onChange, error, hint }) {
 
       <button
         type="button"
-        className={`image-upload ${error ? "image-upload--error" : ""}`.trim()}
+        className={`image-upload ${error ? "image-upload--error" : ""} ${value ? "image-upload--filled" : ""}`.trim()}
         onClick={() => inputRef.current?.click()}
         style={value ? { backgroundImage: `url(${value})` } : undefined}
         aria-label="Unggah gambar menu"
       >
+        <span className="image-upload__placeholder">
+          <FiUploadCloud size={20} />
+        </span>
         {!value && (
-          <span className="image-upload__placeholder">
-            <FiUpload size={20} />
+          <span className="image-upload__copy">
+            <strong>Upload High-Res Photo</strong>
+            <span>Drag and drop or click to browse</span>
           </span>
         )}
         <input
