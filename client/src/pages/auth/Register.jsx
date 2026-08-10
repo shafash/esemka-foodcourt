@@ -1,17 +1,29 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FiMail, FiLock, FiPhone, FiUser, FiArrowLeft } from "react-icons/fi";
+import {
+  FiMail,
+  FiLock,
+  FiPhone,
+  FiUser,
+  FiArrowLeft,
+} from "react-icons/fi";
 
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
-import { isValidEmail, isValidPhone } from "../../utils/validators";
+import {
+  isValidEmail,
+  isValidPhone,
+} from "../../utils/validators";
+
+import "../../styles/auth.css";
 
 function Register() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
 
@@ -32,40 +44,62 @@ function Register() {
   const onSubmit = async (values) => {
     setSubmitError("");
     setSubmitSuccess("");
+
     try {
       await registerUser(values);
-      setSubmitSuccess("Akun berhasil dibuat. Mengarahkan ke halaman login...");
-      setTimeout(() => navigate("/login", { replace: true }), 1200);
+
+      setSubmitSuccess(
+        "Akun berhasil dibuat. Mengarahkan ke halaman login..."
+      );
+
+      setTimeout(
+        () => navigate("/login", { replace: true }),
+        1200
+      );
     } catch (err) {
-      setSubmitError(err.message || "Gagal membuat akun.");
+      setSubmitError(
+        err.message || "Gagal membuat akun."
+      );
     }
   };
 
   return (
-    <Card>
-      <div className="auth-brand auth-brand--centered">
-        <p className="auth-brand__title">Esemka Foodcourt</p>
-        <p className="auth-brand__subtitle">Create your management account</p>
+    <Card className="auth-card auth-card--register">
+      <div className="auth-register-header">
+        <h1>Esemka Foodcourt</h1>
+        <p>Create your management account</p>
       </div>
 
       {submitError && <p className="auth-error">{submitError}</p>}
-      {submitSuccess && <p className="auth-success">{submitSuccess}</p>}
 
-      <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      {submitSuccess && (
+        <p className="auth-success">{submitSuccess}</p>
+      )}
+
+      <form
+        className="form auth-register-form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         <div className="form-row">
           <Input
             label="First Name"
             placeholder="e.g. Jane"
             iconLeft={<FiUser />}
             error={errors.firstName?.message}
-            {...register("firstName", { required: "Nama depan wajib diisi." })}
+            {...register("firstName", {
+              required: "Nama depan wajib diisi.",
+            })}
           />
+
           <Input
             label="Last Name"
             placeholder="e.g. Doe"
             iconLeft={<FiUser />}
             error={errors.lastName?.message}
-            {...register("lastName", { required: "Nama belakang wajib diisi." })}
+            {...register("lastName", {
+              required: "Nama belakang wajib diisi.",
+            })}
           />
         </div>
 
@@ -77,7 +111,8 @@ function Register() {
           error={errors.email?.message}
           {...register("email", {
             required: "Email wajib diisi.",
-            validate: (value) => isValidEmail(value) || "Format email tidak valid.",
+            validate: (value) =>
+              isValidEmail(value) || "Format email tidak valid.",
           })}
         />
 
@@ -89,7 +124,8 @@ function Register() {
           error={errors.phone?.message}
           {...register("phone", {
             required: "Nomor telepon wajib diisi.",
-            validate: (value) => isValidPhone(value) || "Format nomor telepon tidak valid.",
+            validate: (value) =>
+              isValidPhone(value) || "Format nomor telepon tidak valid.",
           })}
         />
 
@@ -103,9 +139,13 @@ function Register() {
           error={errors.password?.message}
           {...register("password", {
             required: "Password wajib diisi.",
-            minLength: { value: 8, message: "Password minimal 8 karakter." },
+            minLength: {
+              value: 8,
+              message: "Password minimal 8 karakter.",
+            },
             validate: (value) =>
-              /[^A-Za-z0-9]/.test(value) || "Password harus mengandung minimal satu simbol.",
+              /[^A-Za-z0-9]/.test(value) ||
+              "Password harus mengandung minimal satu simbol.",
           })}
         />
 
@@ -119,13 +159,13 @@ function Register() {
         </Button>
       </form>
 
-      <p className="auth-footer">
-        Already have an account?
-        <br />
+      <div className="auth-footer auth-register-footer">
+        <span>Already have an account?</span>
         <Link className="auth-footer-link" to="/login">
-          <FiArrowLeft /> Back to login
+          <FiArrowLeft />
+          <span>Back to login</span>
         </Link>
-      </p>
+      </div>
     </Card>
   );
 }

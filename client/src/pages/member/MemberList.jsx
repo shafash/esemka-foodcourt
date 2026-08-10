@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiPlus, FiDownload, FiEdit2, FiTrash2, FiMail, FiPhone } from "react-icons/fi";
+import { FiPlus, FiDownload, FiEdit2, FiTrash2 } from "react-icons/fi";
 
 import Header from "../../components/layout/Header";
 import Card from "../../components/common/Card";
@@ -20,10 +20,6 @@ import { formatDate } from "../../utils/formatDate";
 import "../../styles/member.css";
 
 const PAGE_SIZE = 8;
-
-function getInitials(firstName = "", lastName = "") {
-  return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
-}
 
 function MemberList() {
   const navigate = useNavigate();
@@ -86,43 +82,34 @@ function MemberList() {
   const columns = useMemo(
     () => [
       {
-        key: "details",
-        header: "Member Details",
-        render: (row) => (
-          <div className="member-cell">
-            <span className="avatar">{getInitials(row.firstName, row.lastName)}</span>
-            <div>
-              <p className="table-cell__primary">
-                {row.firstName} {row.lastName}
-              </p>
-              <p className="table-cell__secondary">ID: #MBR-{row.id.slice(-4).toUpperCase()}</p>
-            </div>
-          </div>
-        ),
+        key: "firstName",
+        header: "First Name",
+        render: (row) => <span className="table-cell__primary">{row.firstName}</span>,
       },
       {
-        key: "contact",
-        header: "Contact",
-        render: (row) => (
-          <div className="member-cell__contact">
-            <span>
-              <FiMail size={13} /> {row.email}
-            </span>
-            <span>
-              <FiPhone size={13} /> {row.phone}
-            </span>
-          </div>
-        ),
+        key: "lastName",
+        header: "Last Name",
+        render: (row) => <span className="table-cell__primary">{row.lastName}</span>,
+      },
+      {
+        key: "email",
+        header: "Email Address",
+        render: (row) => row.email,
+      },
+      {
+        key: "phone",
+        header: "Phone",
+        render: (row) => row.phone,
+      },
+      {
+        key: "memberSince",
+        header: "Member Since",
+        render: (row) => formatDate(row.memberSince),
       },
       {
         key: "status",
         header: "Status",
         render: (row) => <StatusBadge status={row.status} />,
-      },
-      {
-        key: "memberSince",
-        header: "Joined",
-        render: (row) => formatDate(row.memberSince),
       },
     ],
     []
@@ -133,8 +120,20 @@ function MemberList() {
       <Header
         title="Manage Members"
         subtitle="View, add, and manage your bistro's registered members."
-        actions={
-          <>
+      />
+
+      <Card>
+        <div className="member-toolbar">
+          <SearchBar
+            value={searchInput}
+            onChange={setSearchInput}
+            placeholder="Search members by name or email..."
+          />
+
+          <div className="member-toolbar__actions">
+            {selectedIds.length > 0 && (
+              <span className="member-toolbar__count">{selectedIds.length} selected</span>
+            )}
             <Button variant="secondary" icon={<FiDownload />}>
               Export
             </Button>
@@ -143,22 +142,6 @@ function MemberList() {
                 Insert
               </Button>
             </Link>
-          </>
-        }
-      />
-
-      <Card>
-        <div className="member-toolbar">
-          <SearchBar
-            value={searchInput}
-            onChange={setSearchInput}
-            placeholder="Search members by name, email, or phone..."
-          />
-
-          <div className="member-toolbar__actions">
-            {selectedIds.length > 0 && (
-              <span className="member-toolbar__count">{selectedIds.length} selected</span>
-            )}
             <Button
               variant="secondary"
               icon={<FiEdit2 />}

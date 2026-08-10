@@ -8,8 +8,9 @@
 }
 
 .member-toolbar .field {
-  min-width: 280px;
-  max-width: 360px;
+  flex: 1;
+  min-width: 240px;
+  max-width: none;
 }
 
 .member-toolbar__actions {

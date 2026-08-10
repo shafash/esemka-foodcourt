@@ -56,7 +56,7 @@ function ReservationHistory() {
   if (isLoading) {
     return (
       <>
-        <Header title="Reservation History" subtitle="Review your past and upcoming bookings." />
+        <Header title="History Reservation" />
         <Loader centered label="Memuat riwayat reservasi..." />
       </>
     );
@@ -64,23 +64,26 @@ function ReservationHistory() {
 
   return (
     <>
-      <Header title="Reservation History" subtitle="Review your past and upcoming bookings." />
+      <Header title="History Reservation" />
 
       <div className="history-page">
         <div>
-          <div className="history-tabs">
-            {TABS.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                className={`history-tabs__button${
-                  activeTab === tab.key ? " history-tabs__button--active" : ""
-                }`}
-                onClick={() => setActiveTab(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="history-panel-header">
+            <h2 className="history-panel-header__title">History</h2>
+            <div className="history-tabs">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  className={`history-tabs__button${
+                    activeTab === tab.key ? " history-tabs__button--active" : ""
+                  }`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {filtered.length === 0 ? (

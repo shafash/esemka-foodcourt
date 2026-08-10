@@ -99,10 +99,7 @@ function IngredientList() {
 
   return (
     <>
-      <Header
-        title="Menu Ingredients"
-        subtitle="Configure component recipes and monitor stock dependencies."
-      />
+      <Header title="Menu Ingredients" />
 
       <Card
         title="Menu Selection"

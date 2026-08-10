@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { FiMail, FiLock, FiArrowRight, FiUserPlus } from "react-icons/fi";
+import {
+  FiMail,
+  FiLock,
+  FiArrowRight,
+  FiUserPlus,
+} from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
 
 import Card from "../../components/common/Card";
@@ -9,6 +14,8 @@ import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
 import { isValidEmail } from "../../utils/validators";
+
+import "../../styles/auth.css";
 
 function Login() {
   const { login } = useAuth();
@@ -21,36 +28,62 @@ function Login() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { email: "", password: "", remember: false },
+    defaultValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
   });
 
-  const redirectTo = location.state?.from?.pathname || "/dashboard";
+  const redirectTo =
+    location.state?.from?.pathname || "/dashboard";
 
   const onSubmit = async (values) => {
     setSubmitError("");
+
     try {
-      await login({ email: values.email, password: values.password });
+      await login({
+        email: values.email,
+        password: values.password,
+      });
+
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setSubmitError(err.message || "Email atau password salah.");
+      setSubmitError(
+        err.message || "Email atau password salah."
+      );
     }
   };
 
   return (
     <Card>
       <div className="auth-brand">
-        <span className="auth-brand__logo">
+        <div className="auth-brand__logo">
           <GiKnifeFork />
-        </span>
-        <div>
-          <p className="auth-brand__title">Esemka Foodcourt</p>
-          <p className="auth-brand__subtitle">Management System Access</p>
+        </div>
+
+        <div className="auth-brand__content">
+          <div className="auth-brand__title">
+            Esemka Foodcourt
+          </div>
+
+          <div className="auth-brand__subtitle">
+            Management System Access
+          </div>
         </div>
       </div>
 
-      {submitError && <p className="auth-error">{submitError}</p>}
+      {submitError && (
+        <p className="auth-error">
+          {submitError}
+        </p>
+      )}
 
-      <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        className="form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         <Input
           label="Email Address"
           type="email"
@@ -59,29 +92,35 @@ function Login() {
           error={errors.email?.message}
           {...register("email", {
             required: "Email wajib diisi.",
-            validate: (value) => isValidEmail(value) || "Format email tidak valid.",
+            validate: (value) =>
+              isValidEmail(value) ||
+              "Format email tidak valid.",
           })}
         />
 
         <Input
-          label="Password"
+          label="Password" 
           type="password"
           placeholder="********"
           iconLeft={<FiLock />}
           togglePassword
           error={errors.password?.message}
-          {...register("password", { required: "Password wajib diisi." })}
+          {...register("password", {
+            required: "Password wajib diisi.",
+          })}
         />
 
         <div className="auth-remember-row">
-            <label className="auth-checkbox">
-                <input type="checkbox" {...register("remember")} />
-                <span>Remember this device for 30 days</span>
-            </label>
+          <label className="auth-checkbox">
+            <input
+              type="checkbox"
+              {...register("remember")}
+            />
 
-          <span className="auth-link auth-link--muted" title="Fitur belum tersedia">
-            Forgot?
-          </span>
+            <span>
+              Remember this device for 30 days
+            </span>
+          </label>
         </div>
 
         <Button
@@ -90,17 +129,22 @@ function Login() {
           className="button--cta"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Logging in..." : "Login"} <FiArrowRight />
+          {isSubmitting ? "Logging in..." : "Login"}
+          <FiArrowRight />
         </Button>
       </form>
 
-      <div className="auth-divider">New here?</div>
+      <div className="auth-footer">
+        <span>New here?</span>
 
-      <Link to="/register">
-        <Button type="button" variant="secondary" icon={<FiUserPlus />}>
-          Create an account
-        </Button>
-      </Link>
+        <Link
+          to="/register"
+          className="auth-footer-link"
+        >
+          <FiUserPlus />
+          <span>Create an account</span>
+        </Link>
+      </div>
     </Card>
   );
 }

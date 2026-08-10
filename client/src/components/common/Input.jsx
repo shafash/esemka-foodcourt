@@ -4,6 +4,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 const Input = forwardRef(function Input(
   {
     label,
+    labelAction,
     type = "text",
     iconLeft,
     error,
@@ -44,7 +45,16 @@ const Input = forwardRef(function Input(
 
   return (
     <div className={`field ${className}`.trim()}>
-      {label && <label htmlFor={inputId}>{label}</label>}
+      {(label || labelAction) && (
+        <div className="field__label-row">
+          {label && (
+            <label className="field__label" htmlFor={inputId}>
+              {label}
+            </label>
+          )}
+          {labelAction}
+        </div>
+      )}
 
       <div className="field__control">
         {iconLeft && (

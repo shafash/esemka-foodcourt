@@ -130,11 +130,23 @@ function MenuList() {
 
   return (
     <>
-      <Header
+      <Header title="Manage Menus" />
+
+      <Card
         title="Menu Inventory"
-        subtitle="Manage your culinary offerings, prices, and categories."
-        actions={
-          <>
+        headerAction={
+          <div className="menu-toolbar">
+            <SearchBar
+              value={searchInput}
+              onChange={setSearchInput}
+              placeholder="Search menus..."
+            />
+            <Select
+              value={categoryFilter}
+              onChange={(event) => handleCategoryChange(event.target.value)}
+              options={safeCategoryOptions}
+              placeholder="Filter by Category"
+            />
             <Button
               variant="danger"
               disabled={selectedIds.length === 0}
@@ -148,24 +160,6 @@ function MenuList() {
                 Insert New
               </Button>
             </Link>
-          </>
-        }
-      />
-
-      <Card
-        headerAction={
-          <div className="menu-toolbar">
-            <SearchBar
-              value={searchInput}
-              onChange={setSearchInput}
-              placeholder="Search menus..."
-            />
-            <Select
-              value={categoryFilter}
-              onChange={(event) => handleCategoryChange(event.target.value)}
-              options={categoryOptions}
-              placeholder="Filter by Category"
-            />
           </div>
         }
       >

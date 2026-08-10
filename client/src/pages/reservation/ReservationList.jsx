@@ -56,10 +56,7 @@ function ReservationList() {
 
   return (
     <>
-      <Header
-        title="Reservation Management"
-        subtitle="Monitor floor plan and manage guest reservations."
-      />
+      <Header title="Reservation" />
 
       <div className="reservation-page">
         <Card noPadding className="reserve-page__floor">

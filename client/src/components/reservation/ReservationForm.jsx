@@ -189,7 +189,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       </div>
 
       <Card noPadding className="reserve-page__floor">
-        <div className="reserve-step__title" style={{ padding: "var(--space-5) var(--space-5) 0" }}>
+        <div className="reserve-step__title reserve-step__title--panel">
           <span className="reserve-step__badge">2</span> Select Table
         </div>
         {isTablesLoading ? (
@@ -205,12 +205,12 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
 
       <div className="reserve-order">
         <div className="reserve-order__toolbar">
-          <p className="reserve-step__title" style={{ marginRight: "auto" }}>
+          <p className="reserve-step__title reserve-order__toolbar-title">
             <span className="reserve-step__badge">4</span> Pre-order Menu (Optional)
           </p>
           <SearchBar value={menuSearch} onChange={setMenuSearch} placeholder="Search Menu..." />
           <Select options={categoryOptions || []} placeholder="All Categories" />
-          <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
+          <div className="reserve-order__menu-results">
             {menuResults.map((menu) => (
               <Button
                 key={menu.id}
@@ -227,13 +227,13 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
         </div>
 
         {orderItems.length > 0 && (
-          <table className="table">
+          <table className="table reserve-order__table">
             <thead>
               <tr>
                 <th>Menu</th>
-                <th style={{ textAlign: "center" }}>Quantity</th>
-                <th style={{ textAlign: "right" }}>Price</th>
-                <th style={{ textAlign: "right" }}>Subtotal</th>
+                <th className="text-center">Quantity</th>
+                <th className="text-right">Price</th>
+                <th className="text-right">Subtotal</th>
                 <th />
               </tr>
             </thead>
@@ -262,8 +262,8 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
                       </button>
                     </div>
                   </td>
-                  <td style={{ textAlign: "right" }}>{formatCurrency(item.price)}</td>
-                  <td style={{ textAlign: "right" }}>{formatCurrency(item.price * item.qty)}</td>
+                  <td className="text-right">{formatCurrency(item.price)}</td>
+                  <td className="text-right">{formatCurrency(item.price * item.qty)}</td>
                   <td>
                     <button
                       type="button"
@@ -283,18 +283,18 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
 
       <div className="reserve-summary">
         <div className="reserve-summary__totals">
-          <span>
-            Reservation fee
+          <div className="reserve-summary__row">
+            <span>Reservation fee</span>
             <strong>{formatCurrency(RESERVATION_FEE)}</strong>
-          </span>
-          <span>
-            Menu total
+          </div>
+          <div className="reserve-summary__row">
+            <span>Menu total</span>
             <strong>{formatCurrency(menuTotal)}</strong>
-          </span>
-          <span>
-            Grand Total
+          </div>
+          <div className="reserve-summary__row reserve-summary__row--total">
+            <span>Grand Total</span>
             <strong>{formatCurrency(grandTotal)}</strong>
-          </span>
+          </div>
         </div>
 
         <div className="reserve-summary__actions">
@@ -308,9 +308,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       </div>
 
       {(formError || submitError) && (
-        <p className="auth-error" style={{ gridColumn: "1 / -1" }}>
-          {formError || submitError}
-        </p>
+        <p className="auth-error reserve-page__error">{formError || submitError}</p>
       )}
     </form>
   );

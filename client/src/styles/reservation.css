@@ -251,6 +251,11 @@
   margin-bottom: var(--space-4);
 }
 
+.reserve-step__title--panel {
+  padding: var(--space-5) var(--space-5) 0;
+  margin-bottom: 0;
+}
+
 .reserve-step__badge {
   display: inline-flex;
   align-items: center;
@@ -305,6 +310,17 @@
   margin-bottom: var(--space-4);
 }
 
+.reserve-order__toolbar-title {
+  margin-right: auto;
+  margin-bottom: 0;
+}
+
+.reserve-order__menu-results {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 .reserve-order__qty {
   display: inline-flex;
   align-items: center;
@@ -343,20 +359,44 @@
 
 .reserve-summary__totals {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 240px;
+}
+
+.reserve-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--space-6);
   font-size: var(--font-size-caption);
   color: var(--color-muted);
 }
 
-.reserve-summary__totals strong {
-  display: block;
+.reserve-summary__row strong {
   font-size: var(--font-size-body);
   color: var(--color-text);
+}
+
+.reserve-summary__row--total {
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-ink);
+  font-weight: var(--font-weight-medium);
+}
+
+.reserve-summary__row--total strong {
+  font-size: var(--font-size-section-title);
 }
 
 .reserve-summary__actions {
   display: flex;
   gap: var(--space-3);
+}
+
+.reserve-page__error {
+  grid-column: 1 / -1;
 }
 
 /* ===== Member: Reservation history ===== */
@@ -379,6 +419,23 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: var(--space-4);
+}
+
+.history-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.history-panel-header__title {
+  font-size: var(--font-size-section-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+}
+
+.history-panel-header .history-tabs {
+  margin-bottom: 0;
 }
 
 .history-tabs__button {
@@ -495,6 +552,16 @@
   gap: var(--space-5);
 }
 
+.member-dashboard__quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.member-dashboard__quick-actions .button--cta {
+  margin-top: 0;
+}
+
 .member-dashboard__stat-row {
   display: flex;
   align-items: center;
@@ -520,6 +587,7 @@
   letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
   color: var(--color-muted);
+  margin-top: var(--space-4);
   margin-bottom: var(--space-2);
 }
 

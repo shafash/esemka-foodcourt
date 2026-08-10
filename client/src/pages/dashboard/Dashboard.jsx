@@ -13,10 +13,10 @@ import {
 import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Button from "../../components/common/Button";
+import Header from "../../components/layout/Header";
 import EmptyState from "../../components/common/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
 import StatusBadge from "../../components/common/StatusBadge";
-import AreaChart from "../../components/common/AreaChart";
 import StatisticCard from "../../components/dashboard/StatisticCard";
 
 import useAuth from "../../hooks/useAuth";
@@ -201,6 +201,8 @@ function AdminDashboard({ user }) {
 
   return (
     <>
+      <Header title="Dashboard" />
+
       <div className="dashboard-hero">
         <h2 className="dashboard-hero__title">
           Welcome, {user?.firstName}
@@ -234,19 +236,6 @@ function AdminDashboard({ user }) {
             />
           );
         })}
-      </div>
-
-      <div className="dashboard-section">
-        <Card
-          title="Reservation Trend"
-          subtitle="7 hari terakhir (data dummy)"
-        >
-          {isStatsLoading ? (
-            <LoadingSkeleton variant="card" />
-          ) : (
-            <AreaChart data={stats?.chartSeries || []} />
-          )}
-        </Card>
       </div>
 
       <div className="dashboard-section dashboard-columns">

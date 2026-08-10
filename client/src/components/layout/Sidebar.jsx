@@ -44,13 +44,15 @@ function Sidebar({ role = ROLE_ADMIN, onLogout }) {
         <span className="sidebar__brand-icon">
           <GiKnifeFork />
         </span>
-        <span className="sidebar__brand-title">Esemka FoodCourt</span>
+        <span className="sidebar__brand-text">
+          <span className="sidebar__brand-title">Esemka Foodcourt</span>
+          <span className="sidebar__brand-subtitle">Management system</span>
+        </span>
       </div>
 
       <nav className="sidebar__nav">
         {sections.map((section) => (
           <div className="sidebar__section" key={section.label}>
-            <p className="sidebar__section-label">{section.label}</p>
             {section.items.map((item) => (
               <NavLink
                 key={item.to}
