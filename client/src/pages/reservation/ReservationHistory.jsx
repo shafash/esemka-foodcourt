@@ -15,16 +15,10 @@ import { formatDate } from "../../utils/formatDate";
 
 import "../../styles/reservation.css";
 
-const TABS = [
-  { key: "all", label: "All" },
-  { key: "upcoming", label: "Upcoming" },
-];
-
 function ReservationHistory() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [activeTab, setActiveTab] = useState("all");
   const [selectedId, setSelectedId] = useState(null);
   const [isCanceling, setIsCanceling] = useState(false);
 
@@ -35,10 +29,7 @@ function ReservationHistory() {
   const { data, isLoading, refetch } = useFetch(fetchReservations);
 
   const reservations = data || [];
-  const filtered =
-    activeTab === "upcoming"
-      ? reservations.filter((item) => ["pending", "confirmed"].includes(item.status))
-      : reservations;
+  const filtered = reservations;
 
   const selected = filtered.find((item) => item.id === selectedId) || filtered[0] || null;
 
@@ -66,35 +57,29 @@ function ReservationHistory() {
     <>
       <Header title="History Reservation" />
 
-      <div className="history-page">
-        <div>
+      {filtered.length === 0 ? (
+        <div className="history-page history-page--empty">
           <div className="history-panel-header">
             <h2 className="history-panel-header__title">History</h2>
-            <div className="history-tabs">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  className={`history-tabs__button${
-                    activeTab === tab.key ? " history-tabs__button--active" : ""
-                  }`}
-                  onClick={() => setActiveTab(tab.key)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {filtered.length === 0 ? (
+          <div className="history-page__empty">
             <EmptyState
               title="Belum ada reservasi"
               description="Reservasi yang kamu buat akan muncul di sini."
               actionLabel="Reserve Table"
               onAction={() => navigate("/reservation/reserve")}
             />
-          ) : (
-            filtered.map((item) => (
+          </div>
+        </div>
+      ) : (
+      <div className="history-page">
+        <div>
+          <div className="history-panel-header">
+            <h2 className="history-panel-header__title">History</h2>
+          </div>
+
+          {filtered.map((item) => (
               <div
                 key={item.id}
                 className={`history-card${selected?.id === item.id ? " history-card--active" : ""}`}
@@ -110,8 +95,7 @@ function ReservationHistory() {
                 </p>
                 <p className="history-card__guests">{item.guests} Guests</p>
               </div>
-            ))
-          )}
+            ))}
         </div>
 
         {selected && (
@@ -178,6 +162,7 @@ function ReservationHistory() {
           </div>
         )}
       </div>
+      )}
     </>
   );
 }

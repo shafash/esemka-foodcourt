@@ -79,21 +79,8 @@ function IngredientList() {
     {
       key: "category",
       header: "Category",
+      width: "220px",
       render: (row) => <Badge variant="neutral">{row.category}</Badge>,
-    },
-    {
-      key: "status",
-      header: "Status",
-      render: (row) => {
-        const count = countIngredientsByMenu(row.id);
-        const complete = count > 0;
-        return (
-          <span className={`ingredient-status ingredient-status--${complete ? "complete" : "incomplete"}`}>
-            <span className="ingredient-status__dot" />
-            {complete ? "Complete" : "Incomplete"}
-          </span>
-        );
-      },
     },
   ];
 
@@ -101,24 +88,23 @@ function IngredientList() {
     <>
       <Header title="Menu Ingredients" />
 
-      <Card
-        title="Menu Selection"
-        headerAction={
-          <div className="ingredient-toolbar">
-            <SearchBar
+      <Card title="Menu Selection">
+        <div className="ingredient-toolbar">
+          <SearchBar
+              className="ingredient-search"
               value={searchInput}
               onChange={setSearchInput}
               placeholder="Search menus..."
             />
-            <Select
+          <Select
+              className="ingredient-filter"
               value={categoryFilter}
               onChange={(event) => handleCategoryChange(event.target.value)}
               options={categoryOptions || []}
-              placeholder="All Categories"
+              placeholder="Filter"
             />
-          </div>
-        }
-      >
+        </div>
+
         {isLoading ? (
           <LoadingSkeleton variant="table-row" count={6} />
         ) : menus.length > 0 ? (
@@ -128,6 +114,8 @@ function IngredientList() {
               columns={columns}
               data={menus}
               getRowId={(row) => row.id}
+              actionsAlign="center"
+              actionsWidth="220px"
               renderActions={(row) => (
                 <Button
                   variant={activeMenu?.id === row.id ? "primary" : "secondary"}

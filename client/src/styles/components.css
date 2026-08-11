@@ -114,6 +114,17 @@
   width: 100%;
 }
 
+.ingredient-filter {
+  width: auto;
+  min-width: 90px;
+  flex: 0 0 auto;
+}
+
+.ingredient-filter .field__input {
+  width: auto;
+  padding: var(--space-3) var(--space-6) var(--space-3) var(--space-4);
+}
+
 .field__label {
   font-size: var(--font-size-label);
   font-weight: var(--font-weight-medium);
@@ -254,6 +265,8 @@
   font-size: var(--font-size-section-title);
   font-weight: var(--font-weight-bold);
   color: var(--color-ink);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .card__subtitle {
@@ -755,7 +768,9 @@
 .modal-overlay--drawer {
   justify-content: flex-end;
   padding: 0;
-  background-color: rgba(41, 37, 36, 0.35);
+  background-color: rgba(41, 37, 36, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal--drawer {

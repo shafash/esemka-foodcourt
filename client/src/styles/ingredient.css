@@ -2,11 +2,13 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
 }
 
-.ingredient-toolbar .field {
-  min-width: 260px;
+.ingredient-search {
+  flex: 0 1 450px;
+  min-width: 200px;
+  max-width: 450px;
 }
 
 .ingredient-menu-cell {

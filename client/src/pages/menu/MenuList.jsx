@@ -123,25 +123,27 @@ function MenuList() {
       <Card
         title="Menu Inventory"
         headerAction={
-         <div className="menu-toolbar">
+          <div className="menu-toolbar">
             <SearchBar
               value={searchInput}
               onChange={setSearchInput}
               placeholder="Search menus..."
             />
-            <Button
-              variant="danger"
-              disabled={selectedIds.length === 0}
-              onClick={openBulkDelete}
-              icon={<FiTrash2 />}
-            >
-              Bulk Delete
-            </Button>
-            <Link to="/menu/create">
-              <Button variant="primary" icon={<FiPlus />}>
-                Insert New
+            <div className="menu-toolbar__actions">
+              <Button
+                variant="danger"
+                disabled={selectedIds.length === 0}
+                onClick={openBulkDelete}
+                icon={<FiTrash2 />}
+              >
+                Bulk Delete
               </Button>
-            </Link>
+              <Link to="/menu/create">
+                <Button variant="primary" icon={<FiPlus />}>
+                  Insert New
+                </Button>
+              </Link>
+            </div>
           </div>
         }
       >
@@ -156,15 +158,17 @@ function MenuList() {
               selectedIds={selectedIds}
               onSelectRow={toggleSelectRow}
               onSelectAll={toggleSelectAll}
+              onRowClick={(row) => toggleSelectRow(row.id)}
               getRowId={(row) => row.id}
               actionsAlign="center"
               renderActions={(row) => (
-                <>
+                <div className="menu-action-group">
                   <Link to={`/menu/${row.id}/edit`}>
                     <Button
                       variant="ghost"
                       size="sm"
                       iconOnly
+                      className="menu-action-button"
                       icon={<FiEdit2 />}
                       aria-label="Edit menu"
                     />
@@ -173,11 +177,12 @@ function MenuList() {
                     variant="ghost"
                     size="sm"
                     iconOnly
+                    className="menu-action-button"
                     icon={<FiTrash2 />}
                     aria-label="Hapus menu"
                     onClick={() => openSingleDelete(row.id)}
                   />
-                </>
+                </div>
               )}
             />
             <Pagination

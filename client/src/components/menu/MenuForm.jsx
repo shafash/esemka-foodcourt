@@ -9,8 +9,6 @@ import ImageUploadField from "../common/ImageUploadField";
 import useFetch from "../../hooks/useFetch";
 import { getCategoryOptions } from "../../services/cetagory.service";
 
-const DIETARY_TAG_OPTIONS = ["Vegetarian", "Vegan", "Gluten-Free", "Spicy"];
-
 function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel = "Save Change" }) {
   const navigate = useNavigate();
 
@@ -22,7 +20,6 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
     previewUrl: initialValues?.imageUrl || null,
   });
   const [imageError, setImageError] = useState("");
-  const [dietaryTags, setDietaryTags] = useState(initialValues?.dietaryTags || []);
 
   const {
     register,
@@ -42,12 +39,6 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
     setImageError("");
   };
 
-  const toggleDietaryTag = (tag) => {
-    setDietaryTags((prev) =>
-      prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag]
-    );
-  };
-
   const submitHandler = (values) => {
     if (!image.previewUrl) {
       setImageError("Gambar menu wajib diunggah.");
@@ -57,7 +48,6 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
       ...values,
       price: Number(values.price),
       imageUrl: image.previewUrl,
-      dietaryTags,
     });
   };
 
@@ -120,22 +110,6 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
         {errors.description?.message && (
           <span className="field__error">{errors.description.message}</span>
         )}
-      </div>
-
-      <div className="dietary-tags">
-        <p className="dietary-tags__label">Dietary Tags</p>
-        <div className="dietary-tags__options">
-          {DIETARY_TAG_OPTIONS.map((tag) => (
-            <label className="dietary-tags__option" key={tag}>
-              <input
-                type="checkbox"
-                checked={dietaryTags.includes(tag)}
-                onChange={() => toggleDietaryTag(tag)}
-              />
-              {tag}
-            </label>
-          ))}
-        </div>
       </div>
 
       <div className="form-actions">

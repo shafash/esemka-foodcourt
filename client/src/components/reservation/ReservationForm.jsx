@@ -206,7 +206,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       <div className="reserve-order">
         <div className="reserve-order__toolbar">
           <p className="reserve-step__title reserve-order__toolbar-title">
-            <span className="reserve-step__badge">4</span> Pre-order Menu (Optional)
+            <span className="reserve-step__badge">4</span> Pre-order Menu
           </p>
           <SearchBar value={menuSearch} onChange={setMenuSearch} placeholder="Search Menu..." />
           <Select options={categoryOptions || []} placeholder="All Categories" />

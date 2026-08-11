@@ -8,6 +8,7 @@ function Table({
   onRowClick,
   renderActions,
   actionsAlign = "left",
+  actionsWidth,
   emptyState,
   getRowId = (row) => row.id,
 }) {
@@ -38,7 +39,12 @@ function Table({
               </th>
             ))}
             {renderActions && (
-              <th className={actionsAlign === "center" ? "table__actions-header--center" : undefined}>
+              <th
+                style={{
+                  ...(actionsWidth ? { width: actionsWidth } : null),
+                  textAlign: actionsAlign === "center" ? "center" : "left",
+                }}
+              >
                 Action
               </th>
             )}
@@ -72,7 +78,10 @@ function Table({
                   </td>
                 ))}
                 {renderActions && (
-                  <td onClick={(e) => e.stopPropagation()}>
+                  <td
+                    style={actionsWidth ? { width: actionsWidth } : undefined}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div
                       className={`table__actions-cell${
                         actionsAlign === "center" ? " table__actions-cell--center" : ""

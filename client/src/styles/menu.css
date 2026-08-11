@@ -1,12 +1,47 @@
 .menu-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--space-3);
+  justify-content: flex-end;
+  gap: var(--space-4);
+  width: 100%;
 }
 
 .menu-toolbar .field {
+  flex: 1 1 240px;
   min-width: 200px;
+  max-width: 320px;
+}
+
+.menu-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.menu-action-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.menu-action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  flex: 0 0 32px;
+}
+
+.menu-action-button .button__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.menu-action-button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .menu-thumbnail {
@@ -69,11 +104,17 @@
 
 @media (max-width: 767px) {
   .menu-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: wrap;
   }
 
   .menu-toolbar .field {
     min-width: 0;
+    max-width: none;
+    flex: 1 1 100%;
+  }
+
+  .menu-toolbar__actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
