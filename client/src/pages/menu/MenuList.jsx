@@ -10,7 +10,6 @@ import Pagination from "../../components/common/Pagination";
 import Button from "../../components/common/Button";
 import Badge from "../../components/common/Badge";
 import SearchBar from "../../components/common/SearchBar";
-import Select from "../../components/common/Select";
 import Modal from "../../components/common/Modal";
 import EmptyState from "../../components/common/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
@@ -20,7 +19,6 @@ import {
   deleteMenu,
   bulkDeleteMenus,
 } from "../../services/menu.service";
-import { getCategoryOptions } from "../../services/cetagory.service";
 import { formatCurrency } from "../../utils/formatCurrency";
 import "../../styles/menu.css";
 
@@ -51,17 +49,8 @@ function MenuList() {
   );
   const { data, isLoading, refetch } = useFetch(fetchMenus);
 
-  const { data: categoryOptions } = useFetch(getCategoryOptions);
-
-  const safeCategoryOptions = categoryOptions || [];
-
   const menus = data?.data || [];
   const total = data?.total || 0;
-
-  const handleCategoryChange = (value) => {
-    setCategoryFilter(value);
-    setCurrentPage(1);
-  };
 
   const toggleSelectRow = (id) => {
     setSelectedIds((prev) =>
@@ -121,7 +110,6 @@ function MenuList() {
     {
       key: "price",
       header: "Price",
-      align: "right",
       render: (row) => formatCurrency(row.price),
     },
   ];
@@ -135,17 +123,11 @@ function MenuList() {
       <Card
         title="Menu Inventory"
         headerAction={
-          <div className="menu-toolbar">
+         <div className="menu-toolbar">
             <SearchBar
               value={searchInput}
               onChange={setSearchInput}
               placeholder="Search menus..."
-            />
-            <Select
-              value={categoryFilter}
-              onChange={(event) => handleCategoryChange(event.target.value)}
-              options={safeCategoryOptions}
-              placeholder="Filter by Category"
             />
             <Button
               variant="danger"
@@ -175,6 +157,7 @@ function MenuList() {
               onSelectRow={toggleSelectRow}
               onSelectAll={toggleSelectAll}
               getRowId={(row) => row.id}
+              actionsAlign="center"
               renderActions={(row) => (
                 <>
                   <Link to={`/menu/${row.id}/edit`}>

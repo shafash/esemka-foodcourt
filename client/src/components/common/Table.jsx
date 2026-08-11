@@ -5,7 +5,9 @@ function Table({
   selectedIds = [],
   onSelectRow,
   onSelectAll,
+  onRowClick,
   renderActions,
+  actionsAlign = "left",
   emptyState,
   getRowId = (row) => row.id,
 }) {
@@ -35,7 +37,11 @@ function Table({
                 {col.header}
               </th>
             ))}
-            {renderActions && <th style={{ textAlign: "right" }}>Action</th>}
+            {renderActions && (
+              <th className={actionsAlign === "center" ? "table__actions-header--center" : undefined}>
+                Action
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -44,9 +50,14 @@ function Table({
             const isSelected = selectedIds.includes(rowId);
 
             return (
-              <tr key={rowId} className={isSelected ? "table__row--selected" : undefined}>
+              <tr
+                key={rowId}
+                className={isSelected ? "table__row--selected" : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                style={onRowClick ? { cursor: "pointer" } : undefined}
+              >
                 {selectable && (
-                  <td className="table__checkbox-cell">
+                  <td className="table__checkbox-cell" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -61,8 +72,14 @@ function Table({
                   </td>
                 ))}
                 {renderActions && (
-                  <td>
-                    <div className="table__actions-cell">{renderActions(row)}</div>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className={`table__actions-cell${
+                        actionsAlign === "center" ? " table__actions-cell--center" : ""
+                      }`}
+                    >
+                      {renderActions(row)}
+                    </div>
                   </td>
                 )}
               </tr>

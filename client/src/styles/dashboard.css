@@ -107,6 +107,47 @@
   color: var(--color-muted);
 }
 
+.reservation-item {
+  width: 100%;
+}
+
+.reservation-item__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reservation-item__content--left {
+  align-items: flex-start;
+}
+
+.reservation-item__content--right {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.reservation-item__primary {
+  display: block;
+  line-height: 1.35;
+}
+
+.reservation-item__secondary {
+  display: block;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  .reservation-item__content--right {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
 .stock-alert {
   display: flex;
   gap: var(--space-3);

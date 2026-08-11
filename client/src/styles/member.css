@@ -45,7 +45,23 @@
 }
 
 .member-form-card {
-  max-width: 640px;
+  width: 100%;
+  max-width: min(2270px, 100%);
+  margin: 0 auto;
+}
+
+.member-form-card .form {
+  gap: var(--space-6);
+}
+
+.member-form-card .form-row {
+  row-gap: var(--space-6);
+  column-gap: var(--space-7);
+}
+
+.member-form-card .form-actions {
+  justify-content: flex-end;
+  padding-top: var(--space-7);
 }
 
 .member-form-card__header {

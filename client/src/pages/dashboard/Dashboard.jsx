@@ -36,20 +36,34 @@ const RESERVATION_COLUMNS = [
   {
     key: "customer",
     header: "Customer",
+    width: "minmax(0, 1fr)",
     render: (row) => (
-      <div>
-        <strong className="table-cell__primary">{row.customer}</strong>
-        <span className="table-cell__secondary">{row.email}</span>
+      <div className="reservation-item reservation-item--customer">
+        <div className="reservation-item__content reservation-item__content--left">
+          <strong className="table-cell__primary reservation-item__primary">
+            {row.customer}
+          </strong>
+          <span className="table-cell__secondary reservation-item__secondary">
+            {row.email}
+          </span>
+        </div>
       </div>
     ),
   },
   {
     key: "date",
     header: "Date",
+    width: "170px",
     render: (row) => (
-      <div>
-        <strong className="table-cell__primary">{row.date}</strong>
-        <span className="table-cell__secondary">{row.time}</span>
+      <div className="reservation-item reservation-item--date">
+        <div className="reservation-item__content reservation-item__content--right">
+          <strong className="table-cell__primary reservation-item__primary">
+            {row.date}
+          </strong>
+          <span className="table-cell__secondary reservation-item__secondary">
+            {row.time}
+          </span>
+        </div>
       </div>
     ),
   },

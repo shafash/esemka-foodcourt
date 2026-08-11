@@ -8,7 +8,6 @@ import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import Button from "../../components/common/Button";
 import SearchBar from "../../components/common/SearchBar";
-import StatusBadge from "../../components/common/StatusBadge";
 import Modal from "../../components/common/Modal";
 import EmptyState from "../../components/common/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
@@ -106,11 +105,6 @@ function MemberList() {
         header: "Member Since",
         render: (row) => formatDate(row.memberSince),
       },
-      {
-        key: "status",
-        header: "Status",
-        render: (row) => <StatusBadge status={row.status} />,
-      },
     ],
     []
   );
@@ -119,7 +113,6 @@ function MemberList() {
     <>
       <Header
         title="Manage Members"
-        subtitle="View, add, and manage your bistro's registered members."
       />
 
       <Card>
@@ -172,6 +165,7 @@ function MemberList() {
               selectedIds={selectedIds}
               onSelectRow={toggleSelectRow}
               onSelectAll={toggleSelectAll}
+              onRowClick={(row) => toggleSelectRow(row.id)}
               getRowId={(row) => row.id}
             />
             <Pagination
