@@ -101,7 +101,7 @@
 .auth-register-header h1 {
   margin: 0;
   font-family: var(--font-family-heading);
-  font-size: 1.35rem;
+  font-size: var(--font-size-page-title);
   font-weight: var(--font-weight-bold);
   color: var(--color-ink);
   text-transform: uppercase;
@@ -110,7 +110,7 @@
 
 .auth-register-header p {
   margin: 4px 0 0;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   color: var(--color-ink);
   line-height: 1.4;
 }
@@ -272,11 +272,11 @@
   }
 
   .auth-register-header h1 {
-    font-size: 1.2rem;
+    font-size: var(--font-size-section-title);
   }
 
   .auth-register-header p {
-    font-size: 0.85rem;
+    font-size: var(--font-size-caption);
   }
 
   .auth-checkbox span {

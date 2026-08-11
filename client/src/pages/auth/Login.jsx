@@ -99,7 +99,12 @@ function Login() {
         />
 
         <Input
-          label="Password" 
+          label="Password"
+          labelAction={
+            <span className="field__label-action field__label-action--static">
+              Forgot?
+            </span>
+          }
           type="password"
           placeholder="********"
           iconLeft={<FiLock />}
