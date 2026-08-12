@@ -28,7 +28,7 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
   } = useForm({
     defaultValues: {
       name: initialValues?.name || "",
-      category: initialValues?.category || "",
+      category: initialValues?.categoryId ?? initialValues?.category ?? "",
       price: initialValues?.price ?? "",
       description: initialValues?.description || "",
     },
@@ -46,7 +46,9 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
     }
     onSubmit({
       ...values,
+      categoryId: Number(values.category),
       price: Number(values.price),
+      imageFile: image.file,
       imageUrl: image.previewUrl,
     });
   };

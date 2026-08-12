@@ -1,96 +1,67 @@
 import axiosInstance from "./axious";
 import { AUTH_ENDPOINTS } from "../constants/api";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../constants/roles";
+import { unwrapApiData } from "./apiHelper";
 
-const MOCK_AUTH_ENABLED = true;
+function normalizeUser(user) {
+  if (!user) return null;
 
-const MOCK_USERS = [
-  {
-    id: "u-admin-1",
-    firstName: "Admin",
-    lastName: "Esemka",
-    email: "admin@esemkafoodcourt.test",
-    password: "admin1234",
-    phone: "+628110000001",
-    role: ROLE_ADMIN,
-  },
-  {
-    id: "u-member-1",
-    firstName: "Milano",
-    lastName: "Keshi",
-    email: "member@esemkafoodcourt.test",
-    password: "member1234",
-    phone: "+6281762509237",
-    role: ROLE_MEMBER,
-  },
-];
+  const roleId = user.RoleID ?? user.roleId ?? null;
+  let role = user.role || user.Role || null;
 
-function mockDelay(ms = 400) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function toSafeUser(user) {
-  const safeUser = { ...user };
-  delete safeUser.password;
-  return safeUser;
-}
-
-async function mockLogin({ email, password }) {
-  await mockDelay();
-  const found = MOCK_USERS.find(
-    (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
-  );
-  if (!found) {
-    throw new Error("Email atau password salah.");
+  if (!role && roleId === 1) {
+    role = ROLE_ADMIN;
+  } else if (!role && roleId === 2) {
+    role = ROLE_MEMBER;
   }
+
   return {
-    user: toSafeUser(found),
-    token: `mock-token-${found.id}-${Date.now()}`,
+    id: user.ID ?? user.id ?? null,
+    firstName: user.FirstName ?? user.firstName ?? "",
+    lastName: user.LastName ?? user.lastName ?? "",
+    email: user.Email ?? user.email ?? "",
+    phone: user.PhoneNumber ?? user.phone ?? "",
+    role,
+    roleId,
   };
-}
-
-async function mockRegister(payload) {
-  await mockDelay();
-  const emailTaken = MOCK_USERS.some(
-    (u) => u.email.toLowerCase() === payload.email.trim().toLowerCase()
-  );
-  if (emailTaken) {
-    throw new Error("Email sudah terdaftar.");
-  }
-  const newUser = {
-    id: `u-member-${MOCK_USERS.length + 1}`,
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-    email: payload.email,
-    password: payload.password,
-    phone: payload.phone,
-    role: ROLE_MEMBER,
-  };
-  MOCK_USERS.push(newUser);
-  return { user: toSafeUser(newUser) };
 }
 
 export async function login(credentials) {
-  if (MOCK_AUTH_ENABLED) {
-    return mockLogin(credentials);
-  }
-  const { data } = await axiosInstance.post(AUTH_ENDPOINTS.login, credentials);
-  return data;
+  const response = await axiosInstance.post(AUTH_ENDPOINTS.login, {
+    Email: credentials.email,
+    Password: credentials.password,
+  });
+
+  const payload = unwrapApiData(response);
+  return {
+    token: payload?.token ?? null,
+    user: normalizeUser(payload?.user ?? payload),
+  };
 }
 
 export async function register(payload) {
-  if (MOCK_AUTH_ENABLED) {
-    return mockRegister(payload);
-  }
-  const { data } = await axiosInstance.post(AUTH_ENDPOINTS.register, payload);
-  return data;
+  const response = await axiosInstance.post(AUTH_ENDPOINTS.register, {
+    FirstName: payload.firstName,
+    LastName: payload.lastName,
+    Email: payload.email,
+    PhoneNumber: payload.phone,
+    Password: payload.password,
+  });
+
+  const payloadData = unwrapApiData(response);
+  return {
+    user: normalizeUser(payloadData?.user ?? payloadData),
+  };
 }
 
 export async function logout() {
-  if (MOCK_AUTH_ENABLED) {
-    await mockDelay(150);
-    return true;
+  try {
+    await axiosInstance.post(AUTH_ENDPOINTS.logout);
+  } catch (error) {
+    if (error?.response?.status !== 404) {
+      throw error;
+    }
   }
-  const { data } = await axiosInstance.post(AUTH_ENDPOINTS.logout);
-  return data;
+
+  return true;
 }

@@ -110,6 +110,9 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       return;
     }
 
+    const now = new Date();
+    const reservationTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
     onSubmit({
       tableId: selectedTable.id,
       memberId: user?.id,
@@ -119,7 +122,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       lastName: values.lastName,
       email: values.email,
       phone: values.phone,
-      time: new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      time: reservationTime,
       items: orderItems,
     });
   };

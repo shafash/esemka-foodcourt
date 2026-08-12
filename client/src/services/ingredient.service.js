@@ -1,78 +1,69 @@
 import axiosInstance from "./axious";
-
-const MOCK_INGREDIENT_ENABLED = true;
+import { unwrapApiData } from "./apiHelper";
 
 const INGREDIENT_ENDPOINTS = {
-  byMenu: (menuId) => `/menus/${menuId}/ingredients`,
-  update: (menuId) => `/menus/${menuId}/ingredients`,
+  list: "/menuIngredients",
+  create: "/menuIngredients",
+  delete: (id) => `/menuIngredients/${id}`,
 };
-
-function delay(ms = 350) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function generateId() {
-  return `ing-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 const UNIT_OPTIONS = ["g", "Kg", "ml", "l", "Pint", "Cup", "Gallon", "pcs"];
+const ingredientCounts = {};
 
-// Ingredients keyed by menu id, following the same in-memory mock pattern as
-// menu.service.js / cetagory.service.js.
-let MOCK_INGREDIENTS_BY_MENU = {
-  "menu-001": [
-    { id: "ing-001", name: "Zucchini", amount: 3, unit: "pcs" },
-    { id: "ing-002", name: "Flour", amount: 59, unit: "Pint" },
-    { id: "ing-003", name: "Egg", amount: 2, unit: "pcs" },
-    { id: "ing-004", name: "Salt", amount: 5, unit: "g" },
-    { id: "ing-005", name: "Olive Oil", amount: 30, unit: "ml" },
-  ],
-};
-
-function ensureMenuBucket(menuId) {
-  if (!MOCK_INGREDIENTS_BY_MENU[menuId]) {
-    MOCK_INGREDIENTS_BY_MENU[menuId] = [];
-  }
-  return MOCK_INGREDIENTS_BY_MENU[menuId];
-}
-
-async function mockGetIngredientsByMenu(menuId) {
-  await delay();
-  return ensureMenuBucket(menuId).map((item) => ({ ...item }));
-}
-
-async function mockSaveIngredientsForMenu(menuId, ingredients) {
-  await delay();
-  const saved = ingredients.map((item) => ({
-    id: item.id || generateId(),
-    name: item.name,
-    amount: Number(item.amount) || 0,
-    unit: item.unit,
-  }));
-  MOCK_INGREDIENTS_BY_MENU[menuId] = saved;
-  return saved;
+function normalizeIngredient(item) {
+  return {
+    id: item.ID ?? item.id,
+    name: item.IngredientName ?? item.name ?? "",
+    amount: Number(item.Qty ?? item.qty ?? item.amount ?? 0),
+    unit: item.UnitName ?? item.unit ?? "g",
+  };
 }
 
 export async function getIngredientsByMenu(menuId) {
-  if (MOCK_INGREDIENT_ENABLED) {
-    return mockGetIngredientsByMenu(menuId);
-  }
-  const { data } = await axiosInstance.get(INGREDIENT_ENDPOINTS.byMenu(menuId));
-  return data;
+  const { data } = await axiosInstance.get(INGREDIENT_ENDPOINTS.list, {
+    params: { page: 1, limit: 100 },
+  });
+
+  const payload = unwrapApiData(data) ?? {};
+  const ingredients = payload.menuIngredients || payload.data || [];
+  const filtered = (ingredients || [])
+    .filter((item) => String(item.MenuID ?? item.menuId) === String(menuId))
+    .map(normalizeIngredient);
+
+  ingredientCounts[menuId] = filtered.length;
+  return filtered;
 }
 
 export async function saveIngredientsForMenu(menuId, ingredients) {
-  if (MOCK_INGREDIENT_ENABLED) {
-    return mockSaveIngredientsForMenu(menuId, ingredients);
+  const existing = await getIngredientsByMenu(menuId);
+
+  await Promise.all(
+    existing.map((item) => axiosInstance.delete(INGREDIENT_ENDPOINTS.delete(item.id)).catch(() => null))
+  );
+
+  const saved = [];
+  for (const ingredient of ingredients) {
+    try {
+      const response = await axiosInstance.post(INGREDIENT_ENDPOINTS.create, {
+        MenuID: Number(menuId),
+        IngredientName: ingredient.name,
+        UnitName: ingredient.unit,
+        Qty: Number(ingredient.amount || 0),
+      });
+      saved.push(normalizeIngredient(unwrapApiData(response)));
+    } catch (error) {
+      if (error?.response?.status !== 409) {
+        throw error;
+      }
+    }
   }
-  const { data } = await axiosInstance.put(INGREDIENT_ENDPOINTS.update(menuId), {
-    ingredients,
-  });
-  return data;
+
+  ingredientCounts[menuId] = saved.length;
+  return saved;
 }
 
 export function countIngredientsByMenu(menuId) {
-  return ensureMenuBucket(menuId).length;
+  return ingredientCounts[menuId] || 0;
 }
 
 export const INGREDIENT_UNIT_OPTIONS = UNIT_OPTIONS.map((unit) => ({
