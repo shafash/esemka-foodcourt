@@ -4,30 +4,33 @@ import ApiError from "../errors/ApiError.js";
 export const getAllMenuIngredientsService = async ({
     page,
     limit,
-    search 
+    search,
+    menuId
 }) => {
     const skip = (page - 1) * limit;
 
-    const where = search ? {
-        OR: [
-            {
-                Menu: {
-                    Name: {
-                        contains: search 
+    const where = {
+        ...(menuId && { MenuID: menuId }),
+        ...(search && {
+            OR: [
+                {
+                    Menu: {
+                        Name: {
+                            contains: search 
+                        }
                     }
-                }
-            },
+                },
 
-            {
-                Ingredient: {
-                    Name: {
-                        contains: search 
+                {
+                    Ingredient: {
+                        Name: {
+                            contains: search 
+                        }
                     }
                 }
-            }
-        ]
-    }
-    : {};
+            ]
+        })
+    };
 
     const totalData = await prisma.menuIngredients.count({
         where 
@@ -68,7 +71,7 @@ export const getAllMenuIngredientsService = async ({
             MenuID: item.MenuID,
             MenuName: item.Menu.Name,
             IngredientID: item.IngredientID,
-            IngredientName: item.IngredientName,
+            IngredientName: item.Ingredient.Name,
             UnitID: item.UnitID,
             UnitName: item.Unit.Name,
             Qty: item.Qty 
@@ -248,7 +251,7 @@ export const updateMenuIngredientService = async (
     if (!ingredient) {
         ingredient = await prisma.ingredients.create({
             data: {
-                Name: payload.Ingredient
+                Name: payload.IngredientName
             }
         });
     }
@@ -264,7 +267,7 @@ export const updateMenuIngredientService = async (
     if (!unit) {
         unit = await prisma.units.create({
             data: {
-                Name: payload.Unit 
+                Name: payload.UnitName
             }
         });
     }

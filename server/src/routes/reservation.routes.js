@@ -22,34 +22,6 @@ router.get(
 );
 
 router.get(
-    "/:id",
-    authMiddleware,
-    roleMiddleware(1),
-    getReservationById 
-);
-
-router.put(
-    "/:id",
-    authMiddleware,
-    roleMiddleware(1),
-    updateReservation
-);
-
-router.delete(
-    "/:id",
-    authMiddleware,
-    roleMiddleware(1),
-    deleteReservation
-);
-
-router.post(
-    "/",
-    authMiddleware,
-    roleMiddleware(2),
-    createReservation 
-);
-
-router.get(
     "/me",
     authMiddleware,
     roleMiddleware(2),
@@ -68,6 +40,34 @@ router.put(
     authMiddleware,
     roleMiddleware(2),
     cancelReservation
+);
+
+router.post(
+    "/",
+    authMiddleware,
+    roleMiddleware(2),
+    createReservation 
+);
+
+router.get(
+    "/:id",
+    authMiddleware,
+    roleMiddleware(1),
+    getReservationById 
+);
+
+router.put(
+    "/:id",
+    authMiddleware,
+    roleMiddleware(1),
+    updateReservation
+);
+
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware(1),
+    deleteReservation
 );
 
 export default router;

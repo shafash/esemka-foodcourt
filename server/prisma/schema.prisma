@@ -36,7 +36,6 @@ model Users {
 model Categories {
   ID        Int      @id @default(autoincrement())
   Name      String
-  DeletedAt DateTime?
 
   Menus Menus[]
 }

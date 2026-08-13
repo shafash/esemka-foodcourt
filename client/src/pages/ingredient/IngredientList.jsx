@@ -17,7 +17,7 @@ import IngredientDrawer from "../../components/ingredient/IngredientDrawer";
 import useFetch from "../../hooks/useFetch";
 import { getMenus } from "../../services/menu.service";
 import { getCategoryOptions } from "../../services/cetagory.service";
-import { countIngredientsByMenu } from "../../services/ingredient.service";
+import { getIngredientCountsByMenuIds } from "../../services/ingredient.service";
 
 import "../../styles/menu.css";
 import "../../styles/ingredient.css";
@@ -50,6 +50,16 @@ function IngredientList() {
   const menus = data?.data || [];
   const total = data?.total || 0;
 
+  const menuIds = menus.map((menu) => menu.id);
+  const menuIdsKey = menuIds.join(",");
+
+  const fetchCounts = useCallback(
+    () => getIngredientCountsByMenuIds(menuIds),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [menuIdsKey, countVersion]
+  );
+  const { data: countsMap } = useFetch(fetchCounts);
+
   const handleCategoryChange = (value) => {
     setCategoryFilter(value);
     setCurrentPage(1);
@@ -70,7 +80,7 @@ function IngredientList() {
           <span>
             <span className="ingredient-menu-cell__name">{row.name}</span>
             <span className="ingredient-menu-cell__count">
-              {countIngredientsByMenu(row.id)} ingredients configured
+              {countsMap?.[row.id] ?? 0} ingredients configured
             </span>
           </span>
         </div>
@@ -80,7 +90,11 @@ function IngredientList() {
       key: "category",
       header: "Category",
       width: "220px",
-      render: (row) => <Badge variant="neutral">{row.category}</Badge>,
+      render: (row) => (
+        <Badge variant="neutral">
+          {row.category?.Name ?? row.category?.name ?? "-"}
+        </Badge>
+      ),
     },
   ];
 

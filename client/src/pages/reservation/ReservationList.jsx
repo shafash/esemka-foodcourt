@@ -23,7 +23,7 @@ function ReservationList() {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchDetail = useCallback(
-    () => (selectedTable ? getReservationByTable(selectedTable.id) : Promise.resolve(null)),
+    () => (selectedTable ? getReservationByTable(selectedTable) : Promise.resolve(null)),
     [selectedTable]
   );
   const { data: reservation, isLoading: isDetailLoading, refetch: refetchDetail } =

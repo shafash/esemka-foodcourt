@@ -9,7 +9,7 @@ import EmptyState from "../../components/common/EmptyState";
 
 import useAuth from "../../hooks/useAuth";
 import useFetch from "../../hooks/useFetch";
-import { getMemberReservations, cancelReservation } from "../../services/reservation.service";
+import { getMemberReservations, cancelMyReservation } from "../../services/reservation.service";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 
@@ -37,7 +37,7 @@ function ReservationHistory() {
     if (!selected) return;
     setIsCanceling(true);
     try {
-      await cancelReservation(selected.id);
+      await cancelMyReservation(selected.id);
       refetch();
     } finally {
       setIsCanceling(false);

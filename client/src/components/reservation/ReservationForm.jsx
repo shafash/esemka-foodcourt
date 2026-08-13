@@ -110,19 +110,22 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       return;
     }
 
-    const now = new Date();
-    const reservationTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
     onSubmit({
       tableId: selectedTable.id,
+      tableDbId: selectedTable.tableDbId,
       memberId: user?.id,
+      useAccountData: false,
       date: values.date,
       guests: Number(values.guests),
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
       phone: values.phone,
-      time: reservationTime,
+      time: new Date().toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       items: orderItems,
     });
   };

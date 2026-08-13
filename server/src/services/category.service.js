@@ -3,9 +3,6 @@ import ApiError from "../errors/ApiError.js";
 
 export const getAllCategoriesService = async () => {
     const categories = await prisma.categories.findMany({
-        where: {
-            DeletedAt: null
-        },
         orderBy: {
             Name: "asc"
         }
@@ -17,8 +14,7 @@ export const getAllCategoriesService = async () => {
 export const getCategoryByIdService = async (categoryId) => {
     const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId,
-            DeletedAt: null
+            ID: categoryId
         },
         include: {
             Menus: {
@@ -59,8 +55,7 @@ export const getCategoryByIdService = async (categoryId) => {
 export const createCategoryService = async (payload) => {
     const existingCategory = await prisma.categories.findFirst({
         where: {
-            Name: payload.Name,
-            DeletedAt: null
+            Name: payload.Name
         }
     });
 
@@ -83,8 +78,7 @@ export const createCategoryService = async (payload) => {
 export const updateCategoryService = async (categoryId, payload) => {   
     const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId,
-            DeletedAt: null
+            ID: categoryId
         }
     });
 
@@ -98,7 +92,6 @@ export const updateCategoryService = async (categoryId, payload) => {
     const existingCategory = await prisma.categories.findFirst({
         where: {
             Name: payload.Name,
-            DeletedAt: null,
             NOT: {
                 ID: categoryId
             }
@@ -128,8 +121,7 @@ export const updateCategoryService = async (categoryId, payload) => {
 export const deleteCategoryService = async (categoryId) => {
     const category = await prisma.categories.findFirst({
         where: {
-            ID: categoryId,
-            DeletedAt: null
+            ID: categoryId
         }
     });
 
@@ -154,12 +146,9 @@ export const deleteCategoryService = async (categoryId) => {
         );
     }
 
-    await prisma.categories.update({
+    await prisma.categories.delete({
         where: {
             ID: categoryId
-        },
-        data: {
-            DeletedAt: new Date()
         }
     });
 };

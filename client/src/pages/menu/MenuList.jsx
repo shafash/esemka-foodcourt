@@ -29,7 +29,10 @@ function MenuList() {
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  // Category filter UI was removed from the Menu Inventory toolbar
+  // (kept as a no-op empty filter so getMenus()'s signature/behavior is
+  // unchanged).
+  const categoryFilter = "";
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);

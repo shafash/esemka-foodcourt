@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -7,13 +7,13 @@ import Select from "../common/Select";
 import Button from "../common/Button";
 import ImageUploadField from "../common/ImageUploadField";
 import useFetch from "../../hooks/useFetch";
-import { getCategoryOptions } from "../../services/cetagory.service";
+import { getCategoryOptionsWithId } from "../../services/cetagory.service";
 
 function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel = "Save Change" }) {
   const navigate = useNavigate();
 
   const { data: categoryOptions, isLoading: isCategoriesLoading } =
-    useFetch(getCategoryOptions);
+    useFetch(getCategoryOptionsWithId);
 
   const [image, setImage] = useState({
     file: null,
@@ -24,15 +24,23 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       name: initialValues?.name || "",
-      category: initialValues?.categoryId ?? initialValues?.category ?? "",
+      category: initialValues?.category || "",
       price: initialValues?.price ?? "",
       description: initialValues?.description || "",
     },
   });
+
+  useEffect(() => {
+    if (categoryOptions?.length && !watch("category")) {
+      setValue("category", categoryOptions[0].value);
+    }
+  }, [categoryOptions, setValue, watch]);
 
   const handleImageChange = (file, previewUrl) => {
     setImage({ file, previewUrl });
@@ -46,7 +54,6 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
     }
     onSubmit({
       ...values,
-      categoryId: Number(values.category),
       price: Number(values.price),
       imageFile: image.file,
       imageUrl: image.previewUrl,

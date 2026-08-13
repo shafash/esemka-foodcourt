@@ -160,9 +160,9 @@ export const getReservationByIdService = async (
             ID: item.ID,
             MenuID: item.Menu.ID,
             MenuName: item.Menu.Name,
-            Quantity: item.Quantity,
-            Price: item.Menu.Price,
-            Subtotal: Number(item.Quantity) * Number(item.Menu.Price)
+            Quantity: item.Qty,
+            Price: Number(item.Menu.Price),
+            Subtotal: Number(item.Qty) * Number(item.Menu.Price)
         }))
     };
 };

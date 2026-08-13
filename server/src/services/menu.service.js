@@ -1,6 +1,16 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
 
+const normalizeMenu = (menu) => ({
+    ID: menu.ID,
+    CategoryID: menu.CategoryID,
+    Category: menu.Category?.Name ?? null,
+    Name: menu.Name,
+    Description: menu.Description ?? "",
+    Price: menu.Price,
+    Image: menu.Image ?? null,
+});
+
 export const getAllMenusService = async ({
     page,
     limit,
@@ -12,34 +22,36 @@ export const getAllMenusService = async ({
         DeletedAt: null,
         ...(search && {
             Name: {
-                contains: search 
+                contains: search
             }
         })
     };
 
-    const totalData = await prisma.menus.count({
-        where 
-    });
+    const [totalData, menus] = await Promise.all([
+        prisma.menus.count({
+            where
+        }),
 
-    const menus = await prisma.menus.findMany({
-        where,
-        skip,
-        take: limit, 
-        orderBy: {
-            Name:  "asc"
-        },
-        include: {
-            Category: {
-                select: {
-                    ID: true,
-                    Name: true 
+        prisma.menus.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: {
+                Name: "asc"
+            },
+            include: {
+                Category: {
+                    select: {
+                        ID: true,
+                        Name: true
+                    }
                 }
             }
-        }
-    });
+        })
+    ]);
 
     return {
-        menus,
+        menus: menus.map(normalizeMenu),
         pagination: {
             page,
             limit,
@@ -52,8 +64,7 @@ export const getAllMenusService = async ({
 export const createMenuService = async (payload) => {
     const category = await prisma.categories.findFirst({
         where: {
-            ID: payload.CategoryID,
-            DeletedAt: null
+            ID: payload.CategoryID
         }
     });
 
@@ -86,26 +97,17 @@ export const createMenuService = async (payload) => {
             Price: payload.Price,
             Image: payload.Image || null
         },
-
         include: {
             Category: {
                 select: {
                     ID: true,
-                    Name: true 
+                    Name: true
                 }
             }
         }
     });
 
-    return {
-        ID: menu.ID,
-        CategoryID: menu.CategoryID,
-        Category: menu.Category.Name,
-        Name: menu.Name,
-        Description: menu.Description,
-        Price: menu.Price,
-        Image: menu.Image
-    };
+    return normalizeMenu(menu);
 };
 
 export const getMenuByIdService = async (id) => {
@@ -118,7 +120,7 @@ export const getMenuByIdService = async (id) => {
             Category: {
                 select: {
                     ID: true,
-                    Name: true 
+                    Name: true
                 }
             }
         }
@@ -131,20 +133,12 @@ export const getMenuByIdService = async (id) => {
         );
     }
 
-    return {
-        ID: menu.ID,
-        Name: menu.Name,
-        Description: menu.Description,
-        Price: menu.Price,
-        CategoryID: menu.CategoryID,
-        Category: menu.Category.Name,
-        Image: menu.Image
-    };
+    return normalizeMenu(menu);
 };
 
 export const updateMenuService = async (
     id,
-    payload 
+    payload
 ) => {
     const menu = await prisma.menus.findFirst({
         where: {
@@ -162,8 +156,7 @@ export const updateMenuService = async (
 
     const category = await prisma.categories.findFirst({
         where: {
-            ID: payload.CategoryID,
-            DeletedAt: null
+            ID: payload.CategoryID
         }
     });
 
@@ -178,19 +171,23 @@ export const updateMenuService = async (
         where: {
             Name: payload.Name,
             DeletedAt: null,
-            NOT: { ID: id }
+            NOT: {
+                ID: id
+            }
         }
     });
-    
+
     if (duplicate) {
-        throw new ApiError(409, "Menu name already exists");
+        throw new ApiError(
+            409,
+            "Menu name already exists"
+        );
     }
-    
+
     const updateMenu = await prisma.menus.update({
         where: {
             ID: id
         },
-
         data: {
             CategoryID: payload.CategoryID,
             Name: payload.Name,
@@ -198,7 +195,6 @@ export const updateMenuService = async (
             Price: payload.Price,
             Image: payload.Image ?? undefined
         },
-
         include: {
             Category: {
                 select: {
@@ -209,15 +205,7 @@ export const updateMenuService = async (
         }
     });
 
-    return {
-        ID: updateMenu.ID,
-        CategoryID: updateMenu.CategoryID,
-        Category: updateMenu.Category.Name,
-        Name: updateMenu.Name,
-        Description: updateMenu.Description,
-        Price: updateMenu.Price,
-        Image: updateMenu.Image
-    };
+    return normalizeMenu(updateMenu);
 };
 
 export const deleteMenuService = async (id) => {
@@ -231,13 +219,13 @@ export const deleteMenuService = async (id) => {
     if (!menu) {
         throw new ApiError(
             404,
-            "Menu not found" 
+            "Menu not found"
         );
     }
 
     const reservationCount = await prisma.reservationDetails.count({
         where: {
-            MenuID: id 
+            MenuID: id
         }
     });
 

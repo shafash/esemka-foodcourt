@@ -1,88 +1,81 @@
 import axiosInstance from "./axious";
+import { USER_ENDPOINTS } from "../constants/api";
 import { ROLE_MEMBER } from "../constants/roles";
-import { unwrapApiData } from "./apiHelper";
 
-const USER_ENDPOINTS = {
-  list: "/users",
-  detail: (id) => `/users/${id}`,
-  create: "/users",
-  update: (id) => `/users/${id}`,
-  delete: (id) => `/users/${id}`,
-};
-
-function normalizeMember(member) {
-  if (!member) return null;
-
+function mapMember(m) {
   return {
-    id: member.ID ?? member.id,
-    firstName: member.FirstName ?? member.firstName ?? "",
-    lastName: member.LastName ?? member.lastName ?? "",
-    email: member.Email ?? member.email ?? "",
-    phone: member.PhoneNumber ?? member.phone ?? "",
-    memberSince: member.DateJoined ?? member.memberSince ?? null,
-    role: member.Role ?? member.role ?? ROLE_MEMBER,
-    reservationCount: member.ReservationCount ?? member.reservationCount ?? 0,
+    id: m.ID,
+    firstName: m.FirstName,
+    lastName: m.LastName,
+    email: m.Email,
+    phone: m.PhoneNumber,
+    memberSince: m.DateJoined,
+    role: ROLE_MEMBER,
+    reservationCount: m.ReservationCount,
   };
 }
 
-function normalizeMemberList(response) {
-  const payload = unwrapApiData(response) ?? {};
-  const members = (payload.members || payload.data || []).map(normalizeMember);
-  return {
-    data: members,
-    total: payload.pagination?.totalData ?? members.length,
-  };
-}
-
-export async function getMembers(params) {
+export async function getMembers({ search = "", page = 1, pageSize = 8 } = {}) {
   const { data } = await axiosInstance.get(USER_ENDPOINTS.list, {
-    params: {
-      page: params?.page ?? 1,
-      limit: params?.pageSize ?? 10,
-      search: params?.search ?? "",
-    },
+    params: { search, page, limit: pageSize },
   });
-
-  return normalizeMemberList(data);
+  return {
+    data: (data.data.members || []).map(mapMember),
+    total: data.data.pagination?.totalData ?? 0,
+  };
 }
 
 export async function getMemberById(id) {
-  const response = await axiosInstance.get(USER_ENDPOINTS.detail(id));
-  return normalizeMember(unwrapApiData(response));
+  const { data } = await axiosInstance.get(USER_ENDPOINTS.detail(id));
+  return mapMember(data.data);
 }
 
 export async function createMember(payload) {
-  const response = await axiosInstance.post(USER_ENDPOINTS.create, {
+  const { data } = await axiosInstance.post(USER_ENDPOINTS.create, {
     FirstName: payload.firstName,
     LastName: payload.lastName,
     Email: payload.email,
     PhoneNumber: payload.phone,
     Password: payload.password,
   });
-  return normalizeMember(unwrapApiData(response));
+  return mapMember(data.data);
 }
 
 export async function updateMember(id, payload) {
-  const response = await axiosInstance.put(USER_ENDPOINTS.update(id), {
+  const body = {
     FirstName: payload.firstName,
     LastName: payload.lastName,
     Email: payload.email,
     PhoneNumber: payload.phone,
-    Password: payload.password,
-  });
-  return normalizeMember(unwrapApiData(response));
+  };
+  if (payload.password) body.Password = payload.password;
+
+  const { data } = await axiosInstance.put(USER_ENDPOINTS.update(id), body);
+  return mapMember(data.data);
 }
 
 export async function deleteMember(id) {
-  await axiosInstance.delete(USER_ENDPOINTS.delete(id));
-  return true;
+  const { data } = await axiosInstance.delete(USER_ENDPOINTS.delete(id));
+  return data;
 }
 
+// NOTE: The backend does not provide a bulk-delete endpoint for members
+// (no POST /users/bulk-delete route exists). Bulk delete is implemented
+// here as parallel individual DELETE requests against the existing
+// DELETE /users/:id endpoint. If a member has reservations, the backend
+// will reject that individual deletion (409) while others still succeed.
 export async function bulkDeleteMembers(ids) {
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return true;
-  }
+  const results = await Promise.allSettled(ids.map((id) => deleteMember(id)));
+  const failed = results
+    .map((r, i) => ({ r, id: ids[i] }))
+    .filter(({ r }) => r.status === "rejected");
 
-  await Promise.all(ids.map((id) => axiosInstance.delete(USER_ENDPOINTS.delete(id))));
+  if (failed.length > 0) {
+    const error = new Error(
+      `${failed.length} dari ${ids.length} member gagal dihapus (kemungkinan masih memiliki data reservasi).`
+    );
+    error.failedIds = failed.map((f) => f.id);
+    throw error;
+  }
   return true;
 }

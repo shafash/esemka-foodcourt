@@ -3,6 +3,7 @@ import {
     getAllReservationsService,
     getReservationByIdService,
     getMyReservationByIdService,
+    getMyReservationsService,
     createReservationService,
     updateReservationService,
     deleteReservationService,

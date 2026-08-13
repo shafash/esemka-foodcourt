@@ -1,72 +1,69 @@
 import axiosInstance from "./axious";
 import { CATEGORY_ENDPOINTS } from "../constants/api";
-import { unwrapApiData } from "./apiHelper";
 
-function normalizeCategory(category) {
-  if (!category) return null;
-
+function mapCategory(c) {
   return {
-    id: category.ID ?? category.id,
-    name: category.Name ?? category.name,
-    description: category.Description ?? category.description ?? "",
-    createdAt: category.CreatedAt ?? category.createdAt ?? null,
-    menuCount: category.MenuCount ?? category.menuCount ?? 0,
+    id: c.ID,
+    name: c.Name,
+    createdAt: c.CreatedAt,
   };
 }
 
-function normalizeCategoryList(response) {
-  const list = unwrapApiData(response) ?? [];
-  const data = Array.isArray(list) ? list : list?.data ?? [];
-  return {
-    data: data.map(normalizeCategory),
-    total: list?.total ?? data.length,
-  };
-}
+// The backend's GET /categories has no pagination/search query support -
+// it always returns the full active category list. Search/pagination
+// below are therefore applied client-side.
+export async function getCategories({ search = "", page = 1, pageSize = 8 } = {}) {
+  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list);
+  const all = (data.data || []).map(mapCategory);
 
-export async function getCategories(params) {
-  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list, {
-    params: {
-      page: params?.page ?? 1,
-      limit: params?.pageSize ?? 10,
-      search: params?.search ?? "",
-    },
-  });
+  const filtered = search
+    ? all.filter((c) => c.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : all;
 
-  return normalizeCategoryList(data);
+  const total = filtered.length;
+  const start = (page - 1) * pageSize;
+  const dataPage = filtered.slice(start, start + pageSize);
+
+  return { data: dataPage, total };
 }
 
 export async function getCategoryById(id) {
-  const response = await axiosInstance.get(CATEGORY_ENDPOINTS.detail(id));
-  return normalizeCategory(unwrapApiData(response));
+  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.detail(id));
+  return {
+    ...mapCategory(data.data),
+    menus: data.data.Menus || [],
+  };
 }
 
 export async function createCategory(payload) {
-  const response = await axiosInstance.post(CATEGORY_ENDPOINTS.create, {
+  const { data } = await axiosInstance.post(CATEGORY_ENDPOINTS.create, {
     Name: payload.name,
-    Description: payload.description,
   });
-  return normalizeCategory(unwrapApiData(response));
+  return mapCategory(data.data);
 }
 
 export async function updateCategory(id, payload) {
-  const response = await axiosInstance.put(CATEGORY_ENDPOINTS.update(id), {
+  const { data } = await axiosInstance.put(CATEGORY_ENDPOINTS.update(id), {
     Name: payload.name,
-    Description: payload.description,
   });
-  return normalizeCategory(unwrapApiData(response));
+  return mapCategory(data.data);
 }
 
 export async function deleteCategory(id) {
-  await axiosInstance.delete(CATEGORY_ENDPOINTS.delete(id));
-  return true;
+  const { data } = await axiosInstance.delete(CATEGORY_ENDPOINTS.delete(id));
+  return data;
 }
 
+// Name-based options - used by list/filter Selects (Manage Menus, Menu
+// Ingredients, Reservation pre-order) that filter by category NAME.
 export async function getCategoryOptions() {
-  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list, {
-    params: { page: 1, limit: 100 },
-  });
+  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list);
+  return (data.data || []).map((c) => ({ value: c.Name, label: c.Name }));
+}
 
-  const list = unwrapApiData(data) ?? [];
-  const categories = Array.isArray(list) ? list : list?.data ?? [];
-  return categories.map((category) => ({ value: category.ID, label: category.Name ?? category.name }));
+// ID-based options - used specifically by the Menu create/edit form, since
+// the backend's Menu create/update endpoints require a numeric CategoryID.
+export async function getCategoryOptionsWithId() {
+  const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list);
+  return (data.data || []).map((c) => ({ value: String(c.ID), label: c.Name }));
 }

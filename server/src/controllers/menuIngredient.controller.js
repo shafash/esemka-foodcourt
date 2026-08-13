@@ -20,10 +20,12 @@ export const getAllMenuIngredients = async (
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const search = req.query.search?.trim() || "";
+        const menuId = req.query.menuId ? Number(req.query.menuId) : undefined;
         const result = await getAllMenuIngredientsService({
             page,
             limit,
-            search 
+            search,
+            menuId
         });
 
         return successResponse(

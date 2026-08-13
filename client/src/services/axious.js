@@ -26,6 +26,25 @@ axiosInstance.interceptors.response.use(
         window.location.href = "/login";
       }
     }
+
+    // Normalize so every caller's `err.message` shows the backend's actual
+    // message (see server/src/utils/response.js / errorHandler.js) instead
+    // of axios's generic "Request failed with status code 4xx/5xx".
+    const backendMessage = error.response?.data?.message;
+    const validationErrors = error.response?.data?.errors;
+    if (backendMessage) {
+      const normalized = new Error(
+        validationErrors?.length
+          ? `${backendMessage}: ${validationErrors
+              .map((e) => `${e.field} - ${e.message}`)
+              .join(", ")}`
+          : backendMessage
+      );
+      normalized.status = error.response.status;
+      normalized.original = error;
+      return Promise.reject(normalized);
+    }
+
     return Promise.reject(error);
   }
 );
