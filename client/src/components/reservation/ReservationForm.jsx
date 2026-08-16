@@ -26,18 +26,6 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // getTables() with no date defaults to "today" on the backend. Must stay a
-  // stable reference (useCallback, empty deps) - useFetch's effect depends
-  // on this function identity, so a fresh arrow function every render would
-  // re-trigger the fetch in an infinite loop.
-  const fetchTables = useCallback(() => getTables(), []);
-  const {
-    data: tables,
-    isLoading: isTablesLoading,
-    error: tablesError,
-    refetch: refetchTables,
-  } = useFetch(fetchTables);
-
   const [selectedTable, setSelectedTable] = useState(null);
   const [useAccountInfo, setUseAccountInfo] = useState(false);
   const [menuSearch, setMenuSearch] = useState("");
@@ -48,10 +36,16 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       date: "",
+      time: new Date().toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       guests: "",
       firstName: "",
       lastName: "",
@@ -59,6 +53,20 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       phone: "",
     },
   });
+
+  const selectedDate = watch("date");
+  const selectedTime = watch("time");
+
+  const fetchTables = useCallback(
+    () => getTables(selectedDate, selectedTime),
+    [selectedDate, selectedTime]
+  );
+  const {
+    data: tables,
+    isLoading: isTablesLoading,
+    error: tablesError,
+    refetch: refetchTables,
+  } = useFetch(fetchTables);
 
   const fetchMenus = useCallback(
     () => getMenus({ search: menuSearch, page: 1, pageSize: 6 }),
@@ -135,11 +143,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       lastName: values.lastName,
       email: values.email,
       phone: values.phone,
-      time: new Date().toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }),
+      time: values.time,
       items: orderItems,
     });
   };
@@ -156,6 +160,12 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
             type="date"
             error={errors.date?.message}
             {...register("date", { required: "Tanggal reservasi wajib diisi." })}
+          />
+          <Input
+            label="Reservation Time"
+            type="time"
+            error={errors.time?.message}
+            {...register("time", { required: "Waktu reservasi wajib diisi." })}
           />
           <Input
             label="Number of Guests"

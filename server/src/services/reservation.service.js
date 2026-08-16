@@ -1,5 +1,6 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
+import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
 
 export const getAllReservationsService = async ({
     userId,
@@ -400,10 +401,7 @@ export const createReservationService = async (
                 ReservationDate,
                 ReservationTime,
                 Status: {
-                    in: [
-                        "Pending",
-                        "Confirmed"
-                    ]
+                    in: ACTIVE_RESERVATION_STATUSES
                 }
             }
         });

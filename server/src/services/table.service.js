@@ -1,6 +1,6 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
-
+import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
 
 const ACTIVE_STATUSES = ["Pending", "Confirmed"];
 
@@ -20,11 +20,21 @@ const getDateRange = (date) => {
     return { start, end };
 };
 
+const pad2 = (n) => String(n).padStart(2, "0");
+
+const getTimeSlot = (time) => {
+    if (time) return time;
+
+    const now = new Date();
+    return `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+};
+
 export const getAllTablesService = async ({
     page,
     limit,
     search,
-    date
+    date,
+    time
 }) => {
     const skip = (page - 1) * limit;
 
@@ -50,6 +60,7 @@ export const getAllTablesService = async ({
     });
 
     const dateRange = getDateRange(date);
+    const timeSlot = getTimeSlot(time);
 
     let reservations = [];
 
@@ -60,8 +71,9 @@ export const getAllTablesService = async ({
                     gte: dateRange.start,
                     lte: dateRange.end
                 },
+                ReservationTime: timeSlot,
                 Status: {
-                    in: ACTIVE_STATUSES
+                    in: ACTIVE_RESERVATION_STATUSES
                 }
             },
             select: {
@@ -96,22 +108,33 @@ export const getAllTablesService = async ({
     };
 };
 
-export const getTableByIdService = async (
-    id
+export const getAllTables = async (
+    req,
+    res,
+    next
 ) => {
-    const table = await prisma.tables.findUnique({
-        where: {
-            ID: id
-        }
-    });
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const search = req.query.search?.trim() || "";
+        const date = req.query.date || "";
+        const time = req.query.time || "";
+        const result = await getAllTablesService({
+            page,
+            limit,
+            search,
+            date,
+            time
+        });
 
-    if (!table) {
-        throw new ApiError(
-            404,
-            "Table not found"
+        return successResponse(
+            res,
+            "Tables retrieved successfully",
+            result
         );
+    } catch (error) {
+        next(error);
     }
-    return table;
 };
 
 export const createTableService = async (
