@@ -53,6 +53,7 @@ function MenuList() {
   const { data, isLoading, refetch } = useFetch(fetchMenus);
 
   const menus = data?.data || [];
+  console.log("MENUS:", menus);
   const total = data?.total || 0;
 
   const toggleSelectRow = (id) => {
@@ -151,7 +152,14 @@ function MenuList() {
         }
       >
         {isLoading ? (
-          <LoadingSkeleton variant="table-row" count={6} />
+          <>
+            <div className="skeleton-table-rows">
+              <LoadingSkeleton variant="table-row" count={6} />
+            </div>
+            <div className="skeleton-card-list">
+              <LoadingSkeleton variant="card" count={4} />
+            </div>
+          </>
         ) : menus.length > 0 ? (
           <>
             <Table
@@ -188,6 +196,74 @@ function MenuList() {
                 </div>
               )}
             />
+
+            <div className="data-card-list">
+              {menus.map((menu) => {
+                const isSelected = selectedIds.includes(menu.id);
+                return (
+                  <div
+                    key={menu.id}
+                    className={`data-card${isSelected ? " data-card--selected" : ""}`}
+                    onClick={() => toggleSelectRow(menu.id)}
+                  >
+                    <div className="data-card__top">
+                      <div className="data-card__heading">
+                        <input
+                          type="checkbox"
+                          className="data-card__checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectRow(menu.id)}
+                          onClick={(event) => event.stopPropagation()}
+                          aria-label={`Pilih ${menu.name}`}
+                        />
+                        <span
+                          className="data-card__thumb"
+                          style={menu.imageUrl ? { backgroundImage: `url(${menu.imageUrl})` } : undefined}
+                        >
+                          {!menu.imageUrl && <GiKnifeFork />}
+                        </span>
+                        <div className="data-card__title-group">
+                          <p className="data-card__title">{menu.name}</p>
+                          <span className="data-card__id">{formatCurrency(menu.price)}</span>
+                        </div>
+                      </div>
+                      {menu.category && <Badge variant="neutral">{menu.category}</Badge>}
+                    </div>
+
+                    {menu.description && (
+                      <div className="data-card__meta">
+                        <div className="data-card__meta-row">
+                          <span>{menu.description}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="data-card__footer" onClick={(event) => event.stopPropagation()}>
+                      <Link to={`/menu/${menu.id}/edit`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          iconOnly
+                          className="menu-action-button"
+                          icon={<FiEdit2 />}
+                          aria-label="Edit menu"
+                        />
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        iconOnly
+                        className="menu-action-button"
+                        icon={<FiTrash2 />}
+                        aria-label="Hapus menu"
+                        onClick={() => openSingleDelete(menu.id)}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             <Pagination
               currentPage={currentPage}
               pageSize={PAGE_SIZE}

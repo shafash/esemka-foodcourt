@@ -2,6 +2,7 @@
 .floor-plan__legend {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border);
@@ -39,11 +40,23 @@
   border-width: 2px;
 }
 
+.floor-plan__grid-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .floor-plan__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(64px, 1fr));
   gap: var(--space-4);
   padding: var(--space-5);
+  min-width: 288px;
+}
+
+@media (max-width: 480px) {
+  .floor-plan__grid {
+    grid-template-columns: repeat(3, minmax(72px, 1fr));
+  }
 }
 
 .floor-plan__table {
@@ -96,6 +109,82 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
+}
+
+.reservation-detail__close {
+  display: none;
+}
+
+.reservation-detail__backdrop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* The reservation detail panel becomes a bottom sheet on mobile instead
+     of a stacked block the user has to scroll past the floor plan to see.
+     It stays off-screen (translateY 100%) until a table is selected. */
+  .reservation-detail {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-drawer);
+    transform: translateY(100%);
+    transition: transform var(--transition-base);
+  }
+
+  .reservation-detail--open {
+    transform: translateY(0);
+  }
+
+  .reservation-detail__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    color: var(--color-muted);
+    flex-shrink: 0;
+  }
+
+  .reservation-detail__close:hover {
+    background-color: var(--color-surface-alt);
+  }
+
+  .reservation-detail__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background-color: rgba(41, 37, 36, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+  }
+
+  .reservation-detail__backdrop--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .reservation-detail__header {
+    flex-wrap: wrap;
+  }
+
+  .reservation-detail__close {
+    order: 2;
+  }
+
+  .reservation-detail__id {
+    flex-basis: 100%;
+    order: 3;
+    margin-top: var(--space-1);
+  }
 }
 
 .reservation-detail__empty {
@@ -205,16 +294,31 @@
 }
 
 .reservation-detail__actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
   margin-top: var(--space-6);
 }
 
 .reservation-detail__actions .button {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-tight);
+  text-align: center;
 }
 
-/* ===== Member: Reserve Table (multi-step form) ===== */
+/* When there's only one action (e.g. "Complete Reservation" on its own),
+   let it span the full row instead of being squeezed into a single 1fr
+   column of the two-column grid - that's what was cropping the text. */
+.reservation-detail__actions .button:only-child {
+  grid-column: 1 / -1;
+}
+
 .reserve-page {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -395,6 +499,26 @@
   gap: var(--space-3);
 }
 
+@media (max-width: 767px) {
+  .reserve-summary {
+    padding: var(--space-4);
+  }
+
+  .reserve-summary__totals {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .reserve-summary__actions {
+    width: 100%;
+    flex-direction: column-reverse;
+  }
+
+  .reserve-summary__actions .button {
+    width: 100%;
+  }
+}
+
 .reserve-page__error {
   grid-column: 1 / -1;
 }
@@ -531,12 +655,32 @@
 
 .history-detail__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-3);
   margin-top: var(--space-6);
 }
 
-/* ===== Member: dashboard reservation preview ===== */
+@media (max-width: 767px) {
+  .history-detail__actions .button {
+    flex: 1 1 160px;
+  }
+}
+
+@media (max-width: 767px) {
+  .reservation-page,
+  .reserve-page,
+  .history-page,
+  .member-dashboard {
+    gap: var(--space-4);
+  }
+
+  .reserve-order,
+  .reserve-summary {
+    margin-top: var(--space-4);
+  }
+}
+
 .member-dashboard {
   display: grid;
   grid-template-columns: 1fr 300px;

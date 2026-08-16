@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import Header from "../../components/layout/Header";
 import Button from "../../components/common/Button";
@@ -12,6 +13,7 @@ import useFetch from "../../hooks/useFetch";
 import { getMemberReservations, cancelMyReservation } from "../../services/reservation.service";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { generateReservationInvoicePdf } from "../../utils/invoiceGenerator";
 
 import "../../styles/reservation.css";
 
@@ -21,6 +23,7 @@ function ReservationHistory() {
 
   const [selectedId, setSelectedId] = useState(null);
   const [isCanceling, setIsCanceling] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   const fetchReservations = useCallback(
     () => (user?.id ? getMemberReservations(user.id) : Promise.resolve([])),
@@ -41,6 +44,24 @@ function ReservationHistory() {
       refetch();
     } finally {
       setIsCanceling(false);
+    }
+  };
+
+  // Always generates the invoice for the exact reservation passed in (by
+  // object reference / id), never by list index, so it stays correct
+  // regardless of pagination/filter/sort state. downloadingId guards
+  // against double-clicks triggering multiple downloads at once.
+  const handleDownloadInvoice = async (reservation) => {
+    if (!reservation || downloadingId) return;
+    setDownloadingId(reservation.id);
+    try {
+      generateReservationInvoicePdf(reservation);
+      toast.success("Invoice downloaded successfully");
+    } catch (error) {
+      console.error("Gagal membuat invoice reservasi:", error);
+      toast.error("Failed to download invoice. Please try again.");
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -126,7 +147,7 @@ function ReservationHistory() {
             </div>
 
             <p className="reservation-detail__section-title">Ordered Menu Items</p>
-            {selected.items.map((item, index) => (
+            {(selected.items || []).map((item, index) => (
               <div className="reservation-detail__order-item" key={`${item.menuId}-${index}`}>
                 <div>
                   <div>{item.name}</div>
@@ -155,8 +176,12 @@ function ReservationHistory() {
                   {isCanceling ? "Canceling..." : "Cancel Reservation"}
                 </Button>
               )}
-              <Button variant="primary" disabled title="Fitur invoice akan tersedia setelah integrasi backend">
-                Download Invoice
+              <Button
+                variant="primary"
+                onClick={() => handleDownloadInvoice(selected)}
+                disabled={downloadingId === selected.id}
+              >
+                {downloadingId === selected.id ? "Generating..." : "Download Invoice"}
               </Button>
             </div>
           </div>

@@ -1,12 +1,33 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
 
+
+const ACTIVE_STATUSES = ["Pending", "Confirmed"];
+
+const getDateRange = (date) => {
+    const selectedDate = date ? new Date(`${date}T00:00:00`) : new Date();
+
+    if (Number.isNaN(selectedDate.getTime())) {
+        return null;
+    }
+
+    const start = new Date(selectedDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(selectedDate);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
+};
+
 export const getAllTablesService = async ({
     page,
     limit,
-    search
+    search,
+    date
 }) => {
     const skip = (page - 1) * limit;
+
     const where = search
         ? {
             Name: {
@@ -28,8 +49,44 @@ export const getAllTablesService = async ({
         }
     });
 
+    const dateRange = getDateRange(date);
+
+    let reservations = [];
+
+    if (dateRange) {
+        reservations = await prisma.reservations.findMany({
+            where: {
+                ReservationDate: {
+                    gte: dateRange.start,
+                    lte: dateRange.end
+                },
+                Status: {
+                    in: ACTIVE_STATUSES
+                }
+            },
+            select: {
+                ID: true,
+                TableID: true
+            }
+        });
+    }
+
+    const reservedMap = new Map(
+        reservations.map((reservation) => [
+            reservation.TableID,
+            reservation.ID
+        ])
+    );
+
     return {
-        tables: data,
+        tables: data.map((table) => ({
+            ...table,
+            status: reservedMap.has(table.ID)
+                ? "reserved"
+                : "available",
+            reservationId: reservedMap.get(table.ID) || null
+        })),
+
         pagination: {
             page,
             limit,

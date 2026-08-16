@@ -1,20 +1,6 @@
 import axiosInstance from "./axious";
 import { USER_ENDPOINTS, MENU_ENDPOINTS, RESERVATION_ENDPOINTS } from "../constants/api";
-
-// GAP: there is no dedicated dashboard/summary endpoint on the backend
-// (no GET /dashboard route exists anywhere in server/src/routes). The
-// stats below are composed client-side from the existing admin-only
-// endpoints (GET /users, GET /menus, GET /reservations). This means:
-//  - "+12% from last month" / "3 updated this week" style captions have
-//    no historical data to compute from, so they are omitted rather than
-//    invented.
-//  - "Stock Alerts" cannot be implemented at all: the Ingredients model
-//    in prisma/schema.prisma has no stock/quantity/threshold field
-//    whatsoever (Ingredients is just {ID, Name}). This would need a real
-//    schema change (e.g. a Stock/StockLevel table) plus a backend
-//    endpoint before this card can show real data.
-//  - "Performance Reports" (Download Report) has no backend endpoint to
-//    generate or fetch a report from.
+import { mapStatus } from "./reservation.service";
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
@@ -42,12 +28,16 @@ export async function getSummaryStats() {
     todaysReservations: todaysReservations.length,
     todaysReservationsCaption:
       pendingToday > 0 ? `${pendingToday} pending confirmation` : null,
+    // Reuses the pagination metadata from the same reservations request
+    // above (no extra network call) so the dashboard can decide whether
+    // enough reservations exist to enable the report download.
+    totalReservations: reservationsRes.data.data.pagination?.totalData ?? 0,
   };
 }
 
 export async function getRecentReservations() {
   const { data } = await axiosInstance.get(RESERVATION_ENDPOINTS.list, {
-    params: { limit: 3 },
+    params: { limit: 5 },
   });
   return (data.data.reservations || []).map((r) => ({
     id: r.ID,
@@ -59,12 +49,6 @@ export async function getRecentReservations() {
       year: "numeric",
     }),
     time: r.ReservationTime,
-    status: r.Status?.toLowerCase(),
+    status: mapStatus(r.Status),
   }));
-}
-
-// GAP: see note above - no backend data source for ingredient stock
-// exists, so this always returns an empty list rather than fake data.
-export async function getStockAlerts() {
-  return [];
 }

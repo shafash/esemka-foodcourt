@@ -5,6 +5,22 @@
   margin-bottom: var(--space-5);
 }
 
+@media (max-width: 767px) {
+  .ingredient-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .ingredient-search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .ingredient-filter {
+    flex: 1 1 auto;
+    width: auto;
+  }
+}
+
 .ingredient-search {
   flex: 0 1 450px;
   min-width: 200px;
@@ -67,6 +83,11 @@
 
 .ingredient-drawer__header {
   margin-bottom: var(--space-5);
+}
+
+.modal--drawer {
+  width: 450px;
+  max-width: 90vw;
 }
 
 .ingredient-drawer__eyebrow {

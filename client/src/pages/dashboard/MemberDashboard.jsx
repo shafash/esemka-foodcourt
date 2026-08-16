@@ -1,11 +1,12 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiPlus, FiClock, FiGrid, FiCheckSquare, FiUsers } from "react-icons/fi";
+import { FiPlus, FiClock, FiGrid, FiCheckSquare, FiUsers, FiAlertTriangle } from "react-icons/fi";
 
 import Header from "../../components/layout/Header";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
+import EmptyState from "../../components/common/EmptyState";
 import FloorPlan from "../../components/reservation/FloorPlan";
 
 import useFetch from "../../hooks/useFetch";
@@ -16,7 +17,12 @@ import "../../styles/reservation.css";
 function MemberDashboard() {
   const navigate = useNavigate();
 
-  const { data: tables, isLoading } = useFetch(getTables);
+  // getTables() with no date defaults to "today" on the backend. This must
+  // be a stable function reference (useCallback with an empty dep array) -
+  // useFetch's effect depends on it, and a new arrow function on every
+  // render would re-trigger the fetch forever.
+  const fetchTables = useCallback(() => getTables(), []);
+  const { data: tables, isLoading, error, refetch } = useFetch(fetchTables);
 
   const stats = useMemo(() => {
     const list = tables || [];
@@ -38,6 +44,14 @@ function MemberDashboard() {
         <Card noPadding title="Today's table availability">
           {isLoading ? (
             <Loader centered label="Memuat denah meja..." />
+          ) : error ? (
+            <EmptyState
+              icon={<FiAlertTriangle size={22} />}
+              title="Unable to load availability"
+              description={error}
+              actionLabel="Retry"
+              onAction={refetch}
+            />
           ) : (
             <FloorPlan tables={tables || []} disableReserved />
           )}

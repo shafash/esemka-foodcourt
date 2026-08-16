@@ -1,8 +1,10 @@
 import { useCallback, useState } from "react";
+import { FiAlertTriangle } from "react-icons/fi";
 
 import Header from "../../components/layout/Header";
 import Card from "../../components/common/Card";
 import Loader from "../../components/common/Loader";
+import EmptyState from "../../components/common/EmptyState";
 import FloorPlan from "../../components/reservation/FloorPlan";
 import ReservationDetail from "./ReservationDetail";
 
@@ -12,12 +14,20 @@ import {
   getReservationByTable,
   confirmReservation,
   cancelReservation,
+  completeReservation,
 } from "../../services/reservation.service";
 
 import "../../styles/reservation.css";
 
 function ReservationList() {
-  const { data: tables, isLoading: isTablesLoading, refetch: refetchTables } = useFetch(getTables);
+  // getTables() with no date defaults to "today" on the backend.
+  const fetchTables = useCallback(() => getTables(), []);
+  const {
+    data: tables,
+    isLoading: isTablesLoading,
+    error: tablesError,
+    refetch: refetchTables,
+  } = useFetch(fetchTables);
 
   const [selectedTable, setSelectedTable] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -54,6 +64,17 @@ function ReservationList() {
     }
   };
 
+  const handleComplete = async (target) => {
+    setIsUpdating(true);
+    try {
+      await completeReservation(target.id);
+      await Promise.all([refetchDetail(), refetchTables()]);
+      setSelectedTable(null);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <>
       <Header title="Reservation" />
@@ -62,6 +83,14 @@ function ReservationList() {
         <Card noPadding className="reserve-page__floor">
           {isTablesLoading ? (
             <Loader centered label="Memuat denah meja..." />
+          ) : tablesError ? (
+            <EmptyState
+              icon={<FiAlertTriangle size={22} />}
+              title="Unable to load availability"
+              description={tablesError}
+              actionLabel="Retry"
+              onAction={refetchTables}
+            />
           ) : (
             <FloorPlan
               tables={tables || []}
@@ -72,12 +101,21 @@ function ReservationList() {
           )}
         </Card>
 
+        <div
+          className={`reservation-detail__backdrop${
+            selectedTable ? " reservation-detail__backdrop--visible" : ""
+          }`}
+          onClick={() => setSelectedTable(null)}
+        />
+
         <ReservationDetail
           table={selectedTable}
           reservation={reservation}
           isLoading={isDetailLoading}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
+          onComplete={handleComplete}
+          onClose={() => setSelectedTable(null)}
           isUpdating={isUpdating}
         />
       </div>

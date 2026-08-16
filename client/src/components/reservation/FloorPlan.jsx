@@ -13,33 +13,35 @@ function FloorPlan({ tables = [], selectedId, onSelect, disableReserved = true }
         </span>
       </div>
 
-      <div className="floor-plan__grid">
-        {tables.map((table) => {
-          const isReserved = table.status === "reserved";
-          const isSelected = selectedId === table.id;
+      <div className="floor-plan__grid-scroll">
+        <div className="floor-plan__grid">
+          {tables.map((table) => {
+            const isReserved = table.status === "reserved";
+            const isSelected = selectedId === table.id;
 
-          const classes = [
-            "floor-plan__table",
-            isReserved ? "floor-plan__table--reserved" : "",
-            isSelected ? "floor-plan__table--selected" : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
+            const classes = [
+              "floor-plan__table",
+              isReserved ? "floor-plan__table--reserved" : "",
+              isSelected ? "floor-plan__table--selected" : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
 
-          return (
-            <button
-              key={table.id}
-              type="button"
-              className={classes}
-              disabled={disableReserved && isReserved}
-              onClick={() => onSelect?.(table)}
-              aria-label={`Meja ${table.id}${isReserved ? " (sudah dipesan)" : ""}`}
-              aria-pressed={isSelected}
-            >
-              {table.id}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={table.id}
+                type="button"
+                className={classes}
+                disabled={disableReserved && isReserved}
+                onClick={() => onSelect?.(table)}
+                aria-label={`Meja ${table.id}${isReserved ? " (sudah dipesan)" : ""}`}
+                aria-pressed={isSelected}
+              >
+                {table.id}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

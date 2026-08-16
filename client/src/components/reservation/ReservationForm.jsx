@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiMinus, FiPlus, FiTrash2, FiAlertTriangle } from "react-icons/fi";
 
 import Input from "../common/Input";
 import Select from "../common/Select";
@@ -9,6 +9,7 @@ import Button from "../common/Button";
 import SearchBar from "../common/SearchBar";
 import Loader from "../common/Loader";
 import Card from "../common/Card";
+import EmptyState from "../common/EmptyState";
 import FloorPlan from "./FloorPlan";
 
 import useAuth from "../../hooks/useAuth";
@@ -25,7 +26,17 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: tables, isLoading: isTablesLoading } = useFetch(getTables);
+  // getTables() with no date defaults to "today" on the backend. Must stay a
+  // stable reference (useCallback, empty deps) - useFetch's effect depends
+  // on this function identity, so a fresh arrow function every render would
+  // re-trigger the fetch in an infinite loop.
+  const fetchTables = useCallback(() => getTables(), []);
+  const {
+    data: tables,
+    isLoading: isTablesLoading,
+    error: tablesError,
+    refetch: refetchTables,
+  } = useFetch(fetchTables);
 
   const [selectedTable, setSelectedTable] = useState(null);
   const [useAccountInfo, setUseAccountInfo] = useState(false);
@@ -49,7 +60,10 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
     },
   });
 
-  const fetchMenus = () => getMenus({ search: menuSearch, page: 1, pageSize: 6 });
+  const fetchMenus = useCallback(
+    () => getMenus({ search: menuSearch, page: 1, pageSize: 6 }),
+    [menuSearch]
+  );
   const { data: menuData } = useFetch(fetchMenus);
   const { data: categoryOptions } = useFetch(getCategoryOptions);
 
@@ -200,6 +214,14 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
         </div>
         {isTablesLoading ? (
           <Loader centered label="Memuat denah meja..." />
+        ) : tablesError ? (
+          <EmptyState
+            icon={<FiAlertTriangle size={22} />}
+            title="Unable to load availability"
+            description={tablesError}
+            actionLabel="Retry"
+            onAction={refetchTables}
+          />
         ) : (
           <FloorPlan
             tables={tables || []}

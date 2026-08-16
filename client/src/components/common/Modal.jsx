@@ -20,7 +20,7 @@ function Modal({ isOpen, onClose, title, children, footer, variant }) {
   if (!isOpen) return null;
 
   const overlayClass = `modal-overlay${variant === "drawer" ? " modal-overlay--drawer" : ""}`;
-  const modalClass = `modal${variant === "drawer" ? " modal--drawer" : ""}`;
+  const modalClass = `modal${variant ? ` modal--${variant}` : ""}`;
 
   return (
     <div className={overlayClass} onClick={onClose}>

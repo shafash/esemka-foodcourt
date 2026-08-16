@@ -10,32 +10,13 @@ export const getAllReservationsService = async ({
     const skip = (page - 1) * limit;
 
     const where = {
-        UserID: userId,
-
+        ...(userId && { UserID: userId }),
         ...(search && {
             OR: [
-                {
-                    CustomerFirstName: {
-                        contains: search
-                    }
-                },
-                {
-                    CustomerLastName: {
-                        contains: search
-                    }
-                },
-                {
-                    Table: {
-                        Name: {
-                            contains: search
-                        }
-                    }
-                },
-                {
-                    Status: {
-                        contains: search
-                    }
-                }
+                { CustomerFirstName: { contains: search } },
+                { CustomerLastName: { contains: search } },
+                { Table: { Name: { contains: search } } },
+                { Status: { contains: search } }
             ]
         })
     };
@@ -57,6 +38,17 @@ export const getAllReservationsService = async ({
                     ID: true,
                     Name: true
                 }
+            },
+            ReservationDetails: {
+                include: {
+                    Menu: {
+                        select: {
+                            ID: true,
+                            Name: true,
+                            Price: true
+                        }
+                    }
+                }
             }
         }
     });
@@ -77,7 +69,15 @@ export const getAllReservationsService = async ({
             Table: {
                 ID: item.Table.ID,
                 Name: item.Table.Name
-            }
+            },
+
+            ReservationDetails: item.ReservationDetails.map((detail) => ({
+                MenuID: detail.Menu.ID,
+                MenuName: detail.Menu.Name,
+                Quantity: detail.Qty,
+                Price: Number(detail.Menu.Price),
+                Subtotal: Number(detail.Qty) * Number(detail.Menu.Price)
+            }))
         })),
 
         pagination: {
@@ -184,6 +184,23 @@ export const updateReservationService = async (
         );
     }
 
+    const allowedTransitions = {
+        Pending: ["Confirmed", "Cancelled"],
+        Confirmed: ["Completed", "Cancelled"],
+        Completed: [],
+        Cancelled: []
+    };
+
+    const allowedStatuses =
+        allowedTransitions[reservation.Status] || [];
+
+    if (!allowedStatuses.includes(payload.Status)) {
+        throw new ApiError(
+            400,
+            `Cannot change reservation status from ${reservation.Status} to ${payload.Status}`
+        );
+    }
+
     const updated = await prisma.reservations.update({
         where: {
             ID: id
@@ -198,7 +215,8 @@ export const updateReservationService = async (
                 select: {
                     ID: true,
                     FirstName: true,
-                    LastName: true
+                    LastName: true,
+                    Email: true
                 }
             },
 
@@ -207,26 +225,53 @@ export const updateReservationService = async (
                     ID: true,
                     Name: true
                 }
+            },
+
+            ReservationDetails: {
+                include: {
+                    Menu: {
+                        select: {
+                            ID: true,
+                            Name: true,
+                            Price: true
+                        }
+                    }
+                }
             }
         }
     });
 
     return {
         ID: updated.ID,
+        CustomerFirstName: updated.CustomerFirstName,
+        CustomerLastName: updated.CustomerLastName,
+        CustomerEmail: updated.CustomerEmail,
+        CustomerPhoneNumber: updated.CustomerPhoneNumber,
         ReservationDate: updated.ReservationDate,
         ReservationTime: updated.ReservationTime,
         NumberOfPeople: updated.NumberOfPeople,
         Status: updated.Status,
+        CreatedAt: updated.CreatedAt,
 
         User: {
             ID: updated.User.ID,
-            FullName: `${updated.User.FirstName} ${updated.User.LastName}`
+            FullName: `${updated.User.FirstName} ${updated.User.LastName}`,
+            Email: updated.User.Email
         },
 
         Table: {
             ID: updated.Table.ID,
             Name: updated.Table.Name
-        }
+        },
+
+        ReservationDetails: updated.ReservationDetails.map(item => ({
+            ID: item.ID,
+            MenuID: item.Menu.ID,
+            MenuName: item.Menu.Name,
+            Quantity: item.Qty,
+            Price: Number(item.Menu.Price),
+            Subtotal: Number(item.Qty) * Number(item.Menu.Price)
+        }))
     };
 };
 

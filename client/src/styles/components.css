@@ -253,6 +253,21 @@
   padding: var(--space-5) var(--space-5) 0;
 }
 
+@media (max-width: 767px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .card--no-padding .card__header {
+    padding: var(--space-4) var(--space-4) 0;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+}
+
 .card__header {
   display: flex;
   align-items: flex-start;
@@ -328,6 +343,164 @@
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
+}
+
+/* ===== Responsive data card list =====
+   Table -> Card transformation for mobile (<=767px). Desktop/tablet keep
+   the existing .table-wrapper table; mobile hides it and shows this card
+   list instead. Both are rendered with the exact same data/handlers -
+   only the presentation differs, toggled purely via CSS so no extra
+   viewport-detection JS is needed. Visual language (surface color,
+   border, radius, spacing, badges) matches the existing Card/Table/Badge
+   components. */
+.data-card-list {
+  display: none;
+}
+
+.data-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.data-card + .data-card {
+  margin-top: var(--space-3);
+}
+
+.data-card--selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-muted-bg);
+}
+
+.data-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.data-card__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.data-card__checkbox {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.data-card__thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted-bg);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+.data-card__title-group {
+  min-width: 0;
+}
+
+.data-card__title {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-card__id {
+  display: block;
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.data-card__meta {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.data-card__meta-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-caption);
+  color: var(--color-muted);
+  min-width: 0;
+}
+
+.data-card__meta-row svg {
+  flex-shrink: 0;
+}
+
+.data-card__meta-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-card__meta-row strong {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.data-card__footer {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.data-card__footer--stretch .button {
+  flex: 1;
+}
+
+.skeleton-table-rows {
+  display: block;
+}
+
+.skeleton-card-list {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (max-width: 767px) {
+  .table-wrapper {
+    display: none;
+  }
+
+  .data-card-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skeleton-table-rows {
+    display: none;
+  }
+
+  .skeleton-card-list {
+    display: flex;
+  }
 }
 
 .table {
@@ -763,6 +936,24 @@
 .modal__body {
   padding: var(--space-6);
   overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.modal--lg {
+  max-width: 900px;
+}
+
+@media (max-width: 767px) {
+  /* All Reservations (and any other .modal--lg) becomes a near-full-screen
+     mobile sheet instead of a shrunk-down desktop modal, using dvh so
+     mobile browser toolbars don't clip content. */
+  .modal.modal--lg {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: calc(100dvh - (var(--space-4) * 2));
+  }
 }
 
 .modal-overlay--drawer {
@@ -793,6 +984,43 @@
   }
 }
 
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: var(--space-4);
+  }
+
+  /* Drawer-variant modals (e.g. Ingredient Drawer) become a bottom sheet
+     on mobile instead of a fixed right-side panel. Double-class selectors
+     ([.modal-overlay.modal-overlay--drawer] / [.modal.modal--drawer]) are
+     used so this reliably wins over the page-specific .modal--drawer width
+     override declared in ingredient.css, regardless of CSS bundle order. */
+  .modal-overlay.modal-overlay--drawer {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .modal.modal--drawer {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 85vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: drawer-slide-up-mobile var(--transition-base);
+  }
+
+  @keyframes drawer-slide-up-mobile {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
 .modal__footer {
   display: flex;
   align-items: center;
@@ -801,4 +1029,3 @@
   padding: var(--space-5) var(--space-6);
   border-top: 1px solid var(--color-border);
 }
-

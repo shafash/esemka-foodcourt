@@ -1,4 +1,4 @@
-import { FiInfo } from "react-icons/fi";
+import { FiInfo, FiX } from "react-icons/fi";
 
 import Button from "../../components/common/Button";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -6,17 +6,14 @@ import Loader from "../../components/common/Loader";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 
-/**
- * Reusable "table detail" side panel used by the admin Reservation
- * Management page. Shows the reservation tied to the currently selected
- * table on the floor plan, following the RESERVATION - VIEWER.png reference.
- */
 function ReservationDetail({
   table,
   reservation,
   isLoading,
   onConfirm,
   onCancel,
+  onComplete,
+  onClose,
   isUpdating = false,
 }) {
   if (!table) {
@@ -35,7 +32,7 @@ function ReservationDetail({
 
   if (isLoading) {
     return (
-      <div className="reservation-detail">
+      <div className="reservation-detail reservation-detail--open">
         <Loader centered label="Memuat detail reservasi..." />
       </div>
     );
@@ -43,11 +40,19 @@ function ReservationDetail({
 
   if (!reservation) {
     return (
-      <div className="reservation-detail">
+      <div className="reservation-detail reservation-detail--open">
         <div className="reservation-detail__header">
           <div>
             <h3 className="reservation-detail__title">Table {table.id}</h3>
           </div>
+          <button
+            type="button"
+            className="reservation-detail__close"
+            onClick={onClose}
+            aria-label="Tutup detail reservasi"
+          >
+            <FiX size={18} />
+          </button>
         </div>
         <div className="reservation-detail__empty">
           <span className="reservation-detail__empty-icon">
@@ -61,13 +66,21 @@ function ReservationDetail({
   }
 
   return (
-    <div className="reservation-detail">
+    <div className="reservation-detail reservation-detail--open">
       <div className="reservation-detail__header">
         <div>
           <h3 className="reservation-detail__title">Table {table.id}</h3>
           <StatusBadge status={reservation.status} />
         </div>
         <span className="reservation-detail__id">Reservation ID #{reservation.id}</span>
+        <button
+          type="button"
+          className="reservation-detail__close"
+          onClick={onClose}
+          aria-label="Tutup detail reservasi"
+        >
+          <FiX size={18} />
+        </button>
       </div>
 
       <div className="reservation-detail__row">
@@ -132,6 +145,9 @@ function ReservationDetail({
         <div className="reservation-detail__actions">
           <Button variant="secondary" onClick={() => onCancel?.(reservation)} disabled={isUpdating}>
             Cancel Reservation
+          </Button>
+          <Button variant="primary" onClick={() => onComplete?.(reservation)} disabled={isUpdating}>
+            Complete Reservation
           </Button>
         </div>
       ) : null}

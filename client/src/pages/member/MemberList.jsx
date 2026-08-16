@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiPlus, FiDownload, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiDownload, FiEdit2, FiTrash2, FiMail, FiPhone, FiCalendar } from "react-icons/fi";
 
 import Header from "../../components/layout/Header";
 import Card from "../../components/common/Card";
@@ -155,7 +155,14 @@ function MemberList() {
         </div>
 
         {isLoading ? (
-          <LoadingSkeleton variant="table-row" count={6} />
+          <>
+            <div className="skeleton-table-rows">
+              <LoadingSkeleton variant="table-row" count={6} />
+            </div>
+            <div className="skeleton-card-list">
+              <LoadingSkeleton variant="card" count={4} />
+            </div>
+          </>
         ) : members.length > 0 ? (
           <>
             <Table
@@ -168,6 +175,58 @@ function MemberList() {
               onRowClick={(row) => toggleSelectRow(row.id)}
               getRowId={(row) => row.id}
             />
+
+            <div className="data-card-list">
+              {members.map((member) => {
+                const isSelected = selectedIds.includes(member.id);
+                return (
+                  <div
+                    key={member.id}
+                    className={`data-card${isSelected ? " data-card--selected" : ""}`}
+                    onClick={() => toggleSelectRow(member.id)}
+                  >
+                    <div className="data-card__top">
+                      <div className="data-card__heading">
+                        <input
+                          type="checkbox"
+                          className="data-card__checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectRow(member.id)}
+                          onClick={(event) => event.stopPropagation()}
+                          aria-label={`Pilih ${member.firstName} ${member.lastName}`}
+                        />
+                        <div className="data-card__title-group">
+                          <p className="data-card__title">
+                            {member.firstName} {member.lastName}
+                          </p>
+                          <span className="data-card__id">ID #{member.id}</span>
+                        </div>
+                      </div>
+                      {member.reservationCount > 0 && (
+                        <span className="badge badge--secondary">
+                          {member.reservationCount} reservasi
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="data-card__meta">
+                      <div className="data-card__meta-row">
+                        <FiMail size={14} />
+                        <span>{member.email}</span>
+                      </div>
+                      <div className="data-card__meta-row">
+                        <FiPhone size={14} />
+                        <span>{member.phone || "-"}</span>
+                      </div>
+                      <div className="data-card__meta-row">
+                        <FiCalendar size={14} />
+                        <span>Joined {formatDate(member.memberSince)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             <Pagination
               currentPage={currentPage}
               pageSize={PAGE_SIZE}

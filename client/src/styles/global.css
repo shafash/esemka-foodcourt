@@ -19,6 +19,7 @@ body {
   background-color: var(--color-surface-alt);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 #root {
@@ -99,7 +100,6 @@ textarea:focus-visible,
   outline-offset: 2px;
 }
 
-/* ===== Utilities ===== */
 .text-muted {
   color: var(--color-muted);
 }

@@ -18,7 +18,7 @@ const STATUS_MAP_REVERSE = {
 };
 const ACTIVE_STATUSES = ["Pending", "Confirmed"];
 
-function mapStatus(status) {
+export function mapStatus(status) {
   return STATUS_MAP[status] || status?.toLowerCase();
 }
 
@@ -38,6 +38,8 @@ function computeTotals(items) {
 }
 
 function mapReservationSummary(r) {
+  const items = mapDetailItems(r.ReservationDetails);
+
   return {
     id: r.ID,
     tableId: r.Table?.Name,
@@ -50,6 +52,10 @@ function mapReservationSummary(r) {
     guests: r.NumberOfPeople,
     status: mapStatus(r.Status),
     createdAt: r.CreatedAt,
+
+    items,
+
+    ...computeTotals(items),
   };
 }
 
@@ -71,44 +77,56 @@ function mapReservationDetail(r) {
   };
 }
 
-// GAP: there is no backend endpoint that lets a MEMBER see which tables
-// are currently reserved - GET /reservations is admin-only (role 1), and
-// GET /reservations/me only returns the current user's own reservations.
-// For an admin, we can cross-reference GET /reservations to mark tables
-// as reserved/available. For a member, we fall back to showing every
-// table as "available"; a genuine conflict is still caught server-side
-// (createReservation responds 409 "Table is already reserved") and
-// surfaced as a submit error. A real fix needs either a public
-// GET /tables/availability endpoint or a role(1,2) reservations-by-date
-// endpoint.
-export async function getTables() {
-  const { data: tablesRes } = await axiosInstance.get(TABLE_ENDPOINTS.list, {
-    params: { limit: 100 },
-  });
-  const tables = tablesRes.data.tables || [];
-
-  let activeReservations = [];
-  try {
-    const { data: resRes } = await axiosInstance.get(RESERVATION_ENDPOINTS.list, {
-      params: { limit: 500 },
-    });
-    activeReservations = (resRes.data.reservations || []).filter((r) =>
-      ACTIVE_STATUSES.includes(r.Status)
+export async function getTables(date = "") {
+    const { data: tablesRes } = await axiosInstance.get(
+        TABLE_ENDPOINTS.list,
+        {
+            params: {
+                limit: 100,
+                date: date || undefined,
+            },
+        }
     );
-  } catch {
-    // 403 for member role - expected, see GAP note above.
-    activeReservations = [];
+
+    const tables = tablesRes.data.tables || [];
+
+    return tables.map((table) => ({
+        id: table.Name,
+        tableDbId: table.ID,
+        status: table.status || "available",
+        reservationId: table.reservationId || null,
+    }));
+}
+
+export async function getAdminReservations({ page = 1, limit = 10 } = {}) {
+  const { data } = await axiosInstance.get(RESERVATION_ENDPOINTS.list, {
+    params: { page, limit },
+  });
+
+  return {
+    data: (data.data.reservations || []).map(mapReservationSummary),
+    pagination: data.data.pagination || {
+      page,
+      limit,
+      totalData: 0,
+      totalPages: 0,
+    },
+  };
+}
+
+export async function getAllReservationsForReport() {
+  const limit = 100;
+  const first = await getAdminReservations({ page: 1, limit });
+
+  const all = [...first.data];
+  const totalPages = first.pagination.totalPages || 1;
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const next = await getAdminReservations({ page, limit });
+    all.push(...next.data);
   }
 
-  return tables.map((table) => {
-    const reservation = activeReservations.find((r) => r.Table.ID === table.ID);
-    return {
-      id: table.Name,
-      tableDbId: table.ID,
-      status: reservation ? "reserved" : "available",
-      reservationId: reservation?.ID || null,
-    };
-  });
+  return all;
 }
 
 export async function getReservationById(id) {
@@ -116,11 +134,6 @@ export async function getReservationById(id) {
   return mapReservationDetail(data.data);
 }
 
-// There is no "get reservation by table" endpoint on the backend. The
-// admin Reservation page already knows the reservationId for a selected
-// table from getTables() above, so this simply forwards to
-// getReservationById using that id (or returns null if the table has no
-// active reservation).
 export async function getReservationByTable(table) {
   if (!table?.reservationId) return null;
   return getReservationById(table.reservationId);
@@ -161,16 +174,11 @@ export async function cancelReservation(id) {
   return updateReservationStatus(id, "canceled");
 }
 
-// Member-facing cancel (uses the member-scoped /reservations/me/:id/cancel
-// endpoint, which also enforces the "only Pending can be cancelled" rule
-// server-side).
 export async function cancelMyReservation(id) {
   const { data } = await axiosInstance.put(RESERVATION_ENDPOINTS.meCancel(id));
   return mapReservationSummary(data.data);
 }
 
-// Admin-only status transition (Confirmed/Completed/Cancelled), used from
-// the admin Reservation detail panel.
 export async function updateReservationStatus(id, status) {
   const { data } = await axiosInstance.put(RESERVATION_ENDPOINTS.update(id), {
     Status: STATUS_MAP_REVERSE[status] || status,
@@ -180,6 +188,10 @@ export async function updateReservationStatus(id, status) {
 
 export async function confirmReservation(id) {
   return updateReservationStatus(id, "confirmed");
+}
+
+export async function completeReservation(id) {
+  return updateReservationStatus(id, "completed");
 }
 
 export const RESERVATION_FEE_AMOUNT = RESERVATION_FEE;
