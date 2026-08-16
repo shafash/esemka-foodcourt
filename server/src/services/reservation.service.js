@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
 import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
+import { Prisma } from "@prisma/client";
 
 export const getAllReservationsService = async ({
     userId,
@@ -394,27 +395,24 @@ export const createReservationService = async (
         );
     }
 
-    const existingReservation =
-        await prisma.reservations.findFirst({
-            where: {
-                TableID,
-                ReservationDate,
-                ReservationTime,
-                Status: {
-                    in: ACTIVE_RESERVATION_STATUSES
-                }
-            }
-        });
-
-    if (existingReservation) {
-        throw new ApiError(
-            409,
-            "Table is already reserved"
-        );
-    }
-
     const reservation = await prisma.$transaction(
         async (tx) => {
+            const lockedConflicts = await tx.$queryRaw`
+                SELECT ID FROM Reservations
+                WHERE TableID = ${TableID}
+                  AND ReservationDate = ${ReservationDate}
+                  AND ReservationTime = ${ReservationTime}
+                  AND Status IN (${Prisma.join(ACTIVE_RESERVATION_STATUSES)})
+                FOR UPDATE
+            `;
+
+            if (lockedConflicts.length > 0) {
+                throw new ApiError(
+                    409,
+                    "Table is already reserved"
+                );
+            }
+
             const createdReservation =
                 await tx.reservations.create({
                     data: {

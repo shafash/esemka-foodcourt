@@ -52,6 +52,27 @@ async function main() {
     skipDuplicates: true,
   });
 
+  await prisma.tables.createMany({
+    data: [
+      { Name: "01" },
+      { Name: "02" },
+      { Name: "03" },
+      { Name: "04" },
+      { Name: "05" },
+      { Name: "06" },
+      { Name: "07" },
+      { Name: "09" },
+      { Name: "10" },
+      { Name: "11" },
+      { Name: "12" },
+      { Name: "13" },
+      { Name: "14" },
+      { Name: "15" },
+      { Name: "16" },
+    ],
+    skipDuplicates: true,
+  });
+
   console.log("Database seeded successfully!");
 }
 

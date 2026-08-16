@@ -105,6 +105,8 @@ model Reservations {
   User               Users                @relation(fields: [UserID], references: [ID])
   Table              Tables               @relation(fields: [TableID], references: [ID])
   ReservationDetails ReservationDetails[]
+
+  @@index([TableID, ReservationDate, ReservationTime])
 }
 
 model ReservationDetails {
