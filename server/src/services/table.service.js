@@ -83,12 +83,12 @@ export const getAllTablesService = async ({
         });
     }
 
-    const reservedMap = new Map(
-        reservations.map((reservation) => [
-            reservation.TableID,
-            reservation.ID
-        ])
-    );
+    const reservedMap = new Map();
+    for (const reservation of reservations) {
+        if (!reservedMap.has(reservation.TableID)) {
+            reservedMap.set(reservation.TableID, reservation.ID);
+        }
+    }
 
     return {
         tables: data.map((table) => ({

@@ -171,7 +171,7 @@ function ReservationHistory() {
             </div>
 
             <div className="history-detail__actions">
-              {["pending", "confirmed"].includes(selected.status) && (
+              {selected.status === "pending" && (
                 <Button variant="danger" onClick={handleCancel} disabled={isCanceling}>
                   {isCanceling ? "Canceling..." : "Cancel Reservation"}
                 </Button>

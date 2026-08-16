@@ -136,7 +136,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       tableId: selectedTable.id,
       tableDbId: selectedTable.tableDbId,
       memberId: user?.id,
-      useAccountData: false,
+      useAccountData: useAccountInfo,
       date: values.date,
       guests: Number(values.guests),
       firstName: values.firstName,

@@ -147,6 +147,11 @@ export const getReservationByIdService = async (
         NumberOfPeople: reservation.NumberOfPeople,
         Status: reservation.Status,
 
+        CustomerFirstName: reservation.CustomerFirstName,
+        CustomerLastName: reservation.CustomerLastName,
+        CustomerEmail: reservation.CustomerEmail,
+        CustomerPhoneNumber: reservation.CustomerPhoneNumber,
+
         User: {
             ID: reservation.User.ID,
             FullName: `${reservation.User.FirstName} ${reservation.User.LastName}`,
@@ -384,7 +389,8 @@ export const createReservationService = async (
         where: {
             ID: {
                 in: menuIds
-            }
+            },
+            DeletedAt: null
         }
     });
 
