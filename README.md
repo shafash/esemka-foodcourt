@@ -36,7 +36,7 @@ esemka-foodcourt/
 └── .gitignore
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -112,8 +112,8 @@ Create `server/.env`:
 ```env
 DATABASE_URL="mysql://root:123@localhost:3306/esemka_foodcourt"
 PORT=5000
-JWT_SECRET=esemka_foodcourt_secret_key
-JWT_EXPIRES_IN=7d
+JWT_SECRET=
+JWT_EXPIRES_IN=
 ```
 
 > Update `DATABASE_URL` to match your local MySQL configuration.

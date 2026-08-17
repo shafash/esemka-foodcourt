@@ -21,11 +21,13 @@ export const getAllTables = async (
         const limit = Number(req.query.limit) || 10;
         const search = req.query.search?.trim() || "";
         const date = req.query.date || "";
+        const time = req.query.time || "";
         const result = await getAllTablesService({
             page,
             limit,
             search,
-            date
+            date,
+            time
         });
 
         return successResponse(

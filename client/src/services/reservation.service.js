@@ -77,25 +77,38 @@ function mapReservationDetail(r) {
   };
 }
 
-export async function getTables(date = "") {
-    const { data: tablesRes } = await axiosInstance.get(
-        TABLE_ENDPOINTS.list,
-        {
-            params: {
-                limit: 100,
-                date: date || undefined,
-            },
-        }
-    );
+export async function getTables(date = "", time = "") {
+  const params = {
+    limit: 100,
+  };
 
-    const tables = tablesRes.data.tables || [];
+  if (date) {
+    params.date = date;
+  }
 
-    return tables.map((table) => ({
-        id: table.Name,
-        tableDbId: table.ID,
-        status: table.status || "available",
-        reservationId: table.reservationId || null,
-    }));
+  if (time) {
+    params.time = time;
+  }
+
+  const { data: tablesRes } = await axiosInstance.get(
+    TABLE_ENDPOINTS.list,
+    {
+      params,
+    }
+  );
+
+  const tables = tablesRes?.data?.tables || [];
+
+  return tables.map((table) => ({
+    id: table.Name,
+    tableDbId: table.ID,
+    status:
+      table.status === "reserved"
+        ? "reserved"
+        : "available",
+    reservationId:
+      table.reservationId || null,
+  }));
 }
 
 export async function getAdminReservations({ page = 1, limit = 10 } = {}) {

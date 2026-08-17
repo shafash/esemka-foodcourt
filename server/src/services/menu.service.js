@@ -236,12 +236,17 @@ export const deleteMenuService = async (id) => {
         );
     }
 
-    await prisma.menus.update({
-        where: {
-            ID: id
-        },
-        data: {
-            DeletedAt: new Date()
-        }
-    });
+    await prisma.$transaction([
+        prisma.menuIngredients.deleteMany({
+            where: {
+                MenuID: id
+            }
+        }),
+
+        prisma.menus.delete({
+            where: {
+                ID: id
+            }
+        })
+    ]);
 };

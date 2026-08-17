@@ -8,9 +8,6 @@ const MUTATING_METHODS = ["post", "put", "patch", "delete"];
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 axiosInstance.interceptors.request.use((config) => {

@@ -20,8 +20,39 @@ import {
 import "../../styles/reservation.css";
 
 function ReservationList() {
-  // getTables() with no date defaults to "today" on the backend.
-  const fetchTables = useCallback(() => getTables(), []);
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const fetchDetail = useCallback(
+    () => {
+      if (!selectedTable?.reservationId) {
+        return Promise.resolve(null);
+      }
+
+      return getReservationByTable(selectedTable);
+    },
+    [selectedTable]
+  );
+
+  const {
+    data: reservation,
+    isLoading: isDetailLoading,
+    refetch: refetchDetail,
+  } = useFetch(fetchDetail);
+
+  /*
+   * DENAH MEJA
+   *
+   * Backend akan menentukan meja mana yang reserved
+   * berdasarkan reservation aktif pada hari ini.
+   *
+   * Tidak bergantung kepada meja yang sedang dipilih.
+   */
+  const fetchTables = useCallback(
+    () => getTables(),
+    []
+  );
+
   const {
     data: tables,
     isLoading: isTablesLoading,
@@ -29,35 +60,60 @@ function ReservationList() {
     refetch: refetchTables,
   } = useFetch(fetchTables);
 
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const fetchDetail = useCallback(
-    () => (selectedTable ? getReservationByTable(selectedTable) : Promise.resolve(null)),
-    [selectedTable]
-  );
-  const { data: reservation, isLoading: isDetailLoading, refetch: refetchDetail } =
-    useFetch(fetchDetail);
-
   const handleSelectTable = (table) => {
     setSelectedTable(table);
   };
 
+  /*
+   * CONFIRM
+   *
+   * Pending -> Confirmed
+   * kemudian refresh denah.
+   *
+   * Backend akan membaca reservation yang baru menjadi
+   * Confirmed dan mengembalikan meja tersebut sebagai reserved.
+   */
   const handleConfirm = async (target) => {
+    if (!target?.id) return;
+
     setIsUpdating(true);
+
     try {
       await confirmReservation(target.id);
-      await Promise.all([refetchDetail(), refetchTables()]);
+
+      /*
+       * Ambil ulang detail reservation.
+       */
+      await refetchDetail();
+
+      /*
+       * Ambil ulang seluruh denah meja.
+       *
+       * Ini yang membuat status meja berubah:
+       * available -> reserved
+       */
+      await refetchTables();
     } finally {
       setIsUpdating(false);
     }
   };
 
   const handleCancel = async (target) => {
+    if (!target?.id) return;
+
     setIsUpdating(true);
+
     try {
       await cancelReservation(target.id);
-      await Promise.all([refetchDetail(), refetchTables()]);
+
+      /*
+       * Reservation menjadi Cancelled,
+       * sehingga backend tidak lagi memasukkannya
+       * ke ACTIVE_RESERVATION_STATUSES.
+       */
+      await refetchDetail();
+      await refetchTables();
+
       setSelectedTable(null);
     } finally {
       setIsUpdating(false);
@@ -65,10 +121,20 @@ function ReservationList() {
   };
 
   const handleComplete = async (target) => {
+    if (!target?.id) return;
+
     setIsUpdating(true);
+
     try {
       await completeReservation(target.id);
-      await Promise.all([refetchDetail(), refetchTables()]);
+
+      /*
+       * Completed bukan ACTIVE reservation,
+       * sehingga meja kembali available.
+       */
+      await refetchDetail();
+      await refetchTables();
+
       setSelectedTable(null);
     } finally {
       setIsUpdating(false);
@@ -82,7 +148,10 @@ function ReservationList() {
       <div className="reservation-page">
         <Card noPadding className="reserve-page__floor">
           {isTablesLoading ? (
-            <Loader centered label="Memuat denah meja..." />
+            <Loader
+              centered
+              label="Memuat denah meja..."
+            />
           ) : tablesError ? (
             <EmptyState
               icon={<FiAlertTriangle size={22} />}
@@ -103,7 +172,9 @@ function ReservationList() {
 
         <div
           className={`reservation-detail__backdrop${
-            selectedTable ? " reservation-detail__backdrop--visible" : ""
+            selectedTable
+              ? " reservation-detail__backdrop--visible"
+              : ""
           }`}
           onClick={() => setSelectedTable(null)}
         />

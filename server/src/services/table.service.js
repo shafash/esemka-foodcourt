@@ -2,10 +2,10 @@ import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
 import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
 
-const ACTIVE_STATUSES = ["Pending", "Confirmed"];
-
 const getDateRange = (date) => {
-    const selectedDate = date ? new Date(`${date}T00:00:00`) : new Date();
+    const selectedDate = date
+        ? new Date(`${date}T00:00:00`)
+        : new Date();
 
     if (Number.isNaN(selectedDate.getTime())) {
         return null;
@@ -17,16 +17,10 @@ const getDateRange = (date) => {
     const end = new Date(selectedDate);
     end.setHours(23, 59, 59, 999);
 
-    return { start, end };
-};
-
-const pad2 = (n) => String(n).padStart(2, "0");
-
-const getTimeSlot = (time) => {
-    if (time) return time;
-
-    const now = new Date();
-    return `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    return {
+        start,
+        end
+    };
 };
 
 export const getAllTablesService = async ({
@@ -59,51 +53,106 @@ export const getAllTablesService = async ({
         }
     });
 
-    const dateRange = getDateRange(date);
-    const timeSlot = getTimeSlot(time);
-
+    /*
+     * Kalau frontend mengirim date + time,
+     * status meja mengikuti reservation pada
+     * tanggal + waktu tersebut.
+     */
     let reservations = [];
 
-    if (dateRange) {
+    if (date && time) {
+        const dateRange = getDateRange(date);
+
+        if (dateRange) {
+            reservations = await prisma.reservations.findMany({
+                where: {
+                    ReservationDate: {
+                        gte: dateRange.start,
+                        lte: dateRange.end
+                    },
+
+                    ReservationTime: time,
+
+                    Status: {
+                        in: ACTIVE_RESERVATION_STATUSES
+                    }
+                },
+
+                select: {
+                    ID: true,
+                    TableID: true,
+                    Status: true
+                }
+            });
+        }
+    }
+
+    /*
+     * Kalau frontend tidak mengirim date/time,
+     * ambil reservation aktif terbaru untuk setiap meja.
+     *
+     * Ini yang dipakai halaman Reservation admin,
+     * supaya meja yang sudah Confirmed tetap terbaca
+     * sebagai Reserved.
+     */
+    if (!date && !time) {
         reservations = await prisma.reservations.findMany({
             where: {
-                ReservationDate: {
-                    gte: dateRange.start,
-                    lte: dateRange.end
-                },
-                ReservationTime: timeSlot,
                 Status: {
                     in: ACTIVE_RESERVATION_STATUSES
                 }
             },
+
+            orderBy: {
+                CreatedAt: "desc"
+            },
+
             select: {
                 ID: true,
-                TableID: true
+                TableID: true,
+                Status: true
             }
         });
     }
 
     const reservedMap = new Map();
+
     for (const reservation of reservations) {
+        /*
+         * Satu meja hanya perlu satu reservationId
+         * di response table.
+         */
         if (!reservedMap.has(reservation.TableID)) {
-            reservedMap.set(reservation.TableID, reservation.ID);
+            reservedMap.set(
+                reservation.TableID,
+                reservation.ID
+            );
         }
     }
 
     return {
-        tables: data.map((table) => ({
-            ...table,
-            status: reservedMap.has(table.ID)
-                ? "reserved"
-                : "available",
-            reservationId: reservedMap.get(table.ID) || null
-        })),
+        tables: data.map((table) => {
+            const reservationId =
+                reservedMap.get(table.ID) || null;
+
+            return {
+                ...table,
+
+                status: reservationId
+                    ? "reserved"
+                    : "available",
+
+                reservationId
+            };
+        }),
 
         pagination: {
             page,
             limit,
             totalData,
-            totalPages: Math.ceil(totalData / limit)
+            totalPages: Math.ceil(
+                totalData / limit
+            )
         }
     };
 };
@@ -125,38 +174,7 @@ export const getTableByIdService = async (id) => {
     return table;
 };
 
-export const getAllTables = async (
-    req,
-    res,
-    next
-) => {
-    try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const search = req.query.search?.trim() || "";
-        const date = req.query.date || "";
-        const time = req.query.time || "";
-        const result = await getAllTablesService({
-            page,
-            limit,
-            search,
-            date,
-            time
-        });
-
-        return successResponse(
-            res,
-            "Tables retrieved successfully",
-            result
-        );
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const createTableService = async (
-    payload
-) => {
+export const createTableService = async (payload) => {
     const existing = await prisma.tables.findFirst({
         where: {
             Name: {
@@ -176,7 +194,7 @@ export const createTableService = async (
         data: {
             Name: payload.Name
         }
-    }); 
+    });
 
     return table;
 };
@@ -230,9 +248,7 @@ export const updateTableService = async (
     return updated;
 };
 
-export const deleteTableService = async (
-    id
-) => {
+export const deleteTableService = async (id) => {
     const table = await prisma.tables.findUnique({
         where: {
             ID: id
