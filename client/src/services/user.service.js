@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { USER_ENDPOINTS } from "../constants/api";
 import { ROLE_MEMBER } from "../constants/roles";
 

@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { UNIT_ENDPOINTS } from "../constants/api";
 
 export async function getUnits() {

@@ -1,4 +1,4 @@
-import axiosInstance from "./axious.js";
+import axiosInstance from "./axios.js";
 import { MENU_INGREDIENT_ENDPOINTS } from "../constants/api.js";
 
 function mapRow(row) {

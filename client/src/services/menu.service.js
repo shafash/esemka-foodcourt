@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { MENU_ENDPOINTS, API_BASE_URL } from "../constants/api";
 
 const SERVER_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, "");

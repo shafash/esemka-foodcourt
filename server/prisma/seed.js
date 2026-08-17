@@ -61,6 +61,7 @@ async function main() {
       { Name: "05" },
       { Name: "06" },
       { Name: "07" },
+      { Name: "08" },
       { Name: "09" },
       { Name: "10" },
       { Name: "11" },

@@ -108,6 +108,23 @@ export const getAllTablesService = async ({
     };
 };
 
+export const getTableByIdService = async (id) => {
+    const table = await prisma.tables.findUnique({
+        where: {
+            ID: id
+        }
+    });
+
+    if (!table) {
+        throw new ApiError(
+            404,
+            "Table not found"
+        );
+    }
+
+    return table;
+};
+
 export const getAllTables = async (
     req,
     res,

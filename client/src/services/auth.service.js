@@ -1,8 +1,7 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { AUTH_ENDPOINTS } from "../constants/api";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../constants/roles";
 
-// Backend RoleID: 1 = Admin, 2 = Member (see server/prisma/seed.js + roleMiddleware usage)
 function roleIdToRoleName(roleId) {
   return roleId === 1 ? ROLE_ADMIN : ROLE_MEMBER;
 }
@@ -28,7 +27,6 @@ export async function login(credentials) {
 
   return {
     user: mapUser(data.data.user),
-    token: data.data.token,
   };
 }
 
@@ -45,12 +43,11 @@ export async function register(payload) {
 }
 
 export async function logout() {
-  // The backend uses stateless JWT and has no /auth/logout endpoint.
-  // Logging out is purely a client-side action (clearing the stored token).
+  await axiosInstance.post(AUTH_ENDPOINTS.logout);
   return true;
 }
 
-export async function getProfile() {
+export async function getMe() {
   const { data } = await axiosInstance.get(AUTH_ENDPOINTS.profile);
-  return mapUser(data.user);
+  return mapUser(data.data);
 }

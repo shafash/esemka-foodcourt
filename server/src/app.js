@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import path from "path";
-import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import routes from "./routes/index.js";
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
+import csrfMiddleware from "./middleware/csrf.middleware.js";
 
 const app = express();
 
@@ -32,6 +34,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use(
@@ -39,7 +42,7 @@ app.use(
   express.static(path.join(__dirname, "uploads"))
 );
 
-app.use("/api", routes);
+app.use("/api", csrfMiddleware, routes);
 
 app.use(notFound);
 app.use(errorHandler);

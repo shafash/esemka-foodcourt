@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { USER_ENDPOINTS, MENU_ENDPOINTS, RESERVATION_ENDPOINTS } from "../constants/api";
 import { mapStatus } from "./reservation.service";
 

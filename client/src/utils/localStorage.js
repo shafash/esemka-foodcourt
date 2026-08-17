@@ -1,4 +1,3 @@
-export const AUTH_TOKEN_KEY = "esemka_auth_token";
 export const AUTH_USER_KEY = "esemka_auth_user";
 
 export function getStorageItem(key) {

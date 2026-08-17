@@ -1,6 +1,7 @@
 import prisma from "../config/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import ApiError from "../errors/ApiError.js";
 
 export const registerService = async (payload) => {
@@ -79,8 +80,25 @@ export const loginService = async (payload) => {
         }
     );
 
+    const csrfToken = crypto.randomBytes(32).toString("hex");
+
     return {
         token,
+        csrfToken,
         user
     };
+};
+
+export const getMeService = async (userId) => {
+    const user = await prisma.users.findUnique({
+        where: {
+            ID: userId
+        },
+    });
+
+    if (!user) {
+        throw new ApiError(401, "Invalid session");
+    }
+
+    return user;
 };

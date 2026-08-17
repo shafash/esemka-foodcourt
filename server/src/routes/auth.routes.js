@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
     register,
-    login 
+    login,
+    logout,
+    getMe,
 } from "../controllers/auth.controller.js";
 import authMiddleware from "../middleware/auth.middleware.js";
 import roleMiddleware from "../middleware/role.middleware.js";
@@ -18,15 +20,16 @@ router.post(
     login 
 );
 
+router.post(
+    "/logout",
+    authMiddleware,
+    logout
+);
+
 router.get(
     "/profile",
     authMiddleware,
-    (req, res) => {
-        res.json({
-            success: true,
-            user: req.user,
-        });
-    }
+    getMe
 );
 
 router.get(

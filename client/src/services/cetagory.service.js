@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { CATEGORY_ENDPOINTS } from "../constants/api";
 
 function mapCategory(c) {

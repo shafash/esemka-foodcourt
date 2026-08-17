@@ -1,20 +1,19 @@
 import jwt from "jsonwebtoken";
+import { AUTH_COOKIE_NAME } from "../utils/cookies.js";
 
 const authMiddleware = (
     req, 
     res,
     next 
 ) => {
-    const authHeader = req.headers.authorization;
+    const token = req.cookies?.[AUTH_COOKIE_NAME];
 
-    if (!authHeader) {
+    if (!token) {
         return res.status(401).json({
             success: false,
             message: "Token is required",
         });
     }
-
-    const token = authHeader.split(" ")[1];
 
     try {
         const decoded = jwt.verify(

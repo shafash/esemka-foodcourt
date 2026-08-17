@@ -1,4 +1,4 @@
-import axiosInstance from "./axious";
+import axiosInstance from "./axios";
 import { RESERVATION_ENDPOINTS, TABLE_ENDPOINTS } from "../constants/api";
 
 const RESERVATION_FEE = 50000;
