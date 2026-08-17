@@ -53,11 +53,6 @@ export const getAllTablesService = async ({
         }
     });
 
-    /*
-     * Kalau frontend mengirim date + time,
-     * status meja mengikuti reservation pada
-     * tanggal + waktu tersebut.
-     */
     let reservations = [];
 
     if (date && time) {
@@ -87,14 +82,6 @@ export const getAllTablesService = async ({
         }
     }
 
-    /*
-     * Kalau frontend tidak mengirim date/time,
-     * ambil reservation aktif terbaru untuk setiap meja.
-     *
-     * Ini yang dipakai halaman Reservation admin,
-     * supaya meja yang sudah Confirmed tetap terbaca
-     * sebagai Reserved.
-     */
     if (!date && !time) {
         reservations = await prisma.reservations.findMany({
             where: {

@@ -47,10 +47,6 @@ function ReservationHistory() {
     }
   };
 
-  // Always generates the invoice for the exact reservation passed in (by
-  // object reference / id), never by list index, so it stays correct
-  // regardless of pagination/filter/sort state. downloadingId guards
-  // against double-clicks triggering multiple downloads at once.
   const handleDownloadInvoice = async (reservation) => {
     if (!reservation || downloadingId) return;
     setDownloadingId(reservation.id);

@@ -40,14 +40,7 @@ function ReservationList() {
     refetch: refetchDetail,
   } = useFetch(fetchDetail);
 
-  /*
-   * DENAH MEJA
-   *
-   * Backend akan menentukan meja mana yang reserved
-   * berdasarkan reservation aktif pada hari ini.
-   *
-   * Tidak bergantung kepada meja yang sedang dipilih.
-   */
+
   const fetchTables = useCallback(
     () => getTables(),
     []
@@ -64,15 +57,6 @@ function ReservationList() {
     setSelectedTable(table);
   };
 
-  /*
-   * CONFIRM
-   *
-   * Pending -> Confirmed
-   * kemudian refresh denah.
-   *
-   * Backend akan membaca reservation yang baru menjadi
-   * Confirmed dan mengembalikan meja tersebut sebagai reserved.
-   */
   const handleConfirm = async (target) => {
     if (!target?.id) return;
 
@@ -80,18 +64,8 @@ function ReservationList() {
 
     try {
       await confirmReservation(target.id);
-
-      /*
-       * Ambil ulang detail reservation.
-       */
       await refetchDetail();
 
-      /*
-       * Ambil ulang seluruh denah meja.
-       *
-       * Ini yang membuat status meja berubah:
-       * available -> reserved
-       */
       await refetchTables();
     } finally {
       setIsUpdating(false);
@@ -106,11 +80,6 @@ function ReservationList() {
     try {
       await cancelReservation(target.id);
 
-      /*
-       * Reservation menjadi Cancelled,
-       * sehingga backend tidak lagi memasukkannya
-       * ke ACTIVE_RESERVATION_STATUSES.
-       */
       await refetchDetail();
       await refetchTables();
 
