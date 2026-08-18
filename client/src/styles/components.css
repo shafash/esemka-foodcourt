@@ -258,6 +258,10 @@
     padding: var(--space-4);
   }
 
+  .card__header {
+    flex-wrap: wrap;
+  }
+
   .card--no-padding .card__header {
     padding: var(--space-4) var(--space-4) 0;
   }

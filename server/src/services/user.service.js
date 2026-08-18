@@ -1,6 +1,6 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 export const getAllMembersService = async ({
     page,

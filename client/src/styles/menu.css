@@ -114,8 +114,15 @@
   }
 
   .menu-toolbar__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .menu-toolbar__actions .button,
+  .menu-toolbar__actions .menu-action-group,
+  .menu-toolbar__actions > * {
+    width: 100%;
   }
 }

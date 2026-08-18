@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiMenu } from "react-icons/fi";
+import { useSidebar } from "../../context/SidebarContext";
 
 function Header({ title, subtitle, actions, showBack = false, backTo }) {
   const navigate = useNavigate();
+  const { toggle } = useSidebar();
 
   const handleBack = () => {
     if (backTo) {
@@ -15,6 +17,14 @@ function Header({ title, subtitle, actions, showBack = false, backTo }) {
   return (
     <header className="header">
       <div className="header__heading">
+        <button
+          type="button"
+          className="header__menu-toggle"
+          onClick={toggle}
+          aria-label="Buka menu"
+        >
+          <FiMenu />
+        </button>
         {showBack && (
           <button
             type="button"

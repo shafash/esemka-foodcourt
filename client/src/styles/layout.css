@@ -214,26 +214,31 @@
   flex-wrap: wrap;
 }
 
+.header__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  color: var(--color-ink-soft);
+  transition: background-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.header__menu-toggle:hover {
+  background-color: var(--color-muted-bg);
+}
+
 @media (max-width: 1023px) {
   .dashboard-layout,
   .dashboard-layout--with-detail {
-    grid-template-columns: var(--sidebar-width-collapsed) 1fr;
-    grid-template-areas: "sidebar main";
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
   }
 
   .dashboard-layout__detail {
     display: none;
-  }
-
-  .sidebar__brand-text,
-  .sidebar__nav-item span:not(.sidebar__nav-icon),
-  .sidebar__logout span:not(.sidebar__nav-icon) {
-    display: none;
-  }
-
-  .sidebar__nav-item,
-  .sidebar__logout {
-    justify-content: center;
   }
 
   .dashboard-layout__content {
@@ -243,6 +248,49 @@
   .header {
     margin: 0 calc(var(--space-5) * -1) var(--space-4);
     padding: var(--space-4) var(--space-5);
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 70;
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-md);
+  }
+
+  .header__menu-toggle {
+    display: inline-flex;
+  }
+
+  .sidebar__backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background-color: rgba(41, 37, 36, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+  }
+
+  .sidebar__backdrop--visible {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header__menu-toggle,
+  .sidebar__backdrop {
+    display: none;
   }
 }
 
@@ -254,5 +302,9 @@
   .header {
     margin: 0 calc(var(--space-4) * -1) var(--space-4);
     padding: var(--space-4);
+  }
+
+  .sidebar {
+    width: 260px;
   }
 }

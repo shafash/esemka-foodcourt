@@ -35,7 +35,7 @@ model Users {
 
 model Categories {
   ID        Int      @id @default(autoincrement())
-  Name      String
+  Name      String   @unique
 
   Menus Menus[]
 }

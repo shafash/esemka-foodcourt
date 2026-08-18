@@ -83,6 +83,12 @@ export const deleteIngredientService = async (id) => {
     if (!existing) {
         throw new ApiError(404, "Ingredient not found");
     }
+    const usageCount = await prisma.menuIngredients.count({
+        where: { IngredientID: id }
+    });
+    if (usageCount > 0) {
+        throw new ApiError(409, "Ingredient is still used by one or more menus and cannot be deleted");
+    }
     await prisma.ingredients.delete({
         where: { ID: id }
     });

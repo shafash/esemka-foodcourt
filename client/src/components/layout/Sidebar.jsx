@@ -35,11 +35,11 @@ const NAV_SECTIONS_BY_ROLE = {
   ],
 };
 
-function Sidebar({ role = ROLE_ADMIN, onLogout }) {
+function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
   const sections = NAV_SECTIONS_BY_ROLE[role] || NAV_SECTIONS_BY_ROLE[ROLE_ADMIN];
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${isOpen ? " sidebar--open" : ""}`}>
       <div className="sidebar__brand">
         <span className="sidebar__brand-icon">
           <GiKnifeFork />
@@ -58,6 +58,7 @@ function Sidebar({ role = ROLE_ADMIN, onLogout }) {
                 key={item.to}
                 to={item.to}
                 end={item.to === "/dashboard"}
+                onClick={onNavigate}
                 className={({ isActive }) =>
                   `sidebar__nav-item${isActive ? " sidebar__nav-item--active" : ""}`
                 }

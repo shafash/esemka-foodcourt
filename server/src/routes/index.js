@@ -14,12 +14,18 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     try {
-        const tables = await prisma.$queryRawUnsafe("SHOW TABLES");
+        if (process.env.NODE_ENV !== "production") {
+            const tables = await prisma.$queryRawUnsafe("SHOW TABLES");
+            return res.json({
+                success: true,
+                message: "Esemka Foodcourt API",
+                totalTable: tables.length
+            });
+        }
 
         res.json({
             success: true,
-            message: "Esemka Foodcourt API",
-            totalTable: tables.length
+            message: "Esemka Foodcourt API"
         });
     } catch (error) {
         res.status(500).json({
@@ -34,9 +40,11 @@ router.use(
     authRoutes
 );
 
-router.get("/test-error", (req, res, next) => {
-    next(new Error("Testing internal server error"));
-});
+if (process.env.NODE_ENV !== "production") {
+    router.get("/test-error", (req, res, next) => {
+        next(new Error("Testing internal server error"));
+    });
+}
 
 router.use(
     "/users",

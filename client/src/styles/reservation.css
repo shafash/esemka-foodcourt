@@ -47,10 +47,11 @@
 
 .floor-plan__grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(64px, 1fr));
+  grid-template-columns: repeat(4, minmax(80px, 1fr));
   gap: var(--space-4);
   padding: var(--space-5);
   min-width: 288px;
+  min-height: 440px;
 }
 
 @media (max-width: 480px) {
@@ -60,7 +61,10 @@
 }
 
 .floor-plan__table {
-  aspect-ratio: 2 / 1;
+  width: 198px;
+  height: 50px;
+  justify-self: start;
+  min-height: 124px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +74,27 @@
   color: var(--color-text);
   font-weight: var(--font-weight-medium);
   transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+@media (max-width: 1023px) {
+  .floor-plan__table {
+    width: 160px;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 767px) {
+  .floor-plan__table {
+    width: 120px;
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floor-plan__table {
+    width: 90px;
+    min-height: 64px;
+  }
 }
 
 .floor-plan__table:hover:not(:disabled) {
@@ -90,7 +115,6 @@
   color: var(--color-primary);
 }
 
-/* ===== Admin reservation page (floor plan + detail) ===== */
 .reservation-page {
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -120,9 +144,6 @@
 }
 
 @media (max-width: 767px) {
-  /* The reservation detail panel becomes a bottom sheet on mobile instead
-     of a stacked block the user has to scroll past the floor plan to see.
-     It stays off-screen (translateY 100%) until a table is selected. */
   .reservation-detail {
     position: fixed;
     left: 0;
