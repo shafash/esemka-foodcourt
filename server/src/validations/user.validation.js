@@ -15,7 +15,7 @@ export const createMemberSchema = z.object({
     FirstName: z .string() .min(1),
     LastName: z .string() .min(1),
     Email: z .email(),
-    PhoneNumber: z .string() .min(1),
+    PhoneNumber: z .string() .trim() .min(8, "Phone number must be at least 8 characters") .max(15, "Phone number must be at most 15 characters"),
     Password: z .string() .min(8)
 });
 
@@ -23,6 +23,6 @@ export const updateMemberSchema = z.object({
     FirstName: z .string() .min(1),
     LastName: z .string() .min(1),
     Email: z .email(),
-    PhoneNumber: z .string() .min(1),
+    PhoneNumber: z .string() .trim() .min(8, "Phone number must be at least 8 characters") .max(15, "Phone number must be at most 15 characters"),
     Password: z .string() .min(8) .optional()
 });

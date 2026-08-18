@@ -4,6 +4,7 @@ import { FiUser, FiUserPlus, FiMail, FiLock, FiPhone } from "react-icons/fi";
 
 import Input from "../common/Input";
 import Button from "../common/Button";
+import { isValidPhone } from "../../utils/validators";
 
 function MemberForm({
   initialValues,
@@ -94,7 +95,11 @@ function MemberForm({
           placeholder="+1 (555) 000-0000"
           iconLeft={<FiPhone />}
           error={errors.phone?.message}
-          {...register("phone", { required: "Nomor telepon wajib diisi." })}
+          {...register("phone", {
+            required: "Nomor telepon wajib diisi.",
+            validate: (value) =>
+              isValidPhone(value) || "Nomor telepon minimal 8 digit dan maksimal 15 digit.",
+          })}
         />
 
         <div className="form-actions">

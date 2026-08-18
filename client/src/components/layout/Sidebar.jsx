@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FiGrid,
@@ -9,6 +10,8 @@ import {
 } from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
+import Modal from "../common/Modal";
+import Button from "../common/Button";
 
 const NAV_SECTIONS_BY_ROLE = {
   [ROLE_ADMIN]: [
@@ -37,6 +40,12 @@ const NAV_SECTIONS_BY_ROLE = {
 
 function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
   const sections = NAV_SECTIONS_BY_ROLE[role] || NAV_SECTIONS_BY_ROLE[ROLE_ADMIN];
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    onLogout?.();
+  };
 
   return (
     <aside className={`sidebar${isOpen ? " sidebar--open" : ""}`}>
@@ -71,14 +80,38 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
         ))}
       </nav>
 
-      <div className="sidebar__footer">
-        <button type="button" className="sidebar__logout" onClick={onLogout}>
+            <div className="sidebar__footer">
+        <button
+          type="button"
+          className="sidebar__logout"
+          onClick={() => setShowLogoutConfirm(true)}
+        >
           <span className="sidebar__nav-icon">
             <FiLogOut />
           </span>
           <span>Logout</span>
         </button>
       </div>
+
+      <Modal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        title="Keluar dari akun?"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setShowLogoutConfirm(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={confirmLogout}>
+              Logout
+            </Button>
+          </>
+        }
+      >
+        <p className="text-muted">
+          Kamu akan keluar dari sesi ini dan perlu login kembali untuk mengakses dashboard.
+        </p>
+      </Modal>
     </aside>
   );
 }
