@@ -285,13 +285,13 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
           />
         </div>
 
-        {isMenuLoading ? (
+                {isMenuLoading && menuResults.length === 0 ? (
           <Loader centered label="Memuat menu..." />
         ) : menuResults.length === 0 ? (
           <EmptyState title="Menu tidak ditemukan" description="Coba kata kunci atau kategori lain." />
         ) : (
           <>
-            <div className="reserve-order__grid">
+            <div className={`reserve-order__grid${isMenuLoading ? " is-loading" : ""}`}>
               {menuResults.map((menu) => (
                 <button
                   key={menu.id}
