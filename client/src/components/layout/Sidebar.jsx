@@ -22,8 +22,8 @@ const NAV_SECTIONS_BY_ROLE = {
       items: [
         { to: "/dashboard", label: "Dashboard", icon: <FiGrid /> },
         { to: "/members", label: "Manage Members", icon: <FiUsers /> },
-        { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
         { to: "/category", label: "Manage Categories", icon: <FiTag /> },
+        { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
         { to: "/unit", label: "Manage Units", icon: <FiHash /> },
         { to: "/ingredients", label: "Menu Ingredients", icon: <GiKnifeFork /> },
         { to: "/reservation", label: "Reservations", icon: <FiCalendar /> },

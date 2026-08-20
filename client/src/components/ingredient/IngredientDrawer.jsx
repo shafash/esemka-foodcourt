@@ -286,10 +286,16 @@ function IngredientDrawer({ menu, onClose, onSaved }) {
                   />
 
                   <input
-                    type="decimal"
+                    type="number"
                     min="0"
+                    step="any"
                     placeholder="0"
                     value={newIngredient.amount}
+                    onKeyDown={(event) => {
+                      if (event.key === "e" || event.key === "E") {
+                        event.preventDefault();
+                      }
+                    }}
                     onChange={(event) =>
                       setNewIngredient((prev) => ({
                         ...prev,
