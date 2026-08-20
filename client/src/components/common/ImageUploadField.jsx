@@ -1,12 +1,17 @@
 import { useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
-function ImageUploadField({ label, value, onChange, error, hint }) {
+function ImageUploadField({ label, value, onChange, onError, error, hint }) {
   const inputRef = useRef(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      onError?.("Ukuran file maksimal 2MB.");
+      event.target.value = "";
+      return;
+    }
     const previewUrl = URL.createObjectURL(file);
     onChange?.(file, previewUrl);
   };
@@ -27,8 +32,8 @@ function ImageUploadField({ label, value, onChange, error, hint }) {
         </span>
         {!value && (
           <span className="image-upload__copy">
-            <strong>Upload High-Res Photo</strong>
-            <span>Drag and drop or click to browse</span>
+            <strong>Upload Photo</strong>
+            <span>JPG/PNG, maks 2MB</span>
           </span>
         )}
         <input

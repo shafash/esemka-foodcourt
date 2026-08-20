@@ -65,6 +65,7 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
       <ImageUploadField
         value={image.previewUrl}
         onChange={handleImageChange}
+        onError={setImageError}
         error={imageError}
         hint={!imageError ? "Format JPG/PNG, disarankan rasio 4:3" : undefined}
       />

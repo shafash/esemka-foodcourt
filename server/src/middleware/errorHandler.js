@@ -1,11 +1,22 @@
 import ApiError from "../errors/ApiError.js";
 import { ZodError } from "zod";
+import multer from "multer";
 
 const errorHandler = (err, req, res, next) => {
     if (err instanceof ApiError) {
         return res.status(err.statusCode).json({
             success: false,
             message: err.message,
+        });
+    }
+
+    if (err instanceof multer.MulterError) {
+        const message = err.code === "LIMIT_FILE_SIZE"
+            ? "Ukuran file maksimal 2MB. Silakan pilih foto dengan ukuran lebih kecil."
+            : "Gagal mengunggah file. Silakan coba lagi.";
+        return res.status(400).json({
+            success: false,
+            message,
         });
     }
 
