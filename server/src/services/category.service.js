@@ -3,12 +3,21 @@ import ApiError from "../errors/ApiError.js";
 
 export const getAllCategoriesService = async () => {
     const categories = await prisma.categories.findMany({
-        orderBy: {
-            Name: "asc"
+        orderBy: { Name: "asc" },
+        include: {
+            _count: {
+                select: {
+                    Menus: { where: { DeletedAt: null } }
+                }
+            }
         }
     });
 
-    return categories;
+    return categories.map(category => ({
+        ID: category.ID,
+        Name: category.Name,
+        MenuCount: category._count.Menus
+    }));
 };
 
 export const getCategoryByIdService = async (categoryId) => {

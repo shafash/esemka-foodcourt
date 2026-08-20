@@ -5,13 +5,10 @@ function mapCategory(c) {
   return {
     id: c.ID,
     name: c.Name,
-    createdAt: c.CreatedAt,
+    menuCount: c.MenuCount ?? 0,
   };
 }
 
-// The backend's GET /categories has no pagination/search query support -
-// it always returns the full active category list. Search/pagination
-// below are therefore applied client-side.
 export async function getCategories({ search = "", page = 1, pageSize = 8 } = {}) {
   const { data } = await axiosInstance.get(CATEGORY_ENDPOINTS.list);
   const all = (data.data || []).map(mapCategory);

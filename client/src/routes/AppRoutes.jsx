@@ -19,6 +19,10 @@ import EditMember from "../pages/member/EditMember";
 
 import IngredientList from "../pages/ingredient/IngredientList";
 
+import CategoryList from "../pages/category/CategoryList";
+
+import UnitList from "../pages/unit/UnitList";
+
 import ReservationList from "../pages/reservation/ReservationList";
 import CreateReservation from "../pages/reservation/CreateReservation";
 import ReservationHistory from "../pages/reservation/ReservationHistory";
@@ -84,6 +88,10 @@ function AppRoutes() {
             <Route path="/members/:id/edit" element={<EditMember />} />
 
             <Route path="/ingredients" element={<IngredientList />} />
+
+            <Route path="/category" element={<CategoryList />} />
+
+            <Route path="/unit" element={<UnitList />} />
 
             <Route path="/reservation" element={<ReservationList />} />
           </Route>

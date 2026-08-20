@@ -7,6 +7,8 @@ import {
   FiCalendar,
   FiLogOut,
   FiHome,
+  FiTag,
+  FiHash,
 } from "react-icons/fi";
 import { GiKnifeFork } from "react-icons/gi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
@@ -21,6 +23,8 @@ const NAV_SECTIONS_BY_ROLE = {
         { to: "/dashboard", label: "Dashboard", icon: <FiGrid /> },
         { to: "/members", label: "Manage Members", icon: <FiUsers /> },
         { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
+        { to: "/category", label: "Manage Categories", icon: <FiTag /> },
+        { to: "/unit", label: "Manage Units", icon: <FiHash /> },
         { to: "/ingredients", label: "Menu Ingredients", icon: <GiKnifeFork /> },
         { to: "/reservation", label: "Reservations", icon: <FiCalendar /> },
       ],

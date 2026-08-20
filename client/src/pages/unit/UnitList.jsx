@@ -6,21 +6,20 @@ import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Pagination from "../../components/common/Pagination";
 import Button from "../../components/common/Button";
-import Badge from "../../components/common/Badge";
 import SearchBar from "../../components/common/SearchBar";
 import Modal from "../../components/common/Modal";
 import EmptyState from "../../components/common/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSkeleton";
-import CategoryForm from "../../components/category/CategoryForm";
+import UnitForm from "../../components/unit/UnitForm";
 
 import useFetch from "../../hooks/useFetch";
-import { getCategories, createCategory, updateCategory, deleteCategory } from "../../services/cetagory.service";
+import { getUnitsPaginated, createUnit, updateUnit, deleteUnit } from "../../services/unit.service";
 
 import "../../styles/category.css";
 
 const PAGE_SIZE = 8;
 
-function CategoryList() {
+function UnitList() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,13 +40,13 @@ function CategoryList() {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  const fetchCategories = useCallback(
-    () => getCategories({ search, page: currentPage, pageSize: PAGE_SIZE }),
+  const fetchUnits = useCallback(
+    () => getUnitsPaginated({ search, page: currentPage, pageSize: PAGE_SIZE }),
     [search, currentPage]
   );
-  const { data, isLoading, refetch } = useFetch(fetchCategories);
+  const { data, isLoading, refetch } = useFetch(fetchUnits);
 
-  const categories = data?.data || [];
+  const units = data?.data || [];
   const total = data?.total || 0;
 
   const openCreate = () => {
@@ -55,9 +54,9 @@ function CategoryList() {
     setFormTarget({});
   };
 
-  const openEdit = (category) => {
+  const openEdit = (unit) => {
     setFormError("");
-    setFormTarget(category);
+    setFormTarget(unit);
   };
 
   const closeForm = () => {
@@ -70,22 +69,22 @@ function CategoryList() {
     setIsSubmitting(true);
     try {
       if (formTarget?.id) {
-        await updateCategory(formTarget.id, values);
+        await updateUnit(formTarget.id, values);
       } else {
-        await createCategory(values);
+        await createUnit(values);
       }
       setFormTarget(null);
       refetch();
     } catch (err) {
-      setFormError(err.message || "Gagal menyimpan kategori.");
+      setFormError(err.message || "Gagal menyimpan unit.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const openDelete = (category) => {
+  const openDelete = (unit) => {
     setDeleteError("");
-    setDeleteTarget(category);
+    setDeleteTarget(unit);
   };
 
   const closeDelete = () => {
@@ -98,39 +97,30 @@ function CategoryList() {
     setIsDeleting(true);
     setDeleteError("");
     try {
-      await deleteCategory(deleteTarget.id);
+      await deleteUnit(deleteTarget.id);
       setDeleteTarget(null);
       refetch();
     } catch (err) {
-      setDeleteError(err.message || "Gagal menghapus kategori.");
+      setDeleteError(err.message || "Gagal menghapus unit.");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const columns = [
-    { key: "name", header: "Category" },
-    {
-      key: "menuCount",
-      header: "Menus",
-      align: "center",
-      width: "160px",
-      render: (row) => <Badge variant="neutral">{row.menuCount ?? 0}</Badge>,
-    },
-  ];
+  const columns = [{ key: "name", header: "Unit" }];
 
   return (
     <>
-      <Header title="Manage Categories" />
+      <Header title="Manage Units" />
 
       <Card
-        title="Category List"
+        title="Unit List"
         headerAction={
           <div className="category-toolbar">
             <SearchBar
               value={searchInput}
               onChange={setSearchInput}
-              placeholder="Search categories..."
+              placeholder="Search units..."
             />
             <Button variant="primary" icon={<FiPlus />} onClick={openCreate}>
               Insert New
@@ -140,11 +130,11 @@ function CategoryList() {
       >
         {isLoading ? (
           <LoadingSkeleton variant="table-row" count={5} />
-        ) : categories.length > 0 ? (
+        ) : units.length > 0 ? (
           <>
             <Table
               columns={columns}
-              data={categories}
+              data={units}
               getRowId={(row) => row.id}
               actionsWidth="100px"
               actionsAlign="center"
@@ -155,7 +145,7 @@ function CategoryList() {
                     size="sm"
                     iconOnly
                     icon={<FiEdit2 />}
-                    aria-label="Edit kategori"
+                    aria-label="Edit unit"
                     onClick={() => openEdit(row)}
                   />
                   <Button
@@ -163,7 +153,7 @@ function CategoryList() {
                     size="sm"
                     iconOnly
                     icon={<FiTrash2 />}
-                    aria-label="Hapus kategori"
+                    aria-label="Hapus unit"
                     onClick={() => openDelete(row)}
                   />
                 </>
@@ -178,11 +168,11 @@ function CategoryList() {
           </>
         ) : (
           <EmptyState
-            title="Belum ada kategori"
+            title="Belum ada unit"
             description={
               search
-                ? "Tidak ada kategori yang cocok dengan pencarian saat ini."
-                : "Mulai tambahkan kategori pertama untuk mengelompokkan menu."
+                ? "Tidak ada unit yang cocok dengan pencarian saat ini."
+                : "Mulai tambahkan unit pertama untuk digunakan pada bahan menu."
             }
             actionLabel={!search ? "Insert New" : undefined}
             onAction={openCreate}
@@ -193,10 +183,10 @@ function CategoryList() {
       <Modal
         isOpen={Boolean(formTarget)}
         onClose={closeForm}
-        title={formTarget?.id ? "Edit Category" : "Add Category"}
+        title={formTarget?.id ? "Edit Unit" : "Add Unit"}
       >
         {formError && <p className="auth-error">{formError}</p>}
-        <CategoryForm
+        <UnitForm
           initialValues={formTarget?.id ? formTarget : undefined}
           onSubmit={submitForm}
           onCancel={closeForm}
@@ -208,7 +198,7 @@ function CategoryList() {
       <Modal
         isOpen={Boolean(deleteTarget)}
         onClose={closeDelete}
-        title="Hapus Kategori Ini?"
+        title="Hapus Unit Ini?"
         footer={
           <>
             <Button variant="secondary" onClick={closeDelete} disabled={isDeleting}>
@@ -224,8 +214,8 @@ function CategoryList() {
           <p className="auth-error">{deleteError}</p>
         ) : (
           <p className="text-muted">
-            Kategori &quot;{deleteTarget?.name}&quot; akan dihapus permanen. Tindakan ini tidak
-            dapat dibatalkan.
+            Unit &quot;{deleteTarget?.name}&quot; akan dihapus permanen. Tindakan ini tidak dapat
+            dibatalkan.
           </p>
         )}
       </Modal>
@@ -233,4 +223,4 @@ function CategoryList() {
   );
 }
 
-export default CategoryList;
+export default UnitList;
