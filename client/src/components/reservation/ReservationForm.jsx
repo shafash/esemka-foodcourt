@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FiMinus, FiPlus, FiTrash2, FiAlertTriangle } from "react-icons/fi";
@@ -15,6 +15,7 @@ import FloorPlan from "./FloorPlan";
 
 import useAuth from "../../hooks/useAuth";
 import useFetch from "../../hooks/useFetch";
+import useResponsiveColumns from "../../hooks/useResponsiveColumns";
 import { getTables } from "../../services/reservation.service";
 import { getMenus } from "../../services/menu.service";
 import { getCategoryOptions } from "../../services/cetagory.service";
@@ -22,7 +23,6 @@ import { formatCurrency } from "../../utils/formatCurrency";
 
 const RESERVATION_FEE = 50000;
 const TAX_RATE = 0.1;
-const MENU_PAGE_SIZE = 5;
 
 function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const navigate = useNavigate();
@@ -34,6 +34,13 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const [menuCategory, setMenuCategory] = useState("");
   const [menuPage, setMenuPage] = useState(1);
   const [orderItems, setOrderItems] = useState([]);
+
+  const menuPageSize = useResponsiveColumns();
+
+  useEffect(() => {
+    setMenuPage(1);
+  }, [menuPageSize]);
+
   const [formError, setFormError] = useState("");
 
   const {
@@ -78,9 +85,9 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
         search: menuSearch,
         category: menuCategory,
         page: menuPage,
-        pageSize: MENU_PAGE_SIZE,
+        pageSize: menuPageSize,
       }),
-    [menuSearch, menuCategory, menuPage]
+    [menuSearch, menuCategory, menuPage, menuPageSize]
   );
   const { data: menuData, isLoading: isMenuLoading } = useFetch(fetchMenus);
   const { data: categoryOptions } = useFetch(getCategoryOptions);
@@ -314,7 +321,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
 
             <Pagination
               currentPage={menuPage}
-              pageSize={MENU_PAGE_SIZE}
+              pageSize={menuPageSize}
               totalItems={menuResultsTotal}
               onPageChange={setMenuPage}
             />
