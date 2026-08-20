@@ -69,9 +69,7 @@ export async function getMenus({
   let items = rawMenus.map(mapMenu);
 
   if (category) {
-    items = items.filter(
-      (menu) => String(menu.categoryId) === String(category)
-    );
+    items = items.filter((menu) => menu.category === category);
   }
 
   return {

@@ -10,6 +10,7 @@ import SearchBar from "../common/SearchBar";
 import Loader from "../common/Loader";
 import Card from "../common/Card";
 import EmptyState from "../common/EmptyState";
+import Pagination from "../common/Pagination";
 import FloorPlan from "./FloorPlan";
 
 import useAuth from "../../hooks/useAuth";
@@ -21,6 +22,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 
 const RESERVATION_FEE = 50000;
 const TAX_RATE = 0.1;
+const MENU_PAGE_SIZE = 5;
 
 function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const navigate = useNavigate();
@@ -29,6 +31,8 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const [selectedTable, setSelectedTable] = useState(null);
   const [useAccountInfo, setUseAccountInfo] = useState(false);
   const [menuSearch, setMenuSearch] = useState("");
+  const [menuCategory, setMenuCategory] = useState("");
+  const [menuPage, setMenuPage] = useState(1);
   const [orderItems, setOrderItems] = useState([]);
   const [formError, setFormError] = useState("");
 
@@ -69,13 +73,30 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   } = useFetch(fetchTables);
 
   const fetchMenus = useCallback(
-    () => getMenus({ search: menuSearch, page: 1, pageSize: 6 }),
-    [menuSearch]
+    () =>
+      getMenus({
+        search: menuSearch,
+        category: menuCategory,
+        page: menuPage,
+        pageSize: MENU_PAGE_SIZE,
+      }),
+    [menuSearch, menuCategory, menuPage]
   );
-  const { data: menuData } = useFetch(fetchMenus);
+  const { data: menuData, isLoading: isMenuLoading } = useFetch(fetchMenus);
   const { data: categoryOptions } = useFetch(getCategoryOptions);
 
   const menuResults = menuData?.data || [];
+  const menuResultsTotal = menuData?.total || 0;
+
+  const handleMenuSearch = (value) => {
+    setMenuSearch(value);
+    setMenuPage(1);
+  };
+
+  const handleMenuCategory = (value) => {
+    setMenuCategory(value);
+    setMenuPage(1);
+  };
 
   const toggleUseAccountInfo = (checked) => {
     setUseAccountInfo(checked);
@@ -242,27 +263,63 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
       </Card>
 
       <div className="reserve-order">
-        <div className="reserve-order__toolbar">
+                <div className="reserve-order__toolbar">
           <p className="reserve-step__title reserve-order__toolbar-title">
             <span className="reserve-step__badge">4</span> Pre-order Menu
           </p>
-          <SearchBar value={menuSearch} onChange={setMenuSearch} placeholder="Search Menu..." />
-          <Select options={categoryOptions || []} placeholder="All Categories" />
-          <div className="reserve-order__menu-results">
-            {menuResults.map((menu) => (
-              <Button
-                key={menu.id}
-                type="button"
-                variant="secondary"
-                size="sm"
-                icon={<FiPlus />}
-                onClick={() => addMenuItem(menu)}
-              >
-                {menu.name}
-              </Button>
-            ))}
-          </div>
         </div>
+
+        <div className="reserve-order__filters">
+          <SearchBar
+            className="reserve-order__search"
+            value={menuSearch}
+            onChange={handleMenuSearch}
+            placeholder="Search Menu..."
+          />
+          <Select
+            className="reserve-order__filter"
+            options={categoryOptions || []}
+            placeholder="All Categories"
+            value={menuCategory}
+            onChange={(event) => handleMenuCategory(event.target.value)}
+          />
+        </div>
+
+        {isMenuLoading ? (
+          <Loader centered label="Memuat menu..." />
+        ) : menuResults.length === 0 ? (
+          <EmptyState title="Menu tidak ditemukan" description="Coba kata kunci atau kategori lain." />
+        ) : (
+          <>
+            <div className="reserve-order__grid">
+              {menuResults.map((menu) => (
+                <button
+                  key={menu.id}
+                  type="button"
+                  className="menu-card"
+                  onClick={() => addMenuItem(menu)}
+                >
+                  <span className="menu-card__image">
+                    {menu.imageUrl ? (
+                      <img src={menu.imageUrl} alt={menu.name} />
+                    ) : (
+                      <span className="menu-card__placeholder">No Image</span>
+                    )}
+                  </span>
+                  <span className="menu-card__name">{menu.name}</span>
+                  <span className="menu-card__price">{formatCurrency(menu.price)}</span>
+                </button>
+              ))}
+            </div>
+
+            <Pagination
+              currentPage={menuPage}
+              pageSize={MENU_PAGE_SIZE}
+              totalItems={menuResultsTotal}
+              onPageChange={setMenuPage}
+            />
+          </>
+        )}
 
         {orderItems.length > 0 && (
           <table className="table reserve-order__table">
