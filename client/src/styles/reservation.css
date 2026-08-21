@@ -339,6 +339,10 @@
 .reserve-page {
   display: grid;
   grid-template-columns: 260px 1fr;
+  grid-template-areas:
+    "step1 floor"
+    "step3 floor"
+    "order order";
   gap: var(--space-6);
   align-items: start;
 }
@@ -346,13 +350,20 @@
 @media (max-width: 1023px) {
   .reserve-page {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "step1"
+      "floor"
+      "step3"
+      "order";
   }
 }
 
-.reserve-page__steps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
+.reserve-step--details {
+  grid-area: step1;
+}
+
+.reserve-step--guest {
+  grid-area: step3;
 }
 
 .reserve-step {
@@ -408,19 +419,19 @@
 }
 
 .reserve-page__floor {
+  grid-area: floor;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
 
 .reserve-order {
-  grid-column: 1 / -1;
+  grid-area: order;
   min-width: 0;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  margin-top: var(--space-6);
 }
 
 .reserve-order__toolbar {

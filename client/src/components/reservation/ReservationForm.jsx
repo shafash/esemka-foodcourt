@@ -178,72 +178,70 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
 
   return (
     <form className="reserve-page" onSubmit={handleSubmit(submitHandler)} noValidate>
-      <div className="reserve-page__steps">
-        <div className="reserve-step">
-          <p className="reserve-step__title">
-            <span className="reserve-step__badge">1</span> Reservation Details
-          </p>
-          <Input
-            label="Reservation Date"
-            type="date"
-            error={errors.date?.message}
-            {...register("date", { required: "Tanggal reservasi wajib diisi." })}
-          />
-          <Input
-            label="Reservation Time"
-            type="time"
-            error={errors.time?.message}
-            {...register("time", { required: "Waktu reservasi wajib diisi." })}
-          />
-          <Input
-            label="Number of Guests"
-            type="number"
-            min="1"
-            placeholder="e.g. 4"
-            error={errors.guests?.message}
-            {...register("guests", {
-              required: "Jumlah tamu wajib diisi.",
-              min: { value: 1, message: "Minimal 1 tamu." },
-            })}
-          />
-        </div>
+      <div className="reserve-step reserve-step--details">
+        <p className="reserve-step__title">
+          <span className="reserve-step__badge">1</span> Reservation Details
+        </p>
+        <Input
+          label="Reservation Date"
+          type="date"
+          error={errors.date?.message}
+          {...register("date", { required: "Tanggal reservasi wajib diisi." })}
+        />
+        <Input
+          label="Reservation Time"
+          type="time"
+          error={errors.time?.message}
+          {...register("time", { required: "Waktu reservasi wajib diisi." })}
+        />
+        <Input
+          label="Number of Guests"
+          type="number"
+          min="1"
+          placeholder="e.g. 4"
+          error={errors.guests?.message}
+          {...register("guests", {
+            required: "Jumlah tamu wajib diisi.",
+            min: { value: 1, message: "Minimal 1 tamu." },
+          })}
+        />
+      </div>
 
-        <div className="reserve-step">
-          <p className="reserve-step__title">
-            <span className="reserve-step__badge">3</span> Guest Information
-          </p>
-          <div className="form-row">
-            <Input
-              label="First Name"
-              error={errors.firstName?.message}
-              {...register("firstName", { required: "Nama depan wajib diisi." })}
-            />
-            <Input
-              label="Last Name"
-              error={errors.lastName?.message}
-              {...register("lastName", { required: "Nama belakang wajib diisi." })}
-            />
-          </div>
+      <div className="reserve-step reserve-step--guest">
+        <p className="reserve-step__title">
+          <span className="reserve-step__badge">3</span> Guest Information
+        </p>
+        <div className="form-row">
           <Input
-            label="Email Address"
-            type="email"
-            error={errors.email?.message}
-            {...register("email", { required: "Email wajib diisi." })}
+            label="First Name"
+            error={errors.firstName?.message}
+            {...register("firstName", { required: "Nama depan wajib diisi." })}
           />
           <Input
-            label="Phone Number"
-            error={errors.phone?.message}
-            {...register("phone", { required: "Nomor telepon wajib diisi." })}
+            label="Last Name"
+            error={errors.lastName?.message}
+            {...register("lastName", { required: "Nama belakang wajib diisi." })}
           />
-          <label className="reserve-step__checkbox">
-            <input
-              type="checkbox"
-              checked={useAccountInfo}
-              onChange={(event) => toggleUseAccountInfo(event.target.checked)}
-            />
-            Use my account information
-          </label>
         </div>
+        <Input
+          label="Email Address"
+          type="email"
+          error={errors.email?.message}
+          {...register("email", { required: "Email wajib diisi." })}
+        />
+        <Input
+          label="Phone Number"
+          error={errors.phone?.message}
+          {...register("phone", { required: "Nomor telepon wajib diisi." })}
+        />
+        <label className="reserve-step__checkbox">
+          <input
+            type="checkbox"
+            checked={useAccountInfo}
+            onChange={(event) => toggleUseAccountInfo(event.target.checked)}
+          />
+          Use my account information
+        </label>
       </div>
 
       <Card noPadding className="reserve-page__floor">
@@ -313,7 +311,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
                       <span className="menu-card__placeholder">No Image</span>
                     )}
                   </span>
-                  <span className="menu-card__name">{menu.name}</span>
+                                    <span className="menu-card__name">{menu.name}</span>
                   {menu.description && (
                     <span className="menu-card__description">{menu.description}</span>
                   )}
