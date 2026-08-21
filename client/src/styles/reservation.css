@@ -200,7 +200,7 @@
     order: 2;
   }
 
-  .reservation-detail__id {
+  .reservation-detail__header .reservation-detail__id {
     flex-basis: 100%;
     order: 3;
     margin-top: var(--space-1);
