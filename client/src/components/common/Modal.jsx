@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
 
 function Modal({ isOpen, onClose, title, children, footer, variant }) {
@@ -22,7 +23,7 @@ function Modal({ isOpen, onClose, title, children, footer, variant }) {
   const overlayClass = `modal-overlay${variant === "drawer" ? " modal-overlay--drawer" : ""}`;
   const modalClass = `modal${variant ? ` modal--${variant}` : ""}`;
 
-  return (
+    return createPortal(
     <div className={overlayClass} onClick={onClose}>
       <div
         className={modalClass}
@@ -47,7 +48,8 @@ function Modal({ isOpen, onClose, title, children, footer, variant }) {
         <div className="modal__body">{children}</div>
         {footer && <div className="modal__footer">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
