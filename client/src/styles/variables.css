@@ -1,5 +1,4 @@
 :root {
-  /* ===== Modern Bistro design tokens (Stitch reference) ===== */
   --color-primary: #9a3412;
   --color-primary-strong: #781f00;
   --color-primary-hover: #7c2d0f;
@@ -17,7 +16,6 @@
   --color-text: #292524;
   --color-muted: #57534e;
 
-  /* ===== Legacy tokens (kept so existing components/pages keep working) ===== */
   --color-ink: var(--color-text);
   --color-ink-soft: var(--color-muted);
   --color-surface-alt: var(--color-background);
@@ -41,11 +39,10 @@
   --color-info-soft: #eaf1fb;
   --color-info-border: #bcd4f0;
 
-  /* ===== Typography ===== */
-  --font-family-heading: "Epilogue", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-family-heading: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  --font-family-base: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  --font-family-base: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Roboto, Helvetica, Arial, sans-serif;
 
   --font-size-page-title: 1.375rem;
   --font-size-section-title: 1.0625rem;
