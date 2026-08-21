@@ -314,6 +314,9 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
                     )}
                   </span>
                   <span className="menu-card__name">{menu.name}</span>
+                  {menu.description && (
+                    <span className="menu-card__description">{menu.description}</span>
+                  )}
                   <span className="menu-card__price">{formatCurrency(menu.price)}</span>
                 </button>
               ))}
