@@ -298,7 +298,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
           <EmptyState title="Menu tidak ditemukan" description="Coba kata kunci atau kategori lain." />
         ) : (
           <>
-            <div className={`reserve-order__grid${isMenuLoading ? " is-loading" : ""}`}>
+          <div className={`reserve-order__grid${isMenuLoading ? " is-loading" : ""}`}>
               {menuResults.map((menu) => (
                 <button
                   key={menu.id}
@@ -329,6 +329,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
         )}
 
         {orderItems.length > 0 && (
+          <div className="reserve-order__table-wrapper">
           <table className="table reserve-order__table">
             <thead>
               <tr>
@@ -380,6 +381,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
