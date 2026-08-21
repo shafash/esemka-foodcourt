@@ -169,6 +169,37 @@ function CategoryList() {
                 </>
               )}
             />
+                        <div className="data-card-list">
+              {categories.map((category) => (
+                <div key={category.id} className="data-card">
+                  <div className="data-card__top">
+                    <div className="data-card__title-group">
+                      <p className="data-card__title">{category.name}</p>
+                    </div>
+                    <Badge variant="neutral">{category.menuCount ?? 0} Menus</Badge>
+                  </div>
+                  <div className="data-card__footer">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiEdit2 />}
+                      aria-label="Edit kategori"
+                      onClick={() => openEdit(category)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiTrash2 />}
+                      aria-label="Hapus kategori"
+                      onClick={() => openDelete(category)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <Pagination
               currentPage={currentPage}
               pageSize={PAGE_SIZE}

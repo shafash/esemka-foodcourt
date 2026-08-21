@@ -159,6 +159,36 @@ function UnitList() {
                 </>
               )}
             />
+            <div className="data-card-list">
+              {units.map((unit) => (
+                <div key={unit.id} className="data-card">
+                  <div className="data-card__top">
+                    <div className="data-card__title-group">
+                      <p className="data-card__title">{unit.name}</p>
+                    </div>
+                  </div>
+                  <div className="data-card__footer">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiEdit2 />}
+                      aria-label="Edit unit"
+                      onClick={() => openEdit(unit)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiTrash2 />}
+                      aria-label="Hapus unit"
+                      onClick={() => openDelete(unit)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <Pagination
               currentPage={currentPage}
               pageSize={PAGE_SIZE}
