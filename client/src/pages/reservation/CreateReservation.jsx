@@ -19,7 +19,7 @@ function CreateReservation() {
       await createReservation(payload);
       navigate("/reservation/history");
     } catch (err) {
-      setSubmitError(err.message || "Gagal membuat reservasi.");
+      toast.error(err.message || "Gagal membuat reservasi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -28,11 +28,7 @@ function CreateReservation() {
   return (
     <>
       <Header title="New Reservation" />
-      <ReservationForm
-        onSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        submitError={submitError}
-      />
+      <ReservationForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </>
   );
 }

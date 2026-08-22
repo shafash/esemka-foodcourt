@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { FiMinus, FiPlus, FiTrash2, FiAlertTriangle } from "react-icons/fi";
 
 import Input from "../common/Input";
@@ -47,8 +48,6 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   useEffect(() => {
     setMenuPage(1);
   }, [menuPageSize]);
-
-  const [formError, setFormError] = useState("");
 
   const {
     register,
@@ -152,14 +151,12 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
   const grandTotal = menuTotal + tax + RESERVATION_FEE;
 
   const submitHandler = (values) => {
-    setFormError("");
-
     if (!selectedTable) {
-      setFormError("Silakan pilih meja pada denah terlebih dahulu.");
+      toast.error("Silakan pilih meja pada denah terlebih dahulu.");
       return;
     }
     if (orderItems.length === 0) {
-      setFormError("Tambahkan minimal satu menu untuk pre-order.");
+      toast.error("Tambahkan minimal satu menu untuk pre-order.");
       return;
     }
 
@@ -416,10 +413,6 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
           </Button>
         </div>
       </div>
-
-      {(formError || submitError) && (
-        <p className="auth-error reserve-page__error">{formError || submitError}</p>
-      )}
     </form>
   );
 }
