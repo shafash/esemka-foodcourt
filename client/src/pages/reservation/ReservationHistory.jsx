@@ -13,7 +13,9 @@ import useFetch from "../../hooks/useFetch";
 import { getMemberReservations, cancelMyReservation } from "../../services/reservation.service";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
-import { generateReservationInvoicePdf } from "../../utils/invoiceGenerator";
+import { generateReservationInvoicePdf } from "../../utils/Invoicegenerator";
+
+import Modal from "../../components/common/Modal";
 
 import "../../styles/reservation.css";
 
@@ -36,11 +38,17 @@ function ReservationHistory() {
 
   const selected = filtered.find((item) => item.id === selectedId) || filtered[0] || null;
 
-  const handleCancel = async () => {
-    if (!selected) return;
+  const [cancelTarget, setCancelTarget] = useState(null);
+
+  const openCancelConfirm = (reservation) => setCancelTarget(reservation);
+  const closeCancelConfirm = () => setCancelTarget(null);
+
+  const confirmCancel = async () => {
+    if (!cancelTarget) return;
     setIsCanceling(true);
     try {
-      await cancelMyReservation(selected.id);
+      await cancelMyReservation(cancelTarget.id);
+      setCancelTarget(null);
       refetch();
     } finally {
       setIsCanceling(false);
@@ -168,8 +176,8 @@ function ReservationHistory() {
 
             <div className="history-detail__actions">
               {selected.status === "pending" && (
-                <Button variant="danger" onClick={handleCancel} disabled={isCanceling}>
-                  {isCanceling ? "Canceling..." : "Cancel Reservation"}
+                <Button variant="danger" onClick={() => openCancelConfirm(selected)} disabled={isCanceling}>
+                  Cancel Reservation
                 </Button>
               )}
               <Button
@@ -184,6 +192,27 @@ function ReservationHistory() {
         )}
       </div>
       )}
+
+      <Modal
+        isOpen={Boolean(cancelTarget)}
+        onClose={closeCancelConfirm}
+        title="Batalkan Reservasi Ini?"
+        footer={
+          <>
+            <Button variant="secondary" onClick={closeCancelConfirm} disabled={isCanceling}>
+              Kembali
+            </Button>
+            <Button variant="danger" onClick={confirmCancel} disabled={isCanceling}>
+              {isCanceling ? "Membatalkan..." : "Ya, Batalkan"}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-muted">
+          Reservasi Table {cancelTarget?.tableId} (#{cancelTarget?.id}) akan dibatalkan.
+          Tindakan ini tidak dapat dibatalkan.
+        </p>
+      </Modal>
     </>
   );
 }
