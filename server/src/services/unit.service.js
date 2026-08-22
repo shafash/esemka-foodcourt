@@ -65,6 +65,18 @@ export const getUnitByIdService = async (
 export const createUnitService = async (
     payload 
 ) => {
+    const existingUnit = await prisma.units.findFirst({
+        where: {
+            Name: payload.Name
+        }
+    });
+
+    if (existingUnit) {
+        throw new ApiError(
+            409,
+            "Unit already exists"
+        );
+    }
     const unit = await prisma.units.create({
         data: {
             Name: payload.Name 
@@ -91,6 +103,22 @@ export const updateUnitService = async (
         throw new ApiError(
             404,
             "Unit not found"
+        );
+    }
+
+    const existingUnit = await prisma.units.findFirst({
+        where: {
+            Name: payload.Name,
+            NOT: {
+                ID: id
+            }
+        }
+    });
+
+    if (existingUnit) {
+        throw new ApiError(
+            409,
+            "Unit name already exists"
         );
     }
 
