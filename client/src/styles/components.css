@@ -46,6 +46,16 @@
   background-color: var(--color-danger-soft);
 }
 
+.button--success {
+  background-color: var(--color-surface);
+  border-color: var(--color-success-border);
+  color: var(--color-success);
+}
+
+.button--success:hover:not(:disabled) {
+  background-color: var(--color-success-soft);
+}
+
 .button--ghost {
   background-color: transparent;
   border-color: transparent;

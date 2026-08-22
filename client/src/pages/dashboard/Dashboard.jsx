@@ -142,7 +142,7 @@ function ReservationActions({ row, onUpdate, onView }) {
     return (
       <>
         <Button
-          variant="ghost"
+          variant="success"
           size="sm"
           iconOnly
           icon={<FiCheck />}
@@ -151,7 +151,7 @@ function ReservationActions({ row, onUpdate, onView }) {
         />
 
         <Button
-          variant="ghost"
+          variant="danger"
           size="sm"
           iconOnly
           icon={<FiX />}
@@ -167,9 +167,9 @@ function ReservationActions({ row, onUpdate, onView }) {
       variant="ghost"
       size="sm"
       icon={<FiEye />}
+      aria-label="Lihat detail reservasi"
       onClick={() => onView(row.id)}
     >
-      View
     </Button>
   );
 }
