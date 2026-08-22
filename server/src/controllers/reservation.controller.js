@@ -23,10 +23,12 @@ export const getAllReservations = async (
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const search = req.query.search?.trim() || "";
+        const status = req.query.status?.trim() || "";
         const result  = await getAllReservationsService({
             page,
             limit,
-            search 
+            search,
+            status
         });
 
         return successResponse(
@@ -168,12 +170,14 @@ export const getMyReservations = async (
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const search = req.query.search?.trim() || "";
+        const status = req.query.status?.trim() || "";
 
         const result = await getMyReservationsService({
             userId: req.user.ID,
             page,
             limit,
-            search
+            search,
+            status
         });
 
         return successResponse(

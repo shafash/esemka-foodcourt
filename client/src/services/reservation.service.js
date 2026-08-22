@@ -152,11 +152,26 @@ export async function getReservationByTable(table) {
   return getReservationById(table.reservationId);
 }
 
-export async function getMemberReservations() {
+export async function getMemberReservations({ page = 1, limit = 10, status = "" } = {}) {
+  const params = { page, limit };
+
+  if (status && status !== "all") {
+    params.status = STATUS_MAP_REVERSE[status] || status;
+  }
+
   const { data } = await axiosInstance.get(RESERVATION_ENDPOINTS.me, {
-    params: { limit: 100 },
+    params,
   });
-  return (data.data.reservations || []).map(mapReservationSummary);
+
+  return {
+    data: (data.data.reservations || []).map(mapReservationSummary),
+    pagination: data.data.pagination || {
+      page,
+      limit,
+      totalData: 0,
+      totalPages: 0,
+    },
+  };
 }
 
 export async function getMyReservationById(id) {

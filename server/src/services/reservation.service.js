@@ -10,12 +10,14 @@ export const getAllReservationsService = async ({
     userId,
     page,
     limit,
-    search
+    search,
+    status
 }) => {
     const skip = (page - 1) * limit;
 
     const where = {
         ...(userId && { UserID: userId }),
+        ...(status && { Status: status }),
         ...(search && {
             OR: [
                 { CustomerFirstName: { contains: search } },
@@ -450,13 +452,15 @@ export const getMyReservationsService = async ({
     userId,
     page,
     limit,
-    search
+    search,
+    status
 }) => {
     return await getAllReservationsService({
         userId,
         page,
         limit,
-        search
+        search,
+        status
     });
 };
 

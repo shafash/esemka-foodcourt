@@ -232,6 +232,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
         />
         <Input
           label="Phone Number"
+          type="tel"
           error={errors.phone?.message}
           {...register("phone", { required: "Nomor telepon wajib diisi." })}
         />
