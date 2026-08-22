@@ -333,25 +333,19 @@ export const createReservationService = async (
         UseAccountData
     } = payload;
 
-    // Jika pakai data akun
     if (UseAccountData) {
         const user = await prisma.users.findUnique({
-            where: {
-                ID: userId
-            }
+            where: { ID: userId }
         });
 
         if (!user) {
-            throw new ApiError(
-                404,
-                "User not found"
-            );
+            throw new ApiError(404, "User not found");
         }
 
-        CustomerFirstName = user.FirstName;
-        CustomerLastName = user.LastName;
-        CustomerEmail = user.Email;
-        CustomerPhoneNumber = user.PhoneNumber;
+        CustomerFirstName = CustomerFirstName || user.FirstName;
+        CustomerLastName = CustomerLastName || user.LastName;
+        CustomerEmail = CustomerEmail || user.Email;
+        CustomerPhoneNumber = CustomerPhoneNumber || user.PhoneNumber;
     }
 
     const table = await prisma.tables.findUnique({
