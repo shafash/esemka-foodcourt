@@ -115,7 +115,7 @@ function ReservationList() {
       <Header title="Reservation" />
 
       <div className="reservation-page">
-        <Card noPadding className="reserve-page__floor">
+        <Card noPadding className="reservation-page__floor">
           {isTablesLoading ? (
             <Loader
               centered

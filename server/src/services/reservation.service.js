@@ -1,7 +1,10 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
+import { autoCompleteExpiredReservations } from "../utils/autoCompleteReservations.js";
 import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
 import { Prisma } from "@prisma/client";
+
+await autoCompleteExpiredReservations();
 
 export const getAllReservationsService = async ({
     userId,

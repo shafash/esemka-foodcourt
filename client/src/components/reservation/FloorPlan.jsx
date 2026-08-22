@@ -1,9 +1,4 @@
-function FloorPlan({
-  tables = [],
-  selectedId,
-  onSelect,
-  disableReserved = true
-}) {
+function FloorPlan({ tables = [], selectedId, onSelect, disableReserved = true, sessionLabel }) {
   return (
     <div className="floor-plan">
       <div className="floor-plan__legend">
@@ -60,14 +55,19 @@ function FloorPlan({
                   onSelect?.(table)
                 }
                 aria-label={`Meja ${table.id}${
-                  isReserved
+                  isReserved && sessionLabel
+                    ? ` (dipesan untuk sesi ${sessionLabel})`
+                    : isReserved
                     ? " (sudah dipesan)"
                     : ""
                 }`}
                 aria-pressed={isSelected}
-              >
-                {table.id}
-              </button>
+                >
+                  <span className="floor-plan__table-name">{table.id}</span>
+                  {isReserved && sessionLabel && (
+                    <span className="floor-plan__table-badge">{sessionLabel}</span>
+                  )}
+                </button>
             );
           })}
         </div>

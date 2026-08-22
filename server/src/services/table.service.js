@@ -1,5 +1,6 @@
 import prisma from "../config/prisma.js";
 import ApiError from "../errors/ApiError.js";
+import { autoCompleteExpiredReservations } from "../utils/autoCompleteReservations.js";
 import { ACTIVE_RESERVATION_STATUSES } from "../utils/reservationStatus.js";
 
 const getDateRange = (date) => {
@@ -22,6 +23,8 @@ const getDateRange = (date) => {
         end
     };
 };
+
+await autoCompleteExpiredReservations();
 
 export const getAllTablesService = async ({
     page,

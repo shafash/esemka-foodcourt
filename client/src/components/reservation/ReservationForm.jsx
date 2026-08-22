@@ -21,6 +21,13 @@ import { getMenus } from "../../services/menu.service";
 import { getCategoryOptions } from "../../services/cetagory.service";
 import { formatCurrency } from "../../utils/formatCurrency";
 
+import {
+  RESERVATION_SESSIONS,
+  getCurrentSessionTime,
+  getSessionLabel,
+  getTodayDateString,
+} from "../../constants/reservation";
+
 const RESERVATION_FEE = 50000;
 const TAX_RATE = 0.1;
 
@@ -51,12 +58,8 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      date: "",
-      time: new Date().toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }),
+      date: getTodayDateString(),
+      time: getCurrentSessionTime(),
       guests: "",
       firstName: "",
       lastName: "",
@@ -188,11 +191,12 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
           error={errors.date?.message}
           {...register("date", { required: "Tanggal reservasi wajib diisi." })}
         />
-        <Input
-          label="Reservation Time"
-          type="time"
+        <Select
+          label="Reservation Session"
+          options={RESERVATION_SESSIONS}
+          placeholder="Pilih sesi reservasi"
           error={errors.time?.message}
-          {...register("time", { required: "Waktu reservasi wajib diisi." })}
+          {...register("time", { required: "Sesi reservasi wajib dipilih." })}
         />
         <Input
           label="Number of Guests"
@@ -263,6 +267,7 @@ function ReservationForm({ onSubmit, isSubmitting = false, submitError }) {
             tables={tables || []}
             selectedId={selectedTable?.id}
             onSelect={(table) => setSelectedTable(table)}
+            sessionLabel={getSessionLabel(selectedTime)}
           />
         )}
       </Card>

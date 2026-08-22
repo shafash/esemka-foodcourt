@@ -14,14 +14,20 @@ import { getTables } from "../../services/reservation.service";
 
 import "../../styles/reservation.css";
 
+import {
+  getCurrentSessionTime,
+  getSessionLabel,
+  getTodayDateString,
+} from "../../constants/reservation";
+
 function MemberDashboard() {
   const navigate = useNavigate();
 
-  // getTables() with no date defaults to "today" on the backend. This must
-  // be a stable function reference (useCallback with an empty dep array) -
-  // useFetch's effect depends on it, and a new arrow function on every
-  // render would re-trigger the fetch forever.
-  const fetchTables = useCallback(() => getTables(), []);
+  const currentSession = useMemo(() => getCurrentSessionTime(), []);
+  const fetchTables = useCallback(
+    () => getTables(getTodayDateString(), currentSession),
+    [currentSession]
+  );
   const { data: tables, isLoading, error, refetch } = useFetch(fetchTables);
 
   const stats = useMemo(() => {
@@ -53,7 +59,11 @@ function MemberDashboard() {
               onAction={refetch}
             />
           ) : (
-            <FloorPlan tables={tables || []} disableReserved />
+            <FloorPlan
+              tables={tables || []}
+              disableReserved
+              sessionLabel={getSessionLabel(currentSession)}
+            />
           )}
         </Card>
 
