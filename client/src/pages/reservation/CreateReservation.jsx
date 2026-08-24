@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import Header from "../../components/layout/Header";
 import ReservationForm from "../../components/reservation/ReservationForm";
@@ -10,10 +11,8 @@ import "../../styles/reservation.css";
 function CreateReservation() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
 
   const handleSubmit = async (payload) => {
-    setSubmitError("");
     setIsSubmitting(true);
     try {
       await createReservation(payload);

@@ -26,6 +26,7 @@ const STATUS_FILTERS = [
   { key: "pending", label: "Pending" },
   { key: "confirmed", label: "Confirmed" },
   { key: "completed", label: "Completed" },
+  { key: "canceled", label: "Canceled" },
 ];
 
 function ReservationDetailContent({
@@ -115,6 +116,7 @@ function ReservationHistory() {
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -129,6 +131,7 @@ function ReservationHistory() {
     if (!user?.id) {
       setReservations([]);
       setIsLoading(false);
+      setIsInitialLoading(false);
       return;
     }
 
@@ -145,6 +148,7 @@ function ReservationHistory() {
       })
       .finally(() => {
         setIsLoading(false);
+        setIsInitialLoading(false);
       });
   }, [user?.id, statusFilter]);
 
@@ -227,7 +231,7 @@ function ReservationHistory() {
     }
   };
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return (
       <>
         <Header title="History Reservation" />
@@ -240,25 +244,26 @@ function ReservationHistory() {
     <>
       <Header title="History Reservation" />
 
-      <div className="history-tabs">
-        {STATUS_FILTERS.map((filter) => (
-          <button
-            key={filter.key}
-            type="button"
-            className={`history-tabs__button${
-              statusFilter === filter.key ? " history-tabs__button--active" : ""
-            }`}
-            onClick={() => setStatusFilter(filter.key)}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
-
-      {reservations.length === 0 ? (
+      {reservations.length === 0 && !isLoading ? (
         <div className="history-page history-page--empty">
           <div className="history-panel-header">
             <h2 className="history-panel-header__title">History</h2>
+          </div>
+
+          <div className="history-tabs">
+            {STATUS_FILTERS.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                className={`history-tabs__button${
+                  statusFilter === filter.key ? " history-tabs__button--active" : ""
+                }`}
+                onClick={() => setStatusFilter(filter.key)}
+                disabled={isLoading}
+              >
+                {filter.label}
+              </button>
+            ))}
           </div>
 
           <div className="history-page__empty">
@@ -272,30 +277,50 @@ function ReservationHistory() {
         </div>
       ) : (
         <div className="history-page">
-          <div>
+          <div className="history-list-column">
             <div className="history-panel-header">
               <h2 className="history-panel-header__title">History</h2>
             </div>
 
-            {reservations.map((item) => (
-              <div
-                key={item.id}
-                className={`history-card${
-                  !isMobile && selected?.id === item.id ? " history-card--active" : ""
-                }`}
-                onClick={() => setSelectedId(item.id)}
-              >
-                <div className="history-card__top">
-                  <StatusBadge status={item.status} />
-                  <span className="reservation-detail__id">#{item.id}</span>
+            <div className="history-tabs">
+              {STATUS_FILTERS.map((filter) => (
+                <button
+                  key={filter.key}
+                  type="button"
+                  className={`history-tabs__button${
+                    statusFilter === filter.key ? " history-tabs__button--active" : ""
+                  }`}
+                  onClick={() => setStatusFilter(filter.key)}
+                  disabled={isLoading}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
+            <div
+              className={`history-cards${isLoading ? " history-cards--loading" : ""}`}
+            >
+              {reservations.map((item) => (
+                <div
+                  key={item.id}
+                  className={`history-card${
+                    !isMobile && selected?.id === item.id ? " history-card--active" : ""
+                  }`}
+                  onClick={() => setSelectedId(item.id)}
+                >
+                  <div className="history-card__top">
+                    <StatusBadge status={item.status} />
+                    <span className="reservation-detail__id">#{item.id}</span>
+                  </div>
+                  <p className="history-card__title">Table {item.tableId}</p>
+                  <p className="history-card__meta">
+                    {formatDate(item.date)} {item.time}
+                  </p>
+                  <p className="history-card__guests">{item.guests} Guests</p>
                 </div>
-                <p className="history-card__title">Table {item.tableId}</p>
-                <p className="history-card__meta">
-                  {formatDate(item.date)} {item.time}
-                </p>
-                <p className="history-card__guests">{item.guests} Guests</p>
-              </div>
-            ))}
+              ))}
+            </div>
 
             <div className="history-list__sentinel" ref={sentinelRef}>
               {isLoadingMore && <Loader label="Memuat lebih banyak..." />}
