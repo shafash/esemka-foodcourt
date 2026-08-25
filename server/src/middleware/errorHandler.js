@@ -23,7 +23,7 @@ const errorHandler = (err, req, res, next) => {
     if (err instanceof ZodError) {
         return res.status(400).json({
             success: false,
-            message: "Validation Error",
+            message: "Data yang dikirim tidak valid",
             errors: (err.issues ?? err.errors ?? []).map(e => ({
                 field: e.path.join("."),
                 message: e.message 

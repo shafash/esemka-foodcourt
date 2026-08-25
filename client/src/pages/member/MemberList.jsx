@@ -251,7 +251,7 @@ function MemberList() {
       <Modal
         isOpen={Boolean(deleteTarget)}
         onClose={closeDeleteModal}
-        title="Hapus Member Terpilih?"
+        title="Delete Selected Members?"
         footer={
           <>
             <Button variant="secondary" onClick={closeDeleteModal} disabled={isDeleting}>
@@ -264,8 +264,8 @@ function MemberList() {
         }
       >
         <p className="text-muted">
-          {deleteTarget?.ids.length} member akan dihapus permanen. Tindakan ini tidak dapat
-          dibatalkan.
+          {deleteTarget?.ids.length} member(s) will be permanently deleted. This action cannot be
+          undone.
         </p>
       </Modal>
     </>

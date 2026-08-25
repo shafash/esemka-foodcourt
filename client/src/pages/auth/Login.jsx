@@ -7,13 +7,12 @@ import {
   FiArrowRight,
   FiUserPlus,
 } from "react-icons/fi";
-import { GiKnifeFork } from "react-icons/gi";
-
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
 import { isValidEmail } from "../../utils/validators";
+import logo from "../../assets/logo-esemka.png";
 
 import "../../styles/auth.css";
 
@@ -59,7 +58,7 @@ function Login() {
     <Card>
       <div className="auth-brand">
         <div className="auth-brand__logo">
-          <GiKnifeFork />
+          <img src={logo} alt="Esemka Foodcourt logo" />
         </div>
 
         <div className="auth-brand__content">

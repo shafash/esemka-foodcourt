@@ -288,7 +288,7 @@ function MenuList() {
       <Modal
         isOpen={Boolean(deleteTarget)}
         onClose={closeDeleteModal}
-        title={deleteTarget?.type === "bulk" ? "Hapus Menu Terpilih?" : "Hapus Menu Ini?"}
+        title={deleteTarget?.type === "bulk" ? "Delete Selected Menus?" : "Delete This Menu?"}
         footer={
           <>
             <Button variant="secondary" onClick={closeDeleteModal} disabled={isDeleting}>
@@ -302,8 +302,8 @@ function MenuList() {
       >
         <p className="text-muted">
           {deleteTarget?.type === "bulk"
-            ? `${deleteTarget?.ids.length} menu akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`
-            : "Menu ini akan dihapus permanen. Tindakan ini tidak dapat dibatalkan."}
+            ? `${deleteTarget?.ids.length} menu item(s) will be permanently deleted. This action cannot be undone.`
+            : "This menu item will be permanently deleted. This action cannot be undone."}
         </p>
       </Modal>
     </>

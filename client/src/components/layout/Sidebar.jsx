@@ -10,10 +10,11 @@ import {
   FiTag,
   FiHash,
 } from "react-icons/fi";
-import { GiKnifeFork } from "react-icons/gi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
 import Modal from "../common/Modal";
 import Button from "../common/Button";
+import { GiKnifeFork } from "react-icons/gi";
+import logo from "../../assets/logo-esemka.png";
 
 const NAV_SECTIONS_BY_ROLE = {
   [ROLE_ADMIN]: [
@@ -55,11 +56,11 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
     <aside className={`sidebar${isOpen ? " sidebar--open" : ""}`}>
       <div className="sidebar__brand">
         <span className="sidebar__brand-icon">
-          <GiKnifeFork />
+          <img src={logo} alt="Esemka Foodcourt logo" />
         </span>
         <span className="sidebar__brand-text">
           <span className="sidebar__brand-title">Esemka Foodcourt</span>
-          <span className="sidebar__brand-subtitle">Management system</span>
+          <span className="sidebar__brand-subtitle">Management System</span>
         </span>
       </div>
 
@@ -100,7 +101,7 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
       <Modal
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
-        title="Keluar dari akun?"
+        title="Log Out of Your Account?"
         footer={
           <>
             <Button variant="secondary" onClick={() => setShowLogoutConfirm(false)}>
@@ -113,7 +114,8 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
         }
       >
         <p className="text-muted">
-          Kamu akan keluar dari sesi ini dan perlu login kembali untuk mengakses dashboard.
+          You'll be signed out of this session and will need to log in again to access the
+          dashboard.
         </p>
       </Modal>
     </aside>

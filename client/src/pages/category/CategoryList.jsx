@@ -239,7 +239,7 @@ function CategoryList() {
       <Modal
         isOpen={Boolean(deleteTarget)}
         onClose={closeDelete}
-        title="Hapus Kategori Ini?"
+        title="Delete This Category?"
         footer={
           <>
             <Button variant="secondary" onClick={closeDelete} disabled={isDeleting}>
@@ -255,8 +255,8 @@ function CategoryList() {
           <p className="auth-error">{deleteError}</p>
         ) : (
           <p className="text-muted">
-            Kategori &quot;{deleteTarget?.name}&quot; akan dihapus permanen. Tindakan ini tidak
-            dapat dibatalkan.
+            The category &quot;{deleteTarget?.name}&quot; will be permanently deleted. This
+            action cannot be undone.
           </p>
         )}
       </Modal>

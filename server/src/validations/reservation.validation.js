@@ -14,8 +14,12 @@ export const createReservationSchema = z.object({
 
     CustomerFirstName: z.string().trim().optional(),
     CustomerLastName: z.string().trim().optional(),
-    CustomerEmail: z.email().optional(),
-    CustomerPhoneNumber: z.string().min(8).max(20).optional(),
+    CustomerEmail: z.email("Format email tidak valid.").optional(),
+    CustomerPhoneNumber: z
+        .string()
+        .min(8, "Nomor telepon minimal 8 karakter.")
+        .max(20, "Nomor telepon maksimal 20 karakter.")
+        .optional(),
 
     ReservationDate: z.coerce.date(),
 
@@ -39,7 +43,7 @@ export const createReservationSchema = z.object({
             ctx.addIssue({
                 code: "custom",
                 path: ["CustomerFirstName"],
-                message: "Customer first name is required"
+                message: "Nama depan pelanggan wajib diisi."
             });
         }
 
@@ -47,7 +51,7 @@ export const createReservationSchema = z.object({
             ctx.addIssue({
                 code: "custom",
                 path: ["CustomerLastName"],
-                message: "Customer last name is required"
+                message: "Nama belakang pelanggan wajib diisi."
             });
         }
 
@@ -55,7 +59,7 @@ export const createReservationSchema = z.object({
             ctx.addIssue({
                 code: "custom",
                 path: ["CustomerEmail"],
-                message: "Customer email is required"
+                message: "Email pelanggan wajib diisi."
             });
         }
 
@@ -63,7 +67,7 @@ export const createReservationSchema = z.object({
             ctx.addIssue({
                 code: "custom",
                 path: ["CustomerPhoneNumber"],
-                message: "Customer phone number is required"
+                message: "Nomor telepon pelanggan wajib diisi."
             });
         }
     }

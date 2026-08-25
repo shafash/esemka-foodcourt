@@ -33,9 +33,7 @@ axiosInstance.interceptors.response.use(
     if (backendMessage) {
       const normalized = new Error(
         validationErrors?.length
-          ? `${backendMessage}: ${validationErrors
-              .map((e) => `${e.field} - ${e.message}`)
-              .join(", ")}`
+          ? validationErrors.map((e) => e.message).join(" ")
           : backendMessage
       );
 

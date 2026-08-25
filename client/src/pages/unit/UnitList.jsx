@@ -228,7 +228,7 @@ function UnitList() {
       <Modal
         isOpen={Boolean(deleteTarget)}
         onClose={closeDelete}
-        title="Hapus Unit Ini?"
+        title="Delete This Unit?"
         footer={
           <>
             <Button variant="secondary" onClick={closeDelete} disabled={isDeleting}>
@@ -244,8 +244,8 @@ function UnitList() {
           <p className="auth-error">{deleteError}</p>
         ) : (
           <p className="text-muted">
-            Unit &quot;{deleteTarget?.name}&quot; akan dihapus permanen. Tindakan ini tidak dapat
-            dibatalkan.
+            The unit &quot;{deleteTarget?.name}&quot; will be permanently deleted. This action
+            cannot be undone.
           </p>
         )}
       </Modal>

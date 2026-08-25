@@ -36,7 +36,6 @@
   overflow-y: auto;
 }
 
-/* ===== Sidebar ===== */
 .sidebar {
   height: 100vh;
   display: flex;
@@ -55,8 +54,16 @@
 
 .sidebar__brand-icon {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-primary);
   font-size: 1.75rem;
+}
+
+.sidebar__brand-icon img {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
 }
 
 .sidebar__brand-text {

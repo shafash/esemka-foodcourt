@@ -358,21 +358,21 @@ function ReservationHistory() {
       <Modal
         isOpen={Boolean(cancelTarget)}
         onClose={closeCancelConfirm}
-        title="Batalkan Reservasi Ini?"
+        title="Cancel This Reservation?"
         footer={
           <>
             <Button variant="secondary" onClick={closeCancelConfirm} disabled={isCanceling}>
-              Kembali
+              Go Back
             </Button>
             <Button variant="danger" onClick={confirmCancel} disabled={isCanceling}>
-              {isCanceling ? "Membatalkan..." : "Ya, Batalkan"}
+              {isCanceling ? "Canceling..." : "Yes, Cancel"}
             </Button>
           </>
         }
       >
         <p className="text-muted">
-          Reservasi Table {cancelTarget?.tableId} (#{cancelTarget?.id}) akan dibatalkan.
-          Tindakan ini tidak dapat dibatalkan.
+          Reservation for Table {cancelTarget?.tableId} (#{cancelTarget?.id}) will be canceled.
+          This action cannot be undone.
         </p>
       </Modal>
     </>
