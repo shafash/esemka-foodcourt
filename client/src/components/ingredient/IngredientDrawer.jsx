@@ -12,44 +12,7 @@ import {
 
 import { getUnits } from "../../services/unit.service";
 
-function parseQuantity(value) {
-  const input = String(value).trim();
-
-  if (!input) return Number.NaN;
-
-  if (input.includes(" ")) {
-    const [wholePart, fractionPart] = input.split(/\s+/);
-
-    const whole = Number(wholePart);
-    const [numerator, denominator] = fractionPart.split("/").map(Number);
-
-    if (
-      !Number.isFinite(whole) ||
-      !Number.isFinite(numerator) ||
-      !Number.isFinite(denominator) ||
-      denominator === 0
-    ) {
-      return Number.NaN;
-    }
-
-    return whole + numerator / denominator;
-  }
-
-  if (input.includes("/")) {
-    const [numerator, denominator] = input.split("/").map(Number);
-
-    if (
-      !Number.isFinite(numerator) ||
-      !Number.isFinite(denominator) ||
-      denominator === 0
-    ) {
-      return Number.NaN;
-    }
-
-    return numerator / denominator;
-  }
-  return Number(input);
-}
+let newRowCounter = 0;
 
 function IngredientDrawer({ menu, onClose, onSaved }) {
   const isOpen = Boolean(menu);
@@ -61,19 +24,11 @@ function IngredientDrawer({ menu, onClose, onSaved }) {
 
   const { data, isLoading } = useFetch(fetchIngredients);
 
-  const {
-    data: units = [],
-    isLoading: isUnitsLoading,
-  } = useFetch(getUnits);
+  const { data: units = [], isLoading: isUnitsLoading } = useFetch(getUnits);
 
   const [ingredients, setIngredients] = useState([]);
-
-  const [newIngredient, setNewIngredient] = useState({
-    name: "",
-    amount: "",
-    unit: "",
-  });
-
+  const [newRows, setNewRows] = useState([]);
+  const [invalidRowIds, setInvalidRowIds] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -83,106 +38,96 @@ function IngredientDrawer({ menu, onClose, onSaved }) {
 
   useEffect(() => {
     if (menu) {
-      setNewIngredient({
-        name: "",
-        amount: "",
-        unit: units[0]?.value || "",
-      });
-
+      setNewRows([]);
+      setInvalidRowIds({});
       setError("");
     }
-  }, [menu?.id, units]);
+  }, [menu?.id]);
+
+  const clearInvalid = (id) => {
+    setInvalidRowIds((prev) => {
+      if (!prev[id]) return prev;
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
 
   const updateAmount = (id, amount) => {
     setIngredients((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              amount,
-            }
-          : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, amount } : item))
     );
+    clearInvalid(id);
   };
 
   const removeIngredient = (id) => {
-    setIngredients((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    setIngredients((prev) => prev.filter((item) => item.id !== id));
+    clearInvalid(id);
   };
 
-  const addIngredient = () => {
-    const name = newIngredient.name.trim();
-    const amount = Number(newIngredient.amount);
+  const addNewRow = () => {
+    const id = `local-${Date.now()}-${newRowCounter++}`;
 
-    if (!name) {
-      setError("Nama ingredient wajib diisi.");
-      return;
-    }
-
-    if (!newIngredient.unit) {
-      setError("Unit wajib dipilih.");
-      return;
-    }
-
-    if (!newIngredient.amount || amount <= 0) {
-      setError("Quantity harus lebih besar dari 0.");
-      return;
-    }
-
-    setIngredients((prev) => [
+    setNewRows((prev) => [
       ...prev,
-      {
-        id: `local-${Date.now()}`,
-        name,
-        amount,
-        unit: newIngredient.unit,
-      },
+      { id, name: "", amount: "", unit: units[0]?.value || "" },
     ]);
+  };
 
-    setNewIngredient({
-      name: "",
-      amount: "",
-      unit: newIngredient.unit,
-    });
+  const updateNewRow = (id, field, value) => {
+    setNewRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+    clearInvalid(id);
+  };
 
-    setError("");
+  const removeNewRow = (id) => {
+    setNewRows((prev) => prev.filter((row) => row.id !== id));
+    clearInvalid(id);
   };
 
   const handleSave = async () => {
     setError("");
 
-    // Validasi sebelum request ke backend
-    const invalidIngredient = ingredients.find(
-      (item) => !item.amount || Number(item.amount) <= 0
+    const nextInvalid = {};
+
+    ingredients.forEach((item) => {
+      if (!item.amount || Number(item.amount) <= 0) {
+        nextInvalid[item.id] = true;
+      }
+    });
+
+    const defaultUnit = units[0]?.value || "";
+    const touchedNewRows = newRows.filter(
+      (row) => row.name.trim() || row.amount || row.unit !== defaultUnit
     );
 
-    if (invalidIngredient) {
-      setError(
-        `Quantity untuk "${invalidIngredient.name}" harus lebih besar dari 0.`
-      );
-      return;
-    }
+    touchedNewRows.forEach((row) => {
+      if (!row.name.trim() || !row.amount || Number(row.amount) <= 0 || !row.unit) {
+        nextInvalid[row.id] = true;
+      }
+    });
 
-    const invalidUnit = ingredients.find(
-      (item) => !item.unit
-    );
-
-    if (invalidUnit) {
-      setError(
-        `Unit untuk "${invalidUnit.name}" belum dipilih.`
-      );
+    if (Object.keys(nextInvalid).length > 0) {
+      setInvalidRowIds(nextInvalid);
+      setError("Lengkapi bahan baku yang ditandai sebelum menyimpan.");
       return;
     }
 
     setIsSaving(true);
 
     try {
-      const saved = await saveIngredientsForMenu(
-        menu.id,
-        ingredients
-      );
+      const payload = [
+        ...ingredients,
+        ...touchedNewRows.map((row) => ({
+          id: row.id,
+          name: row.name.trim(),
+          amount: Number(row.amount),
+          unit: row.unit,
+        })),
+      ];
+
+      const saved = await saveIngredientsForMenu(menu.id, payload);
 
       onSaved?.(menu.id, saved.length);
       onClose();
@@ -199,137 +144,147 @@ function IngredientDrawer({ menu, onClose, onSaved }) {
     }
   };
 
+  const totalItems = ingredients.length + newRows.length;
+  const showNewDivider = ingredients.length > 0 && newRows.length > 0;
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       variant="drawer"
+      title={
+        menu && (
+          <span className="ingredient-drawer__header-content">
+            <span className="ingredient-drawer__eyebrow">Editing Ingredients</span>
+            <span className="ingredient-drawer__title">{menu.name}</span>
+          </span>
+        )
+      }
+      footer={
+        menu &&
+        !isLoading && (
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving..." : "Save Change"}
+            </Button>
+          </>
+        )
+      }
     >
-      {menu && (
-        <>
-          <div className="ingredient-drawer__header">
-            <p className="ingredient-drawer__eyebrow">
-              Editing Ingredients
-            </p>
+      {menu &&
+        (isLoading ? (
+          <Loader label="Memuat bahan baku..." />
+        ) : (
+          <>
+            <div className="ingredient-drawer__section-title">
+              <span>Current Ingredients</span>
+              <span>{totalItems} Items</span>
+            </div>
 
-            <h3 className="ingredient-drawer__title">
-              {menu.name}
-            </h3>
-          </div>
+            <div>
+              {ingredients.map((item) => (
+                <div className="ingredient-row" key={item.id}>
+                  <span className="ingredient-row__name">{item.name}</span>
 
-          {isLoading ? (
-            <Loader label="Memuat bahan baku..." />
-          ) : (
-            <>
-              <div className="ingredient-drawer__section-title">
-                <span>Current Ingredients</span>
-                <span>{ingredients.length} Items</span>
-              </div>
-
-              <div>
-                {ingredients.map((item) => (
-                  <div
-                    className="ingredient-row"
-                    key={item.id}
-                  >
-                    <span className="ingredient-row__name">
-                      {item.name}
-                    </span>
-
-                    <input
-                      className="ingredient-row__amount"
-                      type="number"
-                      min="0"
-                      value={item.amount}
-                      onChange={(event) =>
-                        updateAmount(
-                          item.id,
-                          event.target.value
-                        )
-                      }
-                    />
-
-                    <span className="ingredient-row__unit">
-                      {item.unit}
-                    </span>
-
-                    <button
-                      type="button"
-                      className="ingredient-row__remove"
-                      onClick={() =>
-                        removeIngredient(item.id)
-                      }
-                      aria-label={`Hapus ${item.name}`}
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="ingredient-drawer__add">
-                <div className="ingredient-drawer__section-title">
-                  <span>Add New Ingredient</span>
-                </div>
-
-                <div className="ingredient-add-row">
                   <input
-                    type="text"
-                    placeholder="add new ingredient"
-                    value={newIngredient.name}
+                    className={`ingredient-row__amount${
+                      invalidRowIds[item.id]
+                        ? " ingredient-row__amount--invalid"
+                        : ""
+                    }`}
+                    type="number"
+                    min="0"
+                    value={item.amount}
                     onChange={(event) =>
-                      setNewIngredient((prev) => ({
-                        ...prev,
-                        name: event.target.value,
-                      }))
+                      updateAmount(item.id, event.target.value)
+                    }
+                  />
+
+                  <span className="ingredient-row__unit">{item.unit}</span>
+
+                  <button
+                    type="button"
+                    className="ingredient-row__remove"
+                    onClick={() => removeIngredient(item.id)}
+                    aria-label={`Hapus ${item.name}`}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              ))}
+
+              {showNewDivider && (
+                <div className="ingredient-drawer__divider">
+                  <span>New</span>
+                </div>
+              )}
+
+              {newRows.map((row) => (
+                <div className="ingredient-row ingredient-row--new" key={row.id}>
+                  <input
+                    className={`ingredient-row__name-input${
+                      invalidRowIds[row.id] && !row.name.trim()
+                        ? " ingredient-row__name-input--invalid"
+                        : ""
+                    }`}
+                    type="text"
+                    placeholder="Ingredient name"
+                    value={row.name}
+                    onChange={(event) =>
+                      updateNewRow(row.id, "name", event.target.value)
                     }
                   />
 
                   <input
+                    className={`ingredient-row__amount${
+                      invalidRowIds[row.id] &&
+                      (!row.amount || Number(row.amount) <= 0)
+                        ? " ingredient-row__amount--invalid"
+                        : ""
+                    }`}
                     type="number"
                     min="0"
                     step="any"
                     placeholder="0"
-                    value={newIngredient.amount}
+                    value={row.amount}
                     onKeyDown={(event) => {
                       if (event.key === "e" || event.key === "E") {
                         event.preventDefault();
                       }
                     }}
                     onChange={(event) =>
-                      setNewIngredient((prev) => ({
-                        ...prev,
-                        amount: event.target.value,
-                      }))
+                      updateNewRow(row.id, "amount", event.target.value)
                     }
                   />
 
                   <select
-                    value={newIngredient.unit}
+                    value={row.unit}
                     onChange={(event) =>
-                      setNewIngredient((prev) => ({
-                        ...prev,
-                        unit: event.target.value,
-                      }))
+                      updateNewRow(row.id, "unit", event.target.value)
                     }
-                    disabled={
-                      isUnitsLoading || units.length === 0
-                    }
+                    disabled={isUnitsLoading || units.length === 0}
                   >
                     {isUnitsLoading ? (
-                      <option value="">
-                        Loading units...
-                      </option>
+                      <option value="">Loading units...</option>
                     ) : units.length === 0 ? (
-                      <option value="">
-                        No units available
-                      </option>
+                      <option value="">No units available</option>
                     ) : (
                       units.map((unit) => (
-                        <option
-                          key={unit.value}
-                          value={unit.value}
-                        >
+                        <option key={unit.value} value={unit.value}>
                           {unit.label}
                         </option>
                       ))
@@ -338,53 +293,29 @@ function IngredientDrawer({ menu, onClose, onSaved }) {
 
                   <button
                     type="button"
-                    className="ingredient-add-row__submit"
-                    onClick={addIngredient}
-                    disabled={
-                      !newIngredient.name.trim() ||
-                      !newIngredient.amount ||
-                      Number(newIngredient.amount) <= 0 ||
-                      !newIngredient.unit ||
-                      isUnitsLoading
-                    }
-                    aria-label="Tambah bahan baku"
+                    className="ingredient-row__remove"
+                    onClick={() => removeNewRow(row.id)}
+                    aria-label="Hapus baris baru"
                   >
-                    <FiPlus />
+                    <FiTrash2 />
                   </button>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {error && (
-                <p className="auth-error">
-                  {error}
-                </p>
-              )}
+            <button
+              type="button"
+              className="ingredient-drawer__add-trigger"
+              onClick={addNewRow}
+              disabled={isUnitsLoading}
+            >
+              <FiPlus />
+              Add new ingredient
+            </button>
 
-              <div className="ingredient-drawer__footer">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={onClose}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="primary"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                >
-                  {isSaving
-                    ? "Saving..."
-                    : "Save Change"}
-                </Button>
-              </div>
-            </>
-          )}
-        </>
-      )}
+            {error && <p className="auth-error">{error}</p>}
+          </>
+        ))}
     </Modal>
   );
 }
