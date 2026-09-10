@@ -9,6 +9,7 @@ import {
   FiHome,
   FiTag,
   FiHash,
+  FiLayout,
 } from "react-icons/fi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
 import Modal from "../common/Modal";
@@ -27,6 +28,7 @@ const NAV_SECTIONS_BY_ROLE = {
         { to: "/menu", label: "Manage Menus", icon: <FiClipboard /> },
         { to: "/unit", label: "Manage Units", icon: <FiHash /> },
         { to: "/ingredients", label: "Menu Ingredients", icon: <GiKnifeFork /> },
+        { to: "/table", label: "Manage Tables", icon: <FiLayout /> },
         { to: "/reservation", label: "Reservations", icon: <FiCalendar /> },
       ],
     },

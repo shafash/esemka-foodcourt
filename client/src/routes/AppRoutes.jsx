@@ -23,6 +23,8 @@ import CategoryList from "../pages/category/CategoryList";
 
 import UnitList from "../pages/unit/UnitList";
 
+import TableList from "../pages/table/TableList";
+
 import ReservationList from "../pages/reservation/ReservationList";
 import CreateReservation from "../pages/reservation/CreateReservation";
 import ReservationHistory from "../pages/reservation/ReservationHistory";
@@ -92,6 +94,8 @@ function AppRoutes() {
             <Route path="/category" element={<CategoryList />} />
 
             <Route path="/unit" element={<UnitList />} />
+
+            <Route path="/table" element={<TableList />} />
 
             <Route path="/reservation" element={<ReservationList />} />
           </Route>
