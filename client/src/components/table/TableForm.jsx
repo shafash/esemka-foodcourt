@@ -24,10 +24,15 @@ function TableForm({
     <form className="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Input
         label="Table Name"
-        placeholder="e.g. 01, 02, VIP-1"
+        placeholder="e.g. 01, 02, 15"
+        hint="Hanya boleh angka, contoh: 01, 02, 15."
         error={errors.name?.message}
         {...register("name", {
           required: "Nama meja wajib diisi.",
+          pattern: {
+            value: /^[0-9]+$/,
+            message: "Nama meja hanya boleh berisi angka.",
+          },
         })}
       />
 
