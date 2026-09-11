@@ -66,8 +66,13 @@ function MemberList() {
     try {
       await bulkDeleteMembers(deleteTarget.ids);
       setSelectedIds((prev) => prev.filter((id) => !deleteTarget.ids.includes(id)));
+      const remainingOnPage = members.length - deleteTarget.ids.length;
       setDeleteTarget(null);
-      refetch();
+      if (remainingOnPage <= 0 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetch();
+      }
     } finally {
       setIsDeleting(false);
     }

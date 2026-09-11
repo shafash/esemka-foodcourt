@@ -99,7 +99,11 @@ function UnitList() {
     try {
       await deleteUnit(deleteTarget.id);
       setDeleteTarget(null);
-      refetch();
+      if (units.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetch();
+      }
     } catch (err) {
       setDeleteError(err.message || "Gagal menghapus unit.");
     } finally {

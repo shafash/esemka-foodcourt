@@ -53,7 +53,6 @@ function MenuList() {
   const { data, isLoading, refetch } = useFetch(fetchMenus);
 
   const menus = data?.data || [];
-  console.log("MENUS:", menus);
   const total = data?.total || 0;
 
   const toggleSelectRow = (id) => {
@@ -80,8 +79,13 @@ function MenuList() {
         await deleteMenu(deleteTarget.ids[0]);
       }
       setSelectedIds((prev) => prev.filter((id) => !deleteTarget.ids.includes(id)));
+      const remainingOnPage = menus.length - deleteTarget.ids.length;
       setDeleteTarget(null);
-      refetch();
+      if (remainingOnPage <= 0 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetch();
+      }
     } finally {
       setIsDeleting(false);
     }

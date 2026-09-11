@@ -104,7 +104,11 @@ function TableList() {
     try {
       await deleteTable(deleteTarget.id);
       setDeleteTarget(null);
-      refetch();
+      if (tables.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetch();
+      }
     } catch (err) {
       setDeleteError(err.message || "Gagal menghapus meja.");
     } finally {

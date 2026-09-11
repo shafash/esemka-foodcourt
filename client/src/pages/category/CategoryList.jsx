@@ -100,7 +100,11 @@ function CategoryList() {
     try {
       await deleteCategory(deleteTarget.id);
       setDeleteTarget(null);
-      refetch();
+      if (categories.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        refetch();
+      }
     } catch (err) {
       setDeleteError(err.message || "Gagal menghapus kategori.");
     } finally {
