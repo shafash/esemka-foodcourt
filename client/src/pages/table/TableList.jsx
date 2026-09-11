@@ -164,6 +164,36 @@ function TableList() {
                 </>
               )}
             />
+            <div className="data-card-list">
+              {tables.map((table) => (
+                <div key={table.id} className="data-card">
+                  <div className="data-card__top">
+                    <div className="data-card__title-group">
+                      <p className="data-card__title">Table {table.name}</p>
+                    </div>
+                  </div>
+                  <div className="data-card__footer">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiEdit2 />}
+                      aria-label="Edit meja"
+                      onClick={() => openEdit(table)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      iconOnly
+                      icon={<FiTrash2 />}
+                      aria-label="Hapus meja"
+                      onClick={() => openDelete(table)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <Pagination
               currentPage={currentPage}
               pageSize={PAGE_SIZE}
@@ -200,30 +230,30 @@ function TableList() {
         />
       </Modal>
 
-        <Modal
-            isOpen={Boolean(deleteTarget)}
-            onClose={closeDelete}
-            title="Delete This Table?"
-            footer={
-            <>
-                <Button variant="secondary" onClick={closeDelete} disabled={isDeleting}>
-                Cancel
-                </Button>
-                <Button variant="danger" onClick={confirmDelete} disabled={isDeleting}>
-                {isDeleting ? "Deleting..." : "Delete"}
-                </Button>
-            </>
-            }
-        >
-            {deleteError ? (
-            <p className="auth-error">{deleteError}</p>
-            ) : (
-            <p className="text-muted">
-                Table &quot;{deleteTarget?.name}&quot; will be permanently deleted. If this table
-                still has reservation history, the deletion may be rejected by the system.
-            </p>
-            )}
-        </Modal>
+      <Modal
+        isOpen={Boolean(deleteTarget)}
+        onClose={closeDelete}
+        title="Delete This Table?"
+        footer={
+          <>
+            <Button variant="secondary" onClick={closeDelete} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </>
+        }
+      >
+        {deleteError ? (
+          <p className="auth-error">{deleteError}</p>
+        ) : (
+          <p className="text-muted">
+            Table &quot;{deleteTarget?.name}&quot; will be permanently deleted. If this table
+            still has reservation history, the deletion may be rejected by the system.
+          </p>
+        )}
+      </Modal>
     </>
   );
 }
