@@ -10,12 +10,13 @@ import {
   FiTag,
   FiHash,
   FiLayout,
+  FiMoreVertical,
 } from "react-icons/fi";
+import { GiKnifeFork } from "react-icons/gi";
 import { ROLE_ADMIN, ROLE_MEMBER } from "../../constants/roles";
+import useAuth from "../../hooks/useAuth";
 import Modal from "../common/Modal";
 import Button from "../common/Button";
-import { GiKnifeFork } from "react-icons/gi";
-import logo from "../../assets/logo-esemka.png";
 
 const NAV_SECTIONS_BY_ROLE = {
   [ROLE_ADMIN]: [
@@ -47,7 +48,22 @@ const NAV_SECTIONS_BY_ROLE = {
 
 function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
   const sections = NAV_SECTIONS_BY_ROLE[role] || NAV_SECTIONS_BY_ROLE[ROLE_ADMIN];
+  const { user } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "User";
+  const initials =
+    [user?.firstName, user?.lastName]
+      .filter(Boolean)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "U";
+
+  const openLogoutConfirm = () => {
+    setShowProfileMenu(false);
+    setShowLogoutConfirm(true);
+  };
 
   const confirmLogout = () => {
     setShowLogoutConfirm(false);
@@ -58,11 +74,11 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
     <aside className={`sidebar${isOpen ? " sidebar--open" : ""}`}>
       <div className="sidebar__brand">
         <span className="sidebar__brand-icon">
-          <img src={logo} alt="Esemka Foodcourt logo" />
+          <GiKnifeFork />
         </span>
         <span className="sidebar__brand-text">
           <span className="sidebar__brand-title">Esemka Foodcourt</span>
-          <span className="sidebar__brand-subtitle">Management System</span>
+          <span className="sidebar__brand-subtitle">Management system</span>
         </span>
       </div>
 
@@ -87,23 +103,48 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
         ))}
       </nav>
 
-            <div className="sidebar__footer">
-        <button
-          type="button"
-          className="sidebar__logout"
-          onClick={() => setShowLogoutConfirm(true)}
-        >
-          <span className="sidebar__nav-icon">
-            <FiLogOut />
+      <div className="sidebar__footer">
+        <div className="sidebar__profile">
+          <span className="sidebar__avatar">{initials}</span>
+          <span className="sidebar__profile-info">
+            <span className="sidebar__profile-name">{fullName}</span>
+            <span className="sidebar__profile-email">{user?.email || "-"}</span>
           </span>
-          <span>Logout</span>
-        </button>
+          <button
+            type="button"
+            className="sidebar__profile-menu-toggle"
+            aria-label="Menu akun"
+            aria-expanded={showProfileMenu}
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+          >
+            <FiMoreVertical />
+          </button>
+
+          {showProfileMenu && (
+            <>
+              <div
+                className="sidebar__profile-menu-backdrop"
+                onClick={() => setShowProfileMenu(false)}
+              />
+              <div className="sidebar__profile-menu">
+                <button
+                  type="button"
+                  className="sidebar__profile-menu-item"
+                  onClick={openLogoutConfirm}
+                >
+                  <FiLogOut />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <Modal
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
-        title="Log Out of Your Account?"
+        title="Keluar dari akun?"
         footer={
           <>
             <Button variant="secondary" onClick={() => setShowLogoutConfirm(false)}>
@@ -116,8 +157,7 @@ function Sidebar({ role = ROLE_ADMIN, onLogout, isOpen = false, onNavigate }) {
         }
       >
         <p className="text-muted">
-          You'll be signed out of this session and will need to log in again to access the
-          dashboard.
+          Kamu akan keluar dari sesi ini dan perlu login kembali untuk mengakses dashboard.
         </p>
       </Modal>
     </aside>

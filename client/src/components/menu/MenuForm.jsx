@@ -37,10 +37,18 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
   });
 
   useEffect(() => {
-    if (categoryOptions?.length && !watch("category")) {
+    if (!categoryOptions?.length) return;
+
+    const initialCategoryId =
+      initialValues?.categoryId != null ? String(initialValues.categoryId) : "";
+    const hasMatch = categoryOptions.some((option) => option.value === initialCategoryId);
+
+    if (hasMatch) {
+      setValue("category", initialCategoryId);
+    } else if (!watch("category")) {
       setValue("category", categoryOptions[0].value);
     }
-  }, [categoryOptions, setValue, watch]);
+  }, [categoryOptions, initialValues, setValue, watch]);
 
   const handleImageChange = (file, previewUrl) => {
     setImage({ file, previewUrl });
