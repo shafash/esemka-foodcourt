@@ -30,7 +30,7 @@ function MenuForm({ initialValues, onSubmit, isSubmitting = false, submitLabel =
   } = useForm({
     defaultValues: {
       name: initialValues?.name || "",
-      category: initialValues?.category || "",
+      category: initialValues?.categoryId != null ? String(initialValues.categoryId) : "",
       price: initialValues?.price ?? "",
       description: initialValues?.description || "",
     },
